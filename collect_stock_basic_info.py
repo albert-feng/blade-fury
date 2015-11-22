@@ -38,12 +38,9 @@ def collect_stock_info():
         stock = i.split(',')
         stock_number = stock[1]
         stock_name = stock[2]
-        stock_info = StockInfo()
-        stock_info.stock_number = stock_number
-        stock_info.stock_name = stock_name
+        stock_info = StockInfo(stock_number=stock_number, stock_name=stock_name)
         stock_info.save()
 
 
 if __name__ == '__main__':
-
     collect_stock_info()
