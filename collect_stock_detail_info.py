@@ -2,16 +2,20 @@
 # -*- coding: utf-8 -*-
 __author__ = 'fengweigang'
 
+import random
+import time
 import datetime
+import logging
 
 import requests
 from bs4 import BeautifulSoup
 
 from models import StockInfo
 from config import core_concept, company_survey, exchange_market
+from logger import setup_logging
 
 
-timeout = 10
+timeout = 30
 
 
 def estimate_market(stock_number):
@@ -36,11 +40,15 @@ def send_request(url):
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36',
     }
     r = requests.get(url, headers=headers, timeout=timeout)
-    return r.text
+    html = r.text
+    if not html:
+        logging.warning('No data when request this url:' + url)
+    return html
 
 
 def collect_company_survey(stock_info):
     query_id = estimate_market(stock_info.stock_number)+stock_info.stock_number
+
     company_survey_url = company_survey.format(query_id)
     survey_html = send_request(company_survey_url)
     survey_soup = BeautifulSoup(survey_html, 'lxml')
@@ -58,9 +66,25 @@ def collect_company_survey(stock_info):
     concept_html = send_request(core_concept_url)
     concept_soup = BeautifulSoup(concept_html, 'lxml').find('div', class_='summary').find('p').text
     stock_info.market_plate = concept_soup.replace(u'要点一：所属板块　', '').replace(u'。', '').split(u'，')
+    stock_info.update_time = datetime.datetime.now()
     stock_info.save()
 
 
+def start_collect_detail():
+    try:
+        all_stocks = StockInfo.objects(timeout=False)
+    except Exception, e:
+        logging.error('Error when query StockInfo:' + str(e))
+        raise e
+
+    for i in all_stocks:
+        try:
+            collect_company_survey(i)
+        except Exception, e:
+            logging.error('Error when collect %s data: %s' % (i.stock_number, e))
+        time.sleep(random.random())
+
+
 if __name__ == '__main__':
-    stock_info = StockInfo.objects(stock_number='300104').next()
-    collect_company_survey(stock_info)
+    setup_logging(__file__)
+    start_collect_detail()

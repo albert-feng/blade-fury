@@ -3,12 +3,14 @@
 __author__ = 'fengweigang'
 
 import json
+import logging
 import datetime
 
 import requests
 
 from config import eastmoney_stock_api
 from models import StockInfo
+from logger import setup_logging
 
 timeout = 60
 
@@ -38,9 +40,12 @@ def collect_stock_info():
         stock = i.split(',')
         stock_number = stock[1]
         stock_name = stock[2]
-        stock_info = StockInfo(stock_number=stock_number, stock_name=stock_name)
+        stock_info = StockInfo(stock_number=stock_number, stock_name=stock_name, update_time=datetime.datetime.now())
         stock_info.save()
 
 
 if __name__ == '__main__':
+    setup_logging(__file__)
+    logging.info('Start to collect stock basic info')
     collect_stock_info()
+    logging.info('Collect stock basic info Success')
