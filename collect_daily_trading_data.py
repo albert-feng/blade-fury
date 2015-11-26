@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'fengweigang'
 
+
 import json
 import logging
 import datetime
@@ -9,8 +10,9 @@ import datetime
 import requests
 
 from config import eastmoney_stock_api
-from models import StockInfo
+from models import StockDailyTrading as SDT
 from logger import setup_logging
+
 
 timeout = 60
 
@@ -42,7 +44,11 @@ def request_and_handle_data(url):
 
     return data
 
-def collect_stock_info():
+
+def collect_stock_daily_trading():
+    """
+    获取每日股票交易数据
+    """
     url = eastmoney_stock_api
     data = request_and_handle_data(url)
 
@@ -51,12 +57,37 @@ def collect_stock_info():
         stock = i.split(',')
         stock_number = stock[1]
         stock_name = stock[2]
-        stock_info = StockInfo(stock_number=stock_number, stock_name=stock_name, update_time=datetime.datetime.now())
-        stock_info.save()
+        sdt = SDT(stock_number=stock_number, stock_name=stock_name)
+        sdt.yesterday_closed_price = float(stock[3])
+        sdt.today_opening_price = float(stock[4])
+        sdt.today_closing_price = float(stock[5])
+        sdt.today_highest_price = float(stock[6])
+        sdt.today_lowest_price = float(stock[7])
+        sdt.turnover_amount = int(stock[8])
+        sdt.turnover_volume = int(stock[9])
+        sdt.increase_amount = float(stock[10])
+        sdt.increase_rate = stock[11]
+        sdt.today_average_price = float(stock[12])
+        sdt.quantity_relative_ratio = float(stock[22])
+        sdt.turnover_rate = stock[23]
+        sdt.save()
+
+
+def is_weekend():
+    """
+    排除掉周六和周日这两个不交易的日子
+    """
+    weekday = datetime.datetime.today().weekday()
+    if weekday in [5, 6]:
+        logging.warning('Stock will not trade on weekend')
+        return True
+    else:
+        return False
 
 
 if __name__ == '__main__':
     setup_logging(__file__)
-    logging.info('Start to collect stock basic info')
-    collect_stock_info()
-    logging.info('Collect stock basic info Success')
+    if not is_weekend():
+        logging.info('Start Collect %s Trading Data' % datetime.date.today())
+        collect_stock_daily_trading()
+        logging.info('Collect %s Trading Data Success' % datetime.date.today())
