@@ -72,7 +72,7 @@ def collect_company_survey(stock_info):
 
 def start_collect_detail():
     try:
-        all_stocks = StockInfo.objects(timeout=False)
+        all_stocks = StockInfo.objects().timeout(False)
     except Exception, e:
         logging.error('Error when query StockInfo:' + str(e))
         raise e
