@@ -47,7 +47,7 @@ def request_and_handle_data(url):
 
 def collect_stock_daily_trading():
     """
-    获取每日股票交易数据
+    获取并保存每日股票交易数据
     """
     url = eastmoney_stock_api
     data = request_and_handle_data(url)
@@ -70,7 +70,9 @@ def collect_stock_daily_trading():
         sdt.today_average_price = float(stock[12])
         sdt.quantity_relative_ratio = float(stock[22])
         sdt.turnover_rate = stock[23]
-        sdt.save()
+
+        if not check_duplicate(sdt):
+            sdt.save()
 
 
 def is_weekend():
@@ -85,9 +87,35 @@ def is_weekend():
         return False
 
 
-if __name__ == '__main__':
+def check_duplicate(sdt):
+    """
+    检查某一天的交易数据是否与之前一天完全相同，如果完全相同，则不会保存这些交易数据
+    为了规避一些法定假日不交易的情况，还有股票停牌的时候，停牌中的数据是不记录的
+    """
+    if isinstance(sdt, SDT):
+        trading_date = SDT.objects(stock_number=sdt.stock_number).order_by('-date')
+        if trading_date:
+            latest_sdt = trading_date[0]
+            check_item = ['yesterday_closed_price', 'today_opening_price', 'today_closing_price',
+                          'today_highest_price', 'today_lowest_price', 'turnover_amount', 'turnover_volume',
+                          'increase_amount', 'increase_rate', 'today_average_price', 'quantity_relative_ratio',
+                          'turnover_rate']
+            for i in check_item:
+                if sdt[i] != latest_sdt[i]:
+                    return False
+            logging.warning('%s trading data is same with latest STD, this data will not be saved.' % sdt.stock_number)
+            return True
+        else:
+            return False
+
+
+def main():
     setup_logging(__file__)
     if not is_weekend():
         logging.info('Start Collect %s Trading Data' % datetime.date.today())
         collect_stock_daily_trading()
         logging.info('Collect %s Trading Data Success' % datetime.date.today())
+
+
+if __name__ == '__main__':
+    main()

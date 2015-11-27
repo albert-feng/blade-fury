@@ -34,7 +34,7 @@ class StockDailyTrading(Document):
     存储股票每天的交易数据，包括价格，成交等信息
     """
 
-    date = DateTimeField(default=datetime.datetime.today())
+    date = DateTimeField(default=datetime.date.today())
     timestamp = IntField(default=int(time.time()))
     stock_number = StringField(required=True, max_length=10)  # 股票编号
     stock_name = StringField(required=True, max_length=20)  # 股票名称
