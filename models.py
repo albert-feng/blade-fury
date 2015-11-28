@@ -34,8 +34,6 @@ class StockDailyTrading(Document):
     存储股票每天的交易数据，包括价格，成交等信息
     """
 
-    date = DateTimeField(default=datetime.date.today())
-    timestamp = IntField(default=int(time.time()))
     stock_number = StringField(required=True, max_length=10)  # 股票编号
     stock_name = StringField(required=True, max_length=20)  # 股票名称
     yesterday_closed_price = FloatField()  # 昨日收盘价 单位 rmb
@@ -50,3 +48,19 @@ class StockDailyTrading(Document):
     today_average_price = FloatField()  # 股票今日平均价格 单位 rmb
     quantity_relative_ratio = FloatField()  # 股票今日量比
     turnover_rate = StringField()  # 股票今日换手率
+    date = DateTimeField(default=datetime.date.today())  # 收录股票交易数据的日期
+    timestamp = IntField(default=int(time.time()))  # 收录数据时的时间戳
+
+
+class StockNotice(Document):
+    """
+    存放股票公告信息
+    """
+
+    stock_number = StringField(required=True, max_length=10)  # 股票编号
+    stock_name = StringField(required=True, max_length=20)  # 股票名称
+    notice_title = StringField()  # 公告标题
+    notice_type = StringField()  # 公告类型
+    notice_date = StringField()  # 公告日期
+    notice_url = StringField()  # 公告URL
+    notice_content = StringField()  # 公告正文
