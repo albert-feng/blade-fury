@@ -3,6 +3,7 @@
 __author__ = 'fengweigang'
 
 import argparse
+import platform
 
 from models import StockInfo
 from models import StockDailyTrading as SDT
@@ -48,14 +49,17 @@ def main(market_plate=u'创业板', filter_ruihua=True):
 def setup_argparse():
     parser = argparse.ArgumentParser(description=u'查询某个板块所对应的股票')
     parser.add_argument(u'-m', action=u'store', dest='market_plate', required=True, help=u'需要查询的板块')
-    parser.add_argument(u'-f', action=u'store_true', dest='filter_ruihua',
+    parser.add_argument(u'-f', action=u'store_true', dest='filter_rh',
                         help=u'如果添加这个参数，则在结果里会过滤瑞华的客户')
 
     args = parser.parse_args()
-    return args.market_plate, args.filter_ruihua
+    return args.market_plate, args.filter_rh
 
 if __name__ == '__main__':
-    market_plate, filter_ruihua = setup_argparse()
+    market_plate, filter_rh = setup_argparse()
     if isinstance(market_plate, str):
-        market_plate = market_plate.decode('utf-8')
-    main(market_plate, filter_ruihua)
+        if platform.system() == 'Windows':
+            market_plate = market_plate.decode('gb2312')
+        else:
+            market_plate = market_plate.decode('utf-8')
+    main(market_plate, filter_rh)
