@@ -59,7 +59,7 @@ class StockNotice(Document):
     stock_number = StringField(required=True, max_length=10)  # 股票编号
     stock_name = StringField(required=True, max_length=20)  # 股票名称
     notice_title = StringField()  # 公告标题
-    notice_type = StringField()  # 公告类型
-    notice_date = StringField()  # 公告日期
+    notice_cate = StringField()  # 公告类型
+    notice_date = DateTimeField()  # 公告日期
     notice_url = StringField()  # 公告URL
     notice_content = StringField()  # 公告正文
