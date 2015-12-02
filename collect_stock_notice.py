@@ -69,6 +69,7 @@ def collect_notice(stock_number, stock_name):
                                        notice_cate=notice_cate, notice_date=notice_date, notice_url=notice_url,
                                        notice_content=notice_content)
             stock_notice.save()
+            time.sleep(random.random())
 
 
 def main():
@@ -89,4 +90,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
