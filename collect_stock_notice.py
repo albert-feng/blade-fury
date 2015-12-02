@@ -47,7 +47,7 @@ def check_duplicate(notice_title, notice_cate, notice_date):
         return False
 
 
-def collect_notice(stock_number='002623', stock_name=u'亚玛顿'):
+def collect_notice(stock_number, stock_name):
     req_url = company_accouncement.format(stock_number)
     notice_list_html = send_request(req_url)
     notice_list_soup = BeautifulSoup(notice_list_html, 'lxml')
@@ -62,12 +62,14 @@ def collect_notice(stock_number='002623', stock_name=u'亚玛顿'):
 
         if not check_duplicate(notice_title, notice_cate, notice_date):
             notice_html = send_request(notice_url)
-            notice_content = BeautifulSoup(notice_html, 'lxml').find('pre').text
+            notice_soup = BeautifulSoup(notice_html, 'lxml')
+            notice_content = notice_soup.find('pre').text
 
             stock_notice = StockNotice(stock_number=stock_number, stock_name=stock_name, notice_title=notice_title,
                                        notice_cate=notice_cate, notice_date=notice_date, notice_url=notice_url,
                                        notice_content=notice_content)
             stock_notice.save()
+            time.sleep(random.random())
 
 
 def main():
@@ -89,3 +91,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
