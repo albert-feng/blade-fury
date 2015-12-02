@@ -69,7 +69,6 @@ def collect_notice(stock_number, stock_name):
                                        notice_cate=notice_cate, notice_date=notice_date, notice_url=notice_url,
                                        notice_content=notice_content)
             stock_notice.save()
-            time.sleep(random.random())
 
 
 def main():
@@ -86,7 +85,6 @@ def main():
             collect_notice(i.stock_number, i.stock_name)
         except Exception, e:
             logging.error('Error when collect %s notice: %s' % (i.stock_number, e))
-        time.sleep(random.random())
 
 
 if __name__ == '__main__':
