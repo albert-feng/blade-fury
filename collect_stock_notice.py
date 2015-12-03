@@ -86,6 +86,7 @@ def main():
             collect_notice(i.stock_number, i.stock_name)
         except Exception, e:
             logging.error('Error when collect %s notice: %s' % (i.stock_number, e))
+        time.sleep(random.random())
 
 
 if __name__ == '__main__':
