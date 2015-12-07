@@ -78,7 +78,7 @@ def check_duplicate(stock_info):
     return False
 
 if __name__ == '__main__':
-    setup_logging(__file__)
+    setup_logging(__file__, logging.WARNING)
     logging.info('Start to collect stock basic info')
     collect_stock_info()
     logging.info('Collect stock basic info Success')

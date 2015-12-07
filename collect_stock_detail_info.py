@@ -14,7 +14,8 @@ from config import core_concept, company_survey, exchange_market
 from logger import setup_logging
 
 
-timeout = 30
+timeout = 30  # 发送http请求时的超时时间
+query_step = 100  # 每次查询数据库的步长，以防出现cursor超时的错误
 
 
 def estimate_market(stock_number):
@@ -71,19 +72,32 @@ def collect_company_survey(stock_info):
 
 def start_collect_detail():
     try:
-        all_stocks = StockInfo.objects().timeout(False)
+        all_stocks = StockInfo.objects()
     except Exception, e:
         logging.error('Error when query StockInfo:' + str(e))
         raise e
 
-    for i in all_stocks:
+    stocks_count = len(all_stocks)
+    skip = 0
+
+    while skip < stocks_count:
         try:
-            collect_company_survey(i)
+            stocks = StockInfo.objects().skip(skip).limit(query_step)
         except Exception, e:
-            logging.error('Error when collect %s data: %s' % (i.stock_number, e))
-        time.sleep(random.random())
+            logging.error('Error when query skip %s  StockInfo:%s' % (skip, e))
+            stocks = []
+
+        for i in stocks:
+            try:
+                collect_company_survey(i)
+            except Exception, e:
+                logging.error('Error when collect %s data: %s' % (i.stock_number, e))
+            time.sleep(random.random())
+        skip += query_step
 
 
 if __name__ == '__main__':
-    setup_logging(__file__)
+    setup_logging(__file__, logging.WARNING)
+    logging.info('Start to collect stock detail info')
     start_collect_detail()
+    logging.info('Collect stock detail info Success')

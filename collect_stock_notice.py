@@ -16,7 +16,8 @@ from config import company_accouncement, eastmoney_data
 from logger import setup_logging
 
 
-timeout = 30
+timeout = 30  # 发送http请求的超时时间
+query_step = 50  # 一次从数据库中取出的数据量
 
 
 def send_request(url):
@@ -47,8 +48,8 @@ def check_duplicate(notice_title, notice_cate, notice_date):
         return False
 
 
-def collect_notice(stock_number, stock_name):
-    req_url = company_accouncement.format(stock_number)
+def collect_notice(stock_info):
+    req_url = company_accouncement.format(stock_info.stock_number)
     notice_list_html = send_request(req_url)
     notice_list_soup = BeautifulSoup(notice_list_html, 'lxml')
 
@@ -65,29 +66,41 @@ def collect_notice(stock_number, stock_name):
             notice_soup = BeautifulSoup(notice_html, 'lxml')
             notice_content = notice_soup.find('pre').text
 
-            stock_notice = StockNotice(stock_number=stock_number, stock_name=stock_name, notice_title=notice_title,
-                                       notice_cate=notice_cate, notice_date=notice_date, notice_url=notice_url,
-                                       notice_content=notice_content)
+            stock_notice = StockNotice(stock_number=stock_info.stock_number, stock_name=stock_info.stock_name,
+                                       notice_title=notice_title, notice_cate=notice_cate, notice_date=notice_date,
+                                       notice_url=notice_url, notice_content=notice_content)
             stock_notice.save()
             time.sleep(random.random())
 
 
-def main():
-    setup_logging(__file__)
-
+def start_collect_notice():
     try:
-        all_stocks = StockInfo.objects().timeout(False)
+        all_stocks = StockInfo.objects()
     except Exception, e:
         logging.error('Error when query StockInfo:' + str(e))
         raise e
 
-    for i in all_stocks:
+    stocks_count = len(all_stocks)
+    skip = 0
+
+    while skip < stocks_count:
         try:
-            collect_notice(i.stock_number, i.stock_name)
+            stocks = StockInfo.objects().skip(skip).limit(query_step)
         except Exception, e:
-            logging.error('Error when collect %s notice: %s' % (i.stock_number, e))
-        time.sleep(random.random())
+            logging.error('Error when query skip %s  StockInfo:%s' % (skip, e))
+            stocks = []
+
+        for i in stocks:
+            try:
+                collect_notice(i)
+            except Exception, e:
+                logging.error('Error when collect %s notice: %s' % (i.stock_number, e))
+            time.sleep(random.random())
+        skip += query_step
 
 
 if __name__ == '__main__':
-    main()
+    setup_logging(__file__, logging.WARNING)
+    logging.info('Start to collect stock detail info')
+    start_collect_notice()
+    logging.info('Collect stock detail info Success')
