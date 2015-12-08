@@ -3,6 +3,7 @@
 
 import argparse
 import platform
+from operator import itemgetter
 
 from models import StockInfo
 from models import StockDailyTrading as SDT
@@ -37,11 +38,19 @@ def query_latest_trading(stock_number):
 def main(market_plate=u'创业板', filter_ruihua=True):
     stocks = query_market_plate_stock(market_plate, filter_ruihua)
 
+    plate_stocks = []
     for i in stocks:
         sdt = query_latest_trading(i.stock_number)
-        print i.stock_number, i.stock_name, sdt.increase_rate, sdt.today_closing_price
+        if sdt.today_closing_price > 0:
+            item = {'stock_number': i.stock_number, 'stock_name': i.stock_name, 'increase_rate': sdt.increase_rate,
+                    'today_closing_price': sdt.today_closing_price, 'turnover_rate': sdt.turnover_rate}
+            plate_stocks.append(item)
 
-    print len(stocks)
+    plate_stocks = sorted(plate_stocks, key=lambda stock: float(stock.get('increase_rate').replace('%', '')),
+                          reverse=True)
+    for i in plate_stocks:
+        print i['stock_number'], i['stock_name'], i['increase_rate'], i['today_closing_price']
+    print len(plate_stocks)
     print market_plate
 
 

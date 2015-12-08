@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+用来获取股票公告，数据来自东财，获取最新的25个公告，如果又新的公告出来，之前的也不会删除
+"""
 
 import random
 import time
@@ -17,7 +20,7 @@ from logger import setup_logging
 
 
 timeout = 30  # 发送http请求的超时时间
-query_step = 50  # 一次从数据库中取出的数据量
+query_step = 30  # 一次从数据库中取出的数据量
 
 
 def send_request(url):
@@ -97,6 +100,7 @@ def start_collect_notice():
                 logging.error('Error when collect %s notice: %s' % (i.stock_number, e))
             time.sleep(random.random())
         skip += query_step
+        time.sleep(random.random()*10)
 
 
 if __name__ == '__main__':

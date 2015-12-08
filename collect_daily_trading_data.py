@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+用来获取一个股票每天的交易数据
+"""
+
 import json
 import logging
 import datetime

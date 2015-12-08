@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+这个脚本仅用来获取股票更多方面的信息
+"""
+
 import random
 import time
 import datetime

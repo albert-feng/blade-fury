@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+这个脚本仅用来获取股票最基本的信息，名称和编号
+"""
+
 import json
 import logging
 import datetime

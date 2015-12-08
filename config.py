@@ -1,13 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
+# 使用mongodb存储数据
 mongodb_config = {
     'host': 'localhost',
     'port': 27017,
     'db': 'blade_fury',
 }
 
+# 数据都是从东财爬的...
 eastmoney_stock_api = 'http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/index.aspx?type=s&sortType=C'\
                       '&sortRule=-1&style=33&pageSize=3000&page=1'
 core_concept = 'http://f10.eastmoney.com/f10_v2/CoreConception.aspx?code={}'
