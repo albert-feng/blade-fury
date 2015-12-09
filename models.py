@@ -63,3 +63,18 @@ class StockNotice(Document):
     notice_date = DateTimeField()  # 公告日期
     notice_url = StringField()  # 公告URL
     notice_content = StringField()  # 公告正文
+
+class StockMarginTrading(Document):
+    """
+    存储股票的两融情况
+    """
+    stock_number = StringField(required=True, max_length=10)  # 股票编号
+    stock_name = StringField(required=True, max_length=20)  # 股票名称
+    date = DateTimeField(default=datetime.date.today())  # 收录股票两融数据的日期
+    rz_remaining_amount = StringField()  # 融资余额 单位 rmb
+    rz_buy_amount = StringField()  # 融资买入额 单位 rmb
+    rz_repay_amount = StringField()  # 融资偿还额 单位 rmb
+    rz_net_buy_amount = StringField()  # 融资净买入额 单位 rmb
+    rq_remaining_volume = StringField()  # 融券余量 单位 股
+    rq_sell_volume = StringField()  # 融券卖出量 单位 股
+    rq_repay_volume = StringField()  # 融券偿还量 单位 股

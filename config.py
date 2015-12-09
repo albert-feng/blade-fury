@@ -15,9 +15,9 @@ core_concept = 'http://f10.eastmoney.com/f10_v2/CoreConception.aspx?code={}'
 company_survey = 'http://f10.eastmoney.com/f10_v2/CompanySurvey.aspx?code={}'
 company_accouncement = 'http://data.eastmoney.com/Notice/NoticeStock.aspx?type=0&stockcode={}&pn=1'
 eastmoney_data = 'http://data.eastmoney.com'
-rzrq_sh = 'http://data.eastmoney.com/rzrq/sh.html'
-rzrq_sz = 'http://data.eastmoney.com/rzrq/sz.html'
-rzrq_tital = 'http://data.eastmoney.com/rzrq/total.html'
+rzrq_sh = 'http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=FD&sty=MTND&mkt=1&st=C&sr=1&p=1&ps=1000'
+rzrq_sz = 'http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=FD&sty=MTND&mkt=2&st=C&sr=1&p=1&ps=1000'
+rzrq_api = [rzrq_sh, rzrq_sz]
 
 exchange_market = [{'market': 'sh', 'pattern': ['60']}, {'market': 'sz', 'pattern': ['00', '30']}]
 

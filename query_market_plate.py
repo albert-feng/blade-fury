@@ -3,7 +3,6 @@
 
 import argparse
 import platform
-from operator import itemgetter
 
 from models import StockInfo
 from models import StockDailyTrading as SDT
