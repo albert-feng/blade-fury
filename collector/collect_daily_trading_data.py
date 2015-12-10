@@ -112,7 +112,7 @@ def check_duplicate(sdt):
 
 
 def main():
-    setup_logging(__file__)
+    setup_logging(__file__, logging.WARNING)
     if not is_weekend():
         logging.info('Start Collect %s Trading Data' % datetime.date.today())
         collect_stock_daily_trading()
