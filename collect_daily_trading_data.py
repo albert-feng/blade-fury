@@ -105,7 +105,7 @@ def check_duplicate(sdt):
             for i in check_item:
                 if sdt[i] != latest_sdt[i]:
                     return False
-            # logging.warning('%s trading data is same with latest STD, this data will not be saved.' % sdt.stock_number)
+            logging.info('%s trading data is same with latest STD, this data will not be saved.' % sdt.stock_number)
             return True
         else:
             return False

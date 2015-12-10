@@ -17,7 +17,7 @@ from logger import setup_logging
 timeout = 30
 
 
-def send_request(url):
+def send_request(req_url):
     headers = {
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
         'Accept-Encoding': 'gzip, deflate, sdch',
@@ -27,16 +27,16 @@ def send_request(url):
         'Host': 'datainterface.eastmoney.com',
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36',
     }
-    r = requests.get(url, headers=headers, timeout=timeout)
+    r = requests.get(req_url, headers=headers, timeout=timeout)
+
     html = r.text
     if not html:
-        logging.warning('No data when request this url:' + url)
-
+        logging.warning('No data when request this url:' + req_url)
     return html
 
 
-def collect_margin_trading(url):
-    html = send_request(url)
+def collect_margin_trading(req_url):
+    html = send_request(req_url)
 
     margin_data = eval(html)
     for i in margin_data:
@@ -79,5 +79,8 @@ if __name__ == '__main__':
     setup_logging(__file__, logging.WARNING)
     logging.info('Start to collect stock margin trading')
     for url in rzrq_api:
-        collect_margin_trading(url)
+        try:
+            collect_margin_trading(url)
+        except Exception, e:
+            logging.error('Collect margin trading %s failed:%s' % (url, e))
     logging.info('collect stock margin trading success')
