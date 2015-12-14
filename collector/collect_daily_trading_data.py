@@ -98,10 +98,8 @@ def check_duplicate(sdt):
         trading_date = SDT.objects(stock_number=sdt.stock_number).order_by('-date')
         if trading_date:
             latest_sdt = trading_date[0]
-            check_item = ['yesterday_closed_price', 'today_opening_price', 'today_closing_price',
-                          'today_highest_price', 'today_lowest_price', 'turnover_amount', 'turnover_volume',
-                          'increase_amount', 'increase_rate', 'today_average_price', 'quantity_relative_ratio',
-                          'turnover_rate']
+            check_item = ['today_opening_price', 'today_closing_price', 'today_highest_price', 'today_lowest_price',
+                          'increase_amount', 'increase_rate', 'quantity_relative_ratio', 'turnover_rate']
             for i in check_item:
                 if sdt[i] != latest_sdt[i]:
                     return False
