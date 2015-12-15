@@ -9,6 +9,7 @@ from mongoengine import *
 db = config.mongodb_config['db']
 connect(db)
 
+
 class StockInfo(Document):
     """
     存储股票及其公司的本身的信息
