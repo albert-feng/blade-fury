@@ -73,6 +73,11 @@ def collect_stock_daily_trading():
         sdt.quantity_relative_ratio = float(stock[22])
         sdt.turnover_rate = stock[23]
 
+        if float(sdt.increase_rate.replace('%', '')) == 0.0 and float(sdt.turnover_rate.replace('%', '')) == 0.0:
+            """
+            去掉停牌时的行情数据
+            """
+            continue
         if not check_duplicate(sdt):
             sdt.save()
 

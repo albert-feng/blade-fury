@@ -65,14 +65,16 @@ def collect_his_trading(stock_number, stock_name):
             increase_amount = float(i.find_all('td')[6].text.replace('&nbsp', '').strip())
             turnover_rate = i.find_all('td')[7].text.replace('&nbsp', '').strip() + '%'
 
-            if float(increase_rate.replace('%', '')) != 0.0 and float(turnover_rate.replace('%', '')) != 0.0:
+            if float(increase_rate.replace('%', '')) == 0.0 and float(turnover_rate.replace('%', '')) == 0.0:
                 # 去掉停牌期间的行情数据
-                if not check_exists(stock_number, date):
-                    sdt = SDT(stock_number=stock_number, stock_name=stock_name, date=date,
-                              today_opening_price=today_opening_price, today_highest_price=today_highest_price,
-                              today_lowest_price=today_lowest_price, today_closing_price=today_closing_price,
-                              increase_rate=increase_rate, increase_amount=increase_amount, turnover_rate=turnover_rate)
-                    sdt.save()
+                continue
+
+            if not check_exists(stock_number, date):
+                sdt = SDT(stock_number=stock_number, stock_name=stock_name, date=date,
+                          today_opening_price=today_opening_price, today_highest_price=today_highest_price,
+                          today_lowest_price=today_lowest_price, today_closing_price=today_closing_price,
+                          increase_rate=increase_rate, increase_amount=increase_amount, turnover_rate=turnover_rate)
+                sdt.save()
 
 
 def begin_collect_his():

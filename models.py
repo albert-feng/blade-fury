@@ -64,6 +64,7 @@ class StockNotice(Document):
     notice_url = StringField()  # 公告URL
     notice_content = StringField()  # 公告正文
 
+
 class StockMarginTrading(Document):
     """
     存储股票的两融情况
@@ -78,3 +79,19 @@ class StockMarginTrading(Document):
     rq_remaining_volume = StringField()  # 融券余量 单位 股
     rq_sell_volume = StringField()  # 融券卖出量 单位 股
     rq_repay_volume = StringField()  # 融券偿还量 单位 股
+
+
+class QuantResult(Document):
+    """
+    由量化分析选出的股票
+    """
+    stock_number = StringField(required=True, max_length=10)  # 股票编号
+    stock_name = StringField(required=True, max_length=20)  # 股票名称
+    date = DateTimeField(default=datetime.date.today())  # 根据相应策略选出股票的日期
+    strategy_direction = StringField(choices=['long', 'short'], default='long')  # 策略的方向性，可以是做多和做空
+    strategy_name = StringField()  # 策略的名称
+    init_price = FloatField()  # 选出股票时这个票的收盘价
+    one_back_test = BooleanField()  # 一个交易日之后的回测结果，即第二天的价格是否与策略的期望方向相同
+    one_price = FloatField()  # 一个交易日之后回测时的价格
+    five_back_test = BooleanField()  # 五个交易日之后的回测结果
+    five_price = FloatField()  # 五个交易日之后的价格
