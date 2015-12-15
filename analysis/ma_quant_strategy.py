@@ -109,7 +109,8 @@ def quant_stock(stock_number, short_ma=5, long_ma=30):
         """
         save_quant_result(trading_data[0], strategy_name)
 
-    if abs(ma_difference[-1])/trading_data[0].today_closing_price <= 0.05 and is_growing(ma_difference):
+    if ma_difference[-1] <= 0 and abs(ma_difference[-1])/trading_data[0].today_closing_price <= 0.05\
+            and is_growing(ma_difference):
         """
         当两根均线持续三天靠近，且数量差距小于等于5%的时候
         """
