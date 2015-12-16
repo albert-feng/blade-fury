@@ -6,8 +6,8 @@
 """
 
 
+import argparse
 import logging
-import datetime
 
 from mongoengine import Q
 
@@ -15,7 +15,7 @@ from logger import setup_logging
 from models import StockInfo, StockDailyTrading as SDT, QuantResult as QR
 
 
-query_step = 20  # 一次从数据库中取出的数据量
+query_step = 100  # 一次从数据库中取出的数据量
 
 
 def calculate_ma(sdt_list):
@@ -151,7 +151,16 @@ def start_quant_analysis(short_ma=1, long_ma=30):
         skip += query_step
 
 
+def setup_argparse():
+    parser = argparse.ArgumentParser(description=u'根据长短均线的金叉来选股')
+    parser.add_argument(u'-s', action=u'store', dest='short_ma', required=True, help=u'短期均线数')
+    parser.add_argument(u'-l', action=u'store', dest='long_ma', required=True, help=u'长期均线数')
+
+    args = parser.parse_args()
+    return int(args.short_ma), int(args.long_ma)
+
+
 if __name__ == '__main__':
     setup_logging(__file__, logging.WARNING)
-    start_quant_analysis()
-
+    short_ma, long_ma = setup_argparse()
+    start_quant_analysis(short_ma, long_ma)
