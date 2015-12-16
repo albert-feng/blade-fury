@@ -50,8 +50,8 @@ def is_growing(data):
     return True
 
 
-def check_duplicate(stock_number, date):
-    cursor = QR.objects(Q(stock_number=stock_number) & Q(date=date))
+def check_duplicate(stock_number, date, strategy_name):
+    cursor = QR.objects(Q(stock_number=stock_number) & Q(date=date) & Q(strategy_name=strategy_name))
 
     if cursor:
         return True
@@ -67,13 +67,13 @@ def save_quant_result(sdt, strategy_name):
         strategy_name = strategy_name
         init_price = sdt.today_closing_price
 
-        if not check_duplicate(stock_number, date):
+        if not check_duplicate(stock_number, date, strategy_name):
             qr = QR(stock_number=stock_number, stock_name=stock_name, date=date, strategy_name=strategy_name,
                     init_price=init_price)
             qr.save()
 
 
-def quant_stock(stock_number, short_ma=5, long_ma=30):
+def quant_stock(stock_number, short_ma=1, long_ma=30):
     strategy_name = 'ma_long_%s_%s' % (short_ma, long_ma)
     sdt = SDT.objects(stock_number=stock_number).order_by('-date')[:long_ma+10]
 
@@ -85,6 +85,11 @@ def quant_stock(stock_number, short_ma=5, long_ma=30):
     if float(sdt[0].increase_rate.replace('%', '')) == 0.0 and float(sdt[0].turnover_rate.replace('%', '')) == 0.0:
         """
         如果最新一天股票的状态是停牌，跳过
+        """
+        return
+    if sdt[0].today_closing_price <= 10.0:
+        """
+        去掉当日收盘价低于10块的票
         """
         return
 
@@ -117,7 +122,7 @@ def quant_stock(stock_number, short_ma=5, long_ma=30):
         save_quant_result(trading_data[0], strategy_name)
 
 
-def start_quant_analysis(short_ma=5, long_ma=30):
+def start_quant_analysis(short_ma=1, long_ma=30):
     try:
         all_stocks = StockInfo.objects()
     except Exception, e:
