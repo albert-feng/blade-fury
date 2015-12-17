@@ -92,7 +92,9 @@ class QuantResult(Document):
     strategy_direction = StringField(choices=['long', 'short'], default='long')  # 策略的方向性，可以是做多和做空
     strategy_name = StringField()  # 策略的名称
     init_price = FloatField()  # 选出股票时这个票的收盘价
-    one_back_test = BooleanField()  # 一个交易日之后的回测结果，即第二天的价格是否与策略的期望方向相同
+    one_back_test = BooleanField()  # 一个交易日之后的回测结果
     one_price = FloatField()  # 一个交易日之后回测时的价格
+    three_back_test = BooleanField()  # 三个交易日之后的回测结果
+    three_price = FloatField()  # 三个交易日之后回测时的价格
     five_back_test = BooleanField()  # 五个交易日之后的回测结果
     five_price = FloatField()  # 五个交易日之后的价格
