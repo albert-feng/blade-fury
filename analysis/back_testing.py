@@ -22,6 +22,10 @@ def test_by_day(qr, day):
 
         if sdt.count() >= day:
             back_test_sdt = sdt[day-1]
+            if back_test_sdt.today_closing_price == 0.0:
+                # 去掉停牌的情况
+                return
+
             qr[test_pattern[day]['price']] = back_test_sdt.today_closing_price
             price_spread = back_test_sdt.today_closing_price - qr.init_price
 
