@@ -92,6 +92,12 @@ def quant_stock(stock_number, short_ma=1, long_ma=30):
         去掉当日收盘价低于10块的票
         """
         return
+    if float(sdt[0].increase_rate.replace('%', '')) >= 7.0:
+        """
+        去掉最新的交易日涨幅超过7%，因为如果涨幅突然很大而突破均线，往往对我来说已经失去了买入的机会了
+        """
+        return
+
 
     # 计算出连续3个交易日长MA和短MA的值
     trading_data = []
