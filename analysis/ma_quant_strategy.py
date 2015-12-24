@@ -77,19 +77,9 @@ def quant_stock(stock_number, short_ma=1, long_ma=30):
     strategy_name = 'ma_long_%s_%s' % (short_ma, long_ma)
     sdt = SDT.objects(stock_number=stock_number).order_by('-date')[:long_ma+10]
 
-    if sdt.count() < long_ma + 5:
-        """
-        如果交易数据不够，跳过
-        """
-        return
     if float(sdt[0].increase_rate.replace('%', '')) == 0.0 and float(sdt[0].turnover_rate.replace('%', '')) == 0.0:
         """
         如果最新一天股票的状态是停牌，跳过
-        """
-        return
-    if sdt[0].today_closing_price <= 10.0:
-        """
-        去掉当日收盘价低于10块的票
         """
         return
     if float(sdt[0].increase_rate.replace('%', '')) >= 7.0:
@@ -109,6 +99,11 @@ def quant_stock(stock_number, short_ma=1, long_ma=30):
             continue
         else:
             trading_data.append(i)
+    if len(trading_data) < long_ma + 5:
+        """
+        如果交易数据不够，跳过
+        """
+        return
 
     short_ma_list = calculate_ma_list(trading_data, short_ma, 3)
     long_ma_list = calculate_ma_list(trading_data, long_ma, 3)
