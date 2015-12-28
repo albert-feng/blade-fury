@@ -59,7 +59,7 @@ def check_duplicate(stock_number, date, strategy_name):
         return False
 
 
-def save_quant_result(sdt, strategy_name):
+def save_quant_result(sdt, strategy_name, strategy_direction='long'):
     if isinstance(sdt, SDT):
         stock_number = sdt.stock_number
         stock_name = sdt.stock_name
@@ -69,7 +69,7 @@ def save_quant_result(sdt, strategy_name):
 
         if not check_duplicate(stock_number, date, strategy_name):
             qr = QR(stock_number=stock_number, stock_name=stock_name, date=date, strategy_name=strategy_name,
-                    init_price=init_price)
+                    init_price=init_price, strategy_direction=strategy_direction)
             qr.save()
 
 
@@ -82,9 +82,15 @@ def quant_stock(stock_number, short_ma=1, long_ma=30):
         如果最新一天股票的状态是停牌，跳过
         """
         return
-    if float(sdt[0].increase_rate.replace('%', '')) >= 7.0:
+    if sdt[0].today_closing_price < 8.0:
         """
-        去掉最新的交易日涨幅超过7%，因为如果涨幅突然很大而突破均线，往往对我来说已经失去了买入的机会了
+        去掉最新一天收盘价低于8元的票
+        """
+        return
+
+    if float(sdt[0].turnover_rate.replace('%', '')) < 1.0:
+        """
+        去掉最新的交易日的换手率低于1%的票
         """
         return
 
@@ -109,18 +115,24 @@ def quant_stock(stock_number, short_ma=1, long_ma=30):
     long_ma_list = calculate_ma_list(trading_data, long_ma, 3)
     ma_difference = calculate_ma_difference(short_ma_list, long_ma_list)
 
+    if short_ma <= long_ma:
+        strategy_direction = 'long'
+    else:
+        strategy_direction = 'short'
+
+
     if ma_difference[-2] < 0 < ma_difference[-1]:
         """
         当短期均线向上穿过长期均线的时候
         """
-        save_quant_result(trading_data[0], strategy_name)
+        save_quant_result(trading_data[0], strategy_name, strategy_direction)
 
     if ma_difference[-1] <= 0 and abs(ma_difference[-1])/trading_data[0].today_closing_price <= 0.05\
             and is_growing(ma_difference):
         """
         当两根均线持续三天靠近，且数量差距小于等于5%的时候
         """
-        save_quant_result(trading_data[0], strategy_name)
+        save_quant_result(trading_data[0], strategy_name, strategy_direction)
 
 
 def start_quant_analysis(short_ma=1, long_ma=30):
