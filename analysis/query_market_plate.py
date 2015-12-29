@@ -4,6 +4,9 @@
 import argparse
 import platform
 
+import pandas as pd
+from pandas import DataFrame
+
 from models import StockInfo
 from models import StockDailyTrading as SDT
 
@@ -42,15 +45,20 @@ def main(market_plate=u'创业板', filter_ruihua=True):
         sdt = query_latest_trading(i.stock_number)
         if sdt.today_closing_price > 0:
             item = {'stock_number': i.stock_number, 'stock_name': i.stock_name, 'increase_rate': sdt.increase_rate,
-                    'today_closing_price': sdt.today_closing_price, 'turnover_rate': sdt.turnover_rate}
+                    'today_closing_price': sdt.today_closing_price}
             plate_stocks.append(item)
 
     plate_stocks = sorted(plate_stocks, key=lambda stock: float(stock.get('increase_rate').replace('%', '')),
                           reverse=True)
-    for i in plate_stocks:
-        print i['stock_number'], i['stock_name'], i['increase_rate'], i['today_closing_price']
-    print len(plate_stocks)
+
     print market_plate
+    print len(plate_stocks)
+    print '---------------------------------------------------'
+    frame = DataFrame(plate_stocks).set_index('stock_number').reindex(columns=['stock_name', 'today_closing_price',
+                                                                               'increase_rate'])
+    pd.set_option('display.max_rows', len(plate_stocks))
+    print frame
+    pd.reset_option('display.max_rows')
 
 
 def setup_argparse():
