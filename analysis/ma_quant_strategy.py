@@ -93,7 +93,16 @@ def quant_stock(stock_number, short_ma=1, long_ma=30):
         去掉最新的交易日的换手率低于1%的票
         """
         return
-
+    if sdt[0].quantity_relative_ratio > 3.0:
+        """
+        去掉最新的交易日的量比高于3的票
+        """
+        return
+    if sdt[0].increase_amount < 0.0 and sdt[1].increase_amount < 0.0:
+        """
+        去掉近两个交易日都下跌的票
+        """
+        return
 
     # 计算出连续3个交易日长MA和短MA的值
     trading_data = []
