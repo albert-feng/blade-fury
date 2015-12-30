@@ -87,7 +87,6 @@ def quant_stock(stock_number, short_ma=1, long_ma=30):
         去掉最新一天收盘价低于8元的票
         """
         return
-
     if float(sdt[0].turnover_rate.replace('%', '')) < 1.0:
         """
         去掉最新的交易日的换手率低于1%的票
@@ -98,9 +97,9 @@ def quant_stock(stock_number, short_ma=1, long_ma=30):
         去掉最新的交易日的量比高于3的票
         """
         return
-    if sdt[0].increase_amount < 0.0 and sdt[1].increase_amount < 0.0:
+    if sdt[0].increase_amount < 0.0:
         """
-        去掉近两个交易日都下跌的票
+        去掉近一个交易日下跌的票
         """
         return
 
