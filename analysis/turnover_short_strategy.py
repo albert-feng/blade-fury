@@ -25,7 +25,7 @@ def is_duplicate(stock_number, date, strategy_name):
 def quant_stock():
     today = datetime.date.today()
     increase_rate = '6%'
-    quantity_relative_ratio = 3
+    quantity_relative_ratio = 2.8
     try:
         sdt = SDT.objects(Q(date=today) & Q(increase_rate__gte=increase_rate) &
                           Q(quantity_relative_ratio__gte=quantity_relative_ratio))
