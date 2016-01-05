@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import argparse
-import platform
 
 import pandas as pd
 from pandas import DataFrame
@@ -11,7 +10,9 @@ from mongoengine import Q
 from models import QuantResult as QR
 
 
-back_test_attr = ['one_back_test', 'three_back_test', 'five_back_test']
+back_test_attr = {'one_back_test': ['one_price', 'one_yield_expectation'],
+                  'three_back_test': ['three_price', 'three_yield_expectation'],
+                  'five_back_test': ['five_price', 'five_yield_expectation']}
 
 
 def strategy_statistics(strategy_name):
@@ -32,22 +33,33 @@ def strategy_statistics(strategy_name):
         bt_result[str(d.date())] = back_test_success(strategy_name, d)
 
     frame = DataFrame(bt_result)
-    print frame.reindex(['one_back_test', 'three_back_test', 'five_back_test']).T
-
+    pd.set_option('display.width', 200)
+    print frame.reindex(['one_back_test', 'one_yield_expectation', 'three_back_test', 'three_yield_expectation',
+                         'five_back_test', 'five_yield_expectation']).T
+    pd.set_option('display.width', None)
 
 
 def back_test_success(strategy_name, date):
     cursor = QR.objects(Q(strategy_name=strategy_name) & Q(date=date))
 
     res_by_date = {}
-    for i in back_test_attr:
-        qualified_sample = [qr[i] for qr in cursor if qr[i] is not None]
+    for k, v in back_test_attr.iteritems():
+        qualified_sample = [qr for qr in cursor if qr[k] is not None]
         if not qualified_sample:
             continue
 
-        succ_sample = [q for q in qualified_sample if q is True]
-        res_by_date[i] = str(round(float(len(succ_sample))/float(len(qualified_sample)), 4) * 100) + '%'
+        succ_sample = [q for q in qualified_sample if q[k] is True]
+        res_by_date[k] = str(round(float(len(succ_sample))/float(len(qualified_sample)), 4) * 100) + '%'
 
+        yield_expectation = 0.0
+        if 'long' in strategy_name:
+            for i in qualified_sample:
+                yield_expectation += (i[v[0]] - i.init_price)/i.init_price
+        elif 'short' in strategy_name:
+            for i in qualified_sample:
+                yield_expectation += (i.init_price - i[v[0]])/i.init_price
+
+        res_by_date[v[1]] = str(round(yield_expectation/len(qualified_sample), 4) * 100) + '%'
     return res_by_date
 
 
