@@ -32,9 +32,8 @@ def strategy_statistics(strategy_name):
         bt_result[str(d.date())] = back_test_success(strategy_name, d)
 
     frame = DataFrame(bt_result)
-    pd.set_option('display.width', 200)
-    print frame.reindex(['one_back_test', 'three_back_test', 'five_back_test'])
-    pd.set_option('display.width', None)
+    print frame.reindex(['one_back_test', 'three_back_test', 'five_back_test']).T
+
 
 
 def back_test_success(strategy_name, date):
