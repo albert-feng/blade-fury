@@ -14,7 +14,7 @@ def is_duplicate(stock_number, date, strategy_name):
     try:
         cursor = QR.objects(Q(stock_number=stock_number) & Q(date=date) & Q(strategy_name=strategy_name))
     except Exception, e:
-        logging.error('Query %s failed:%s' % (stock_number, e))
+        logging.error('Query %s QR failed:%s' % (stock_number, e))
 
     if cursor:
         return True
@@ -22,10 +22,26 @@ def is_duplicate(stock_number, date, strategy_name):
         return False
 
 
+def persist_increase(stock_number):
+    try:
+        trading_data = SDT.objects(stock_number=stock_number).order_by('-date')[:3]
+    except Exception, e:
+        logging.error('Query %s SDT failed:%s' % (stock_number, e))
+
+    rate = 0
+    for t in trading_data:
+        rate += float(t.increase_rate.replace('%', ''))
+
+    if rate >= 15:
+        return True
+    else:
+        return False
+
+
 def quant_stock():
     today = datetime.date.today()
-    increase_rate = '6%'
-    quantity_relative_ratio = 2.8
+    increase_rate = '5%'
+    quantity_relative_ratio = 2.5
     try:
         sdt = SDT.objects(Q(date=today) & Q(increase_rate__gte=increase_rate) &
                           Q(quantity_relative_ratio__gte=quantity_relative_ratio))
@@ -34,6 +50,9 @@ def quant_stock():
         raise e
 
     for i in sdt:
+        if persist_increase(i.stock_number):
+            continue
+
         strategy_name = 'turnover_short'
         qr = QR()
         qr.stock_number = i.stock_number
