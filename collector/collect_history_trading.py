@@ -16,6 +16,7 @@ from models import StockInfo, StockDailyTrading as SDT
 
 
 timeout = 30
+query_step = 100
 
 
 def send_request(url):
@@ -79,14 +80,24 @@ def collect_his_trading(stock_number, stock_name):
 
 def begin_collect_his():
     stock_info = StockInfo.objects()
+    stock_count = stock_info.count()
+    skip = 0
 
-    for i in stock_info:
+    while skip < stock_count:
         try:
-            collect_his_trading(i.stock_number, i.stock_name)
+            stocks = StockInfo.objects().skip(skip).limit(query_step)
         except Exception, e:
-            logging.error('Collect %s his data failed:%s' % (i.stock_number, e))
-        finally:
-            time.sleep(random.random())
+            logging.error('Error when query skip %s  StockInfo:%s' % (skip, e))
+            stocks = []
+
+        for i in stocks:
+            try:
+                collect_his_trading(i.stock_number, i.stock_name)
+            except Exception, e:
+                logging.error('Collect %s his data failed:%s' % (i.stock_number, e))
+            finally:
+                time.sleep(random.random())
+        skip += query_step
 
 
 if __name__ == '__main__':

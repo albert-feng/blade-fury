@@ -43,13 +43,6 @@ def calculate_ma_difference(li_1, li_2):
         return ma_difference
 
 
-def is_growing(data):
-    for i in xrange(0, len(data)-1):
-        if data[i] > data[i+1]:
-            return False
-    return True
-
-
 def check_duplicate(stock_number, date, strategy_name):
     cursor = QR.objects(Q(stock_number=stock_number) & Q(date=date) & Q(strategy_name=strategy_name))
 
@@ -73,37 +66,17 @@ def save_quant_result(sdt, strategy_name, strategy_direction='long'):
             qr.save()
 
 
-def quant_stock(stock_number, short_ma=1, long_ma=30):
-    strategy_name = 'ma_long_%s_%s' % (short_ma, long_ma)
-    sdt = SDT.objects(stock_number=stock_number).order_by('-date')[:long_ma+10]
+def quant_stock(stock_number, short_ma_num=1, long_ma_num=30):
+    strategy_name = 'ma_long_%s_%s' % (short_ma_num, long_ma_num)
+    sdt = SDT.objects(stock_number=stock_number).order_by('-date')[:long_ma_num + 10]
 
     if float(sdt[0].increase_rate.replace('%', '')) == 0.0 and float(sdt[0].turnover_rate.replace('%', '')) == 0.0:
         """
         如果最新一天股票的状态是停牌，跳过
         """
         return
-    if sdt[0].today_closing_price < 8.0:
-        """
-        去掉最新一天收盘价低于8元的票
-        """
-        return
-    if float(sdt[0].turnover_rate.replace('%', '')) < 1.0:
-        """
-        去掉最新的交易日的换手率低于1%的票
-        """
-        return
-    if sdt[0].quantity_relative_ratio > 3.0:
-        """
-        去掉最新的交易日的量比高于3的票
-        """
-        return
-    if sdt[0].increase_amount < 0.0:
-        """
-        去掉近一个交易日下跌的票
-        """
-        return
 
-    # 计算出连续3个交易日长MA和短MA的值
+    # 计算出连续2个交易日长MA和短MA的值
     trading_data = []
     for i in sdt:
         """
@@ -113,37 +86,29 @@ def quant_stock(stock_number, short_ma=1, long_ma=30):
             continue
         else:
             trading_data.append(i)
-    if len(trading_data) < long_ma + 5:
+    if len(trading_data) < long_ma_num + 5 or len(trading_data) < short_ma_num + 5:
         """
         如果交易数据不够，跳过
         """
         return
 
-    short_ma_list = calculate_ma_list(trading_data, short_ma, 3)
-    long_ma_list = calculate_ma_list(trading_data, long_ma, 3)
+    short_ma_list = calculate_ma_list(trading_data, short_ma_num, 2)
+    long_ma_list = calculate_ma_list(trading_data, long_ma_num, 2)
     ma_difference = calculate_ma_difference(short_ma_list, long_ma_list)
 
-    if short_ma <= long_ma:
+    if short_ma_num <= long_ma_num:
         strategy_direction = 'long'
     else:
         strategy_direction = 'short'
 
-
-    if ma_difference[-2] < 0 < ma_difference[-1]:
+    if ma_difference[0] < 0 < ma_difference[1]:
         """
         当短期均线向上穿过长期均线的时候
         """
         save_quant_result(trading_data[0], strategy_name, strategy_direction)
 
-    if ma_difference[-1] <= 0 and abs(ma_difference[-1])/trading_data[0].today_closing_price <= 0.05\
-            and is_growing(ma_difference):
-        """
-        当两根均线持续三天靠近，且数量差距小于等于5%的时候
-        """
-        save_quant_result(trading_data[0], strategy_name, strategy_direction)
 
-
-def start_quant_analysis(short_ma=1, long_ma=30):
+def start_quant_analysis(short_ma_num=1, long_ma_num=30):
     try:
         all_stocks = StockInfo.objects()
     except Exception, e:
@@ -166,7 +131,7 @@ def start_quant_analysis(short_ma=1, long_ma=30):
                 continue
 
             try:
-                quant_stock(i.stock_number, short_ma, long_ma)
+                quant_stock(i.stock_number, short_ma_num, long_ma_num)
             except Exception, e:
                 logging.error('Error when collect %s notice: %s' % (i.stock_number, e))
         skip += query_step
