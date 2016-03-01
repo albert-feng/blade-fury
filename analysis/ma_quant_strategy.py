@@ -30,7 +30,7 @@ def calculate_ma(sdt_list):
 def calculate_ma_list(sdt_list, ma, ma_amount=3):
     ma_list = []
     for i in xrange(0, ma_amount):
-        ma_list.insert(0, calculate_ma(sdt_list[i: ma+i]))
+        ma_list.append(calculate_ma(sdt_list[i: ma+i]))
     return ma_list
 
 
@@ -76,7 +76,6 @@ def quant_stock(stock_number, short_ma_num=1, long_ma_num=30):
         """
         return
 
-    # 计算出连续2个交易日长MA和短MA的值
     trading_data = []
     for i in sdt:
         """
@@ -92,16 +91,20 @@ def quant_stock(stock_number, short_ma_num=1, long_ma_num=30):
         """
         return
 
+    if short_ma_num <= long_ma_num:
+        strategy_direction = 'long'
+        if float(sdt[0].increase_rate.replace('%', '')) < 0.0:
+            return
+    else:
+        strategy_direction = 'short'
+        if float(sdt[0].increase_rate.replace('%', '')) > 0.0:
+            return
+
     short_ma_list = calculate_ma_list(trading_data, short_ma_num, 2)
     long_ma_list = calculate_ma_list(trading_data, long_ma_num, 2)
     ma_difference = calculate_ma_difference(short_ma_list, long_ma_list)
 
-    if short_ma_num <= long_ma_num:
-        strategy_direction = 'long'
-    else:
-        strategy_direction = 'short'
-
-    if ma_difference[0] < 0 < ma_difference[1]:
+    if ma_difference[0] > 0 > ma_difference[1]:
         """
         当短期均线向上穿过长期均线的时候
         """
