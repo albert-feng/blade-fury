@@ -34,7 +34,7 @@ def strategy_statistics(strategy_name):
 
     frame = DataFrame(bt_result)
     pd.set_option('display.width', 200)
-    print frame.reindex(['one_back_test', 'one_yield_expectation', 'three_back_test', 'three_yield_expectation',
+    print frame.reindex(['count', 'one_back_test', 'one_yield_expectation', 'three_back_test', 'three_yield_expectation',
                          'five_back_test', 'five_yield_expectation']).T
     pd.set_option('display.width', None)
 
@@ -60,6 +60,7 @@ def back_test_success(strategy_name, date):
                 yield_expectation += (i.init_price - i[v[0]])/i.init_price
 
         res_by_date[v[1]] = str(round(yield_expectation/len(qualified_sample), 4) * 100) + '%'
+        res_by_date['count'] = cursor.count()
     return res_by_date
 
 
