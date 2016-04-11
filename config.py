@@ -27,4 +27,5 @@ exchange_market = [{'market': 'sh', 'pattern': ['60'], 'cd': 'XSHG'},
 log_path = '/data/log/blade-fury.log'
 local_log_path = 'blade-fury.log'
 
-min_bar = [1, 5, 15, 30, 60]
+min_bar = [5, 15, 30, 60]
+minbar_url = 'https://api.wmcloud.com:443/data/v1/api/market/getBarRTIntraDay.json'

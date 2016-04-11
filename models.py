@@ -50,7 +50,7 @@ class StockDailyTrading(Document):
     turnover_rate = StringField()  # 股票今日换手率
     date = DateTimeField(default=datetime.date.today())  # 收录股票交易数据的日期
     timestamp = IntField(default=int(time.time()))  # 收录数据时的时间戳
-    data_source = StringField(choices=['east_money', 'data_yes'], default='easy_money')  # 交易数据来源
+    data_source = StringField(choices=['east_money', 'data_yes'], default='easy_money', required=False)  # 交易数据来源
 
 
 class StockMinTrading(Document):
