@@ -21,7 +21,10 @@ rzrq_api = [rzrq_sh, rzrq_sz]
 
 history_trading = 'http://soft-f9.eastmoney.com/soft/gp9.php?code={}'
 
-exchange_market = [{'market': 'sh', 'pattern': ['60']}, {'market': 'sz', 'pattern': ['00', '30']}]
+exchange_market = [{'market': 'sh', 'pattern': ['60'], 'cd': 'XSHG'},
+                   {'market': 'sz', 'pattern': ['00', '30'], 'cd': 'XSHE'}]
 
 log_path = '/data/log/blade-fury.log'
 local_log_path = 'blade-fury.log'
+
+min_bar = [1, 5, 15, 30, 60]

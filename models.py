@@ -50,6 +50,23 @@ class StockDailyTrading(Document):
     turnover_rate = StringField()  # 股票今日换手率
     date = DateTimeField(default=datetime.date.today())  # 收录股票交易数据的日期
     timestamp = IntField(default=int(time.time()))  # 收录数据时的时间戳
+    data_source = StringField(choices=['east_money', 'data_yes'], default='easy_money')  # 交易数据来源
+
+
+class StockMinTrading(Document):
+    """
+    存储股票交易分钟线数据
+    """
+
+    stock_number = StringField(required=True, max_length=10)  # 股票编号
+    stock_name = StringField(required=True, max_length=20)  # 股票名称
+    bar = IntField(required=True, choices=config.min_bar)  # 分钟线级别
+    bar_time = DateTimeField(required=True)  # 分钟线起始时间
+    close_price = FloatField(required=True)  # 分钟线结束价格
+    open_price = FloatField(required=True)  # 分钟线开始价格
+    high_price = FloatField(required=True)  # 分钟线最高价
+    low_price = FloatField(required=True)  # 分钟线最低价
+    data_source = StringField(choices=['east_money', 'data_yes'], default='easy_money')  # 交易数据来源
 
 
 class StockNotice(Document):
