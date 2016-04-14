@@ -29,3 +29,4 @@ local_log_path = 'blade-fury.log'
 
 min_bar = [5, 15, 30, 60]
 minbar_url = 'https://api.wmcloud.com:443/data/v1/api/market/getBarRTIntraDay.json'
+datayes_token = '82afa4c4a1bfecc6cbd95a3eb8548ee0dea2fccc10f2521e76f194cb13001f49'

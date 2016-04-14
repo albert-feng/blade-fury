@@ -34,9 +34,11 @@ def strategy_statistics(strategy_name):
 
     frame = DataFrame(bt_result)
     pd.set_option('display.width', 200)
+    pd.set_option('display.max_rows', 200)
     print frame.reindex(['count', 'one_back_test', 'one_yield_expectation', 'three_back_test', 'three_yield_expectation',
                          'five_back_test', 'five_yield_expectation']).T
     pd.set_option('display.width', None)
+    pd.set_option('display.max_rows', None)
 
 
 def back_test_success(strategy_name, date):
@@ -46,6 +48,7 @@ def back_test_success(strategy_name, date):
     for k, v in back_test_attr.iteritems():
         qualified_sample = [qr for qr in cursor if qr[k] is not None]
         if not qualified_sample:
+            res_by_date['count'] = cursor.count()
             continue
 
         succ_sample = [q for q in qualified_sample if q[k] is True]
