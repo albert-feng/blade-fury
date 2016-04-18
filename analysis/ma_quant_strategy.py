@@ -67,7 +67,6 @@ def save_quant_result(sdt, strategy_name, strategy_direction='long'):
 
 
 def quant_stock(stock_number, short_ma_num=1, long_ma_num=30):
-    strategy_name = 'ma_long_%s_%s' % (short_ma_num, long_ma_num)
     sdt = SDT.objects(stock_number=stock_number).order_by('-date')[:long_ma_num + 10]
 
     if float(sdt[0].increase_rate.replace('%', '')) == 0.0 and float(sdt[0].turnover_rate.replace('%', '')) == 0.0:
@@ -93,12 +92,9 @@ def quant_stock(stock_number, short_ma_num=1, long_ma_num=30):
 
     if short_ma_num <= long_ma_num:
         strategy_direction = 'long'
-        if float(sdt[0].increase_rate.replace('%', '')) < 0.0:
-            return
     else:
         strategy_direction = 'short'
-        if float(sdt[0].increase_rate.replace('%', '')) > 0.0:
-            return
+    strategy_name = 'ma_%s_%s_%s' % (strategy_direction, short_ma_num, long_ma_num)
 
     short_ma_list = calculate_ma_list(trading_data, short_ma_num, 2)
     long_ma_list = calculate_ma_list(trading_data, long_ma_num, 2)
