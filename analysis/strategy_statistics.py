@@ -8,6 +8,7 @@ from pandas import DataFrame
 from mongoengine import Q
 
 from models import QuantResult as QR
+from models import StockDailyTrading as SDT
 
 
 back_test_attr = {'one_back_test': ['one_price', 'one_yield_expectation'],
@@ -17,19 +18,14 @@ back_test_attr = {'one_back_test': ['one_price', 'one_yield_expectation'],
 
 def strategy_statistics(strategy_name):
     all_qr = QR.objects(strategy_name=strategy_name)
-
     if not all_qr:
         print 'Wrong Strategy Name!'
         return
 
-    all_date = []
-    for i in all_qr:
-        if i.date not in all_date:
-            all_date.append(i.date)
-
-    all_date.sort()
+    trading_date = SDT.objects(stock_number__startswith='300').distinct('date')
+    trading_date.sort()
     bt_result = {}
-    for d in all_date:
+    for d in trading_date:
         bt_result[str(d.date())] = back_test_success(strategy_name, d)
 
     frame = DataFrame(bt_result)
