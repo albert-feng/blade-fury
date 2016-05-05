@@ -58,13 +58,17 @@ def collect_his_trading(stock_number, stock_name):
         his_data = his_table.find_all('tr')[1:]
         for i in his_data:
             date = datetime.datetime.strptime(i.find('p', class_='date').text, '%Y-%m-%d')
-            today_opening_price = float(i.find_all('td')[1].text.replace('&nbsp', '').strip())
-            today_highest_price = float(i.find_all('td')[2].text.replace('&nbsp', '').strip())
-            today_lowest_price = float(i.find_all('td')[3].text.replace('&nbsp', '').strip())
-            today_closing_price = float(i.find_all('td')[4].text.replace('&nbsp', '').strip())
-            increase_rate = i.find_all('td')[5].text.replace('&nbsp', '').strip() + '%'
-            increase_amount = float(i.find_all('td')[6].text.replace('&nbsp', '').strip())
-            turnover_rate = i.find_all('td')[7].text.replace('&nbsp', '').strip() + '%'
+            try:
+                today_opening_price = float(i.find_all('td')[1].text.replace('&nbsp', '').strip())
+                today_highest_price = float(i.find_all('td')[2].text.replace('&nbsp', '').strip())
+                today_lowest_price = float(i.find_all('td')[3].text.replace('&nbsp', '').strip())
+                today_closing_price = float(i.find_all('td')[4].text.replace('&nbsp', '').strip())
+                increase_rate = i.find_all('td')[5].text.replace('&nbsp', '').strip() + '%'
+                increase_amount = float(i.find_all('td')[6].text.replace('&nbsp', '').strip())
+                turnover_rate = i.find_all('td')[7].text.replace('&nbsp', '').strip() + '%'
+            except Exception, e:
+                logging.error('Collect %s %s data failed:%s' % (stock_number, str(date), e))
+                continue
 
             if float(increase_rate.replace('%', '')) == 0.0 and float(turnover_rate.replace('%', '')) == 0.0:
                 # 去掉停牌期间的行情数据

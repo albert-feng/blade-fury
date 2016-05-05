@@ -8,6 +8,7 @@
 
 import argparse
 import logging
+import datetime
 
 from mongoengine import Q
 
@@ -66,8 +67,8 @@ def save_quant_result(sdt, strategy_name, strategy_direction='long'):
             qr.save()
 
 
-def quant_stock(stock_number, short_ma_num=1, long_ma_num=30):
-    sdt = SDT.objects(stock_number=stock_number).order_by('-date')[:long_ma_num + 10]
+def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date):
+    sdt = SDT.objects(Q(stock_number=stock_number) & Q(date__lte=qr_date)).order_by('-date')[:long_ma_num + 10]
 
     if float(sdt[0].increase_rate.replace('%', '')) == 0.0 and float(sdt[0].turnover_rate.replace('%', '')) == 0.0:
         """
@@ -107,7 +108,11 @@ def quant_stock(stock_number, short_ma_num=1, long_ma_num=30):
         save_quant_result(trading_data[0], strategy_name, strategy_direction)
 
 
-def start_quant_analysis(short_ma_num=1, long_ma_num=30):
+def start_quant_analysis(short_ma_num, long_ma_num, qr_date):
+    if not SDT.objects(date=qr_date).count():
+        print 'Not a Trading Date'
+        return
+
     try:
         all_stocks = StockInfo.objects()
     except Exception, e:
@@ -130,7 +135,7 @@ def start_quant_analysis(short_ma_num=1, long_ma_num=30):
                 continue
 
             try:
-                quant_stock(i.stock_number, short_ma_num, long_ma_num)
+                quant_stock(i.stock_number, short_ma_num, long_ma_num, qr_date)
             except Exception, e:
                 logging.error('Error when collect %s notice: %s' % (i.stock_number, e))
         skip += query_step
@@ -140,12 +145,23 @@ def setup_argparse():
     parser = argparse.ArgumentParser(description=u'根据长短均线的金叉来选股')
     parser.add_argument(u'-s', action=u'store', dest='short_ma', required=True, help=u'短期均线数')
     parser.add_argument(u'-l', action=u'store', dest='long_ma', required=True, help=u'长期均线数')
+    parser.add_argument(u'-t', action=u'store', dest='qr_date', required=False, help=u'计算均线的日期')
 
     args = parser.parse_args()
-    return int(args.short_ma), int(args.long_ma)
+
+    if args.qr_date:
+        try:
+            qr_date = datetime.datetime.strptime(args.qr_date, '%Y-%m-%d')
+        except Exception, e:
+            print 'Wrong date form'
+            raise e
+    else:
+        qr_date = datetime.date.today()
+
+    return int(args.short_ma), int(args.long_ma), qr_date
 
 
 if __name__ == '__main__':
     setup_logging(__file__, logging.WARNING)
-    short_ma, long_ma = setup_argparse()
-    start_quant_analysis(short_ma, long_ma)
+    short_ma, long_ma, qr_date = setup_argparse()
+    start_quant_analysis(short_ma, long_ma, qr_date)

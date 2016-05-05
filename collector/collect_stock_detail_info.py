@@ -56,15 +56,16 @@ def collect_company_survey(stock_info):
     company_survey_url = company_survey.format(query_id)
     survey_html = send_request(company_survey_url)
     survey_soup = BeautifulSoup(survey_html, 'lxml')
+    stock_info.stock_name = survey_soup.find('p', class_='key').find('a').text.strip()
     survey_table = survey_soup.find('table', id='Table0').find_all('td')
-    stock_info.company_name_cn = survey_table[0].text
-    stock_info.company_name_en = survey_table[1].text
-    stock_info.account_firm = survey_table[30].text
-    stock_info.law_firm = survey_table[29].text
-    stock_info.industry_involved = survey_table[10].text
-    stock_info.business_scope = survey_table[32].text
-    stock_info.company_introduce = survey_table[31].text
-    stock_info.area = survey_table[23].text
+    stock_info.company_name_cn = survey_table[0].text.strip()
+    stock_info.company_name_en = survey_table[1].text.strip()
+    stock_info.account_firm = survey_table[30].text.strip()
+    stock_info.law_firm = survey_table[29].text.strip()
+    stock_info.industry_involved = survey_table[10].text.strip()
+    stock_info.business_scope = survey_table[32].text.strip()
+    stock_info.company_introduce = survey_table[31].text.strip()
+    stock_info.area = survey_table[23].text.strip()
 
     core_concept_url = core_concept.format(query_id)
     concept_html = send_request(core_concept_url)
