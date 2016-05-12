@@ -1,0 +1,641 @@
+==============================================================================
+Glances Version 2
+==============================================================================
+
+Version 2.6.1
+=============
+
+Enhancements and new features:
+
+    * Add a connector to Riemann (issue #822 by Greogo Nagy)
+
+Bugs corrected:
+
+    * Browsing for servers which are in the [serverlist] is broken (issue #819)
+    * [WebUI] Glances will not get past loading screen (issue #815) opened 9 days ago
+    * Python error after upgrading from 2.5.1 to 2.6 bug (issue #813)
+
+Version 2.6
+===========
+
+Deprecations:
+
+    * Add deprecation warning for Python 2.6.
+      Python 2.6 support will be dropped in future releases.
+      Please switch to at least Python 2.7 or 3.3+ as soon as possible.
+      See http://www.snarky.ca/stop-using-python-2-6 for more information.
+
+Enhancements and new features:
+
+    * Add a connector to ElasticSearch (welcome to Kibana dashboard) (issue #311)
+    * New folders' monitoring plugins (issue #721)
+    * Use wildcard (regexp) to the hide configuration option for network, diskio and fs sections (issue #799 )
+    * Command line arguments are now take into account in the WebUI (#789 by  @notFloran)
+    * Change username for server and web server authentication (issue #693)
+    * Add an option to disable top menu (issue #766)
+    * Add IOps in the DiskIO plugin (issue #763)
+    * Add hide configuration key for FS Plugin (issue #736)
+    * Add process summary min/max stats (issue #703)
+    * Add timestamp to the CSV export module (issue #708)
+    * Add a shortcut 'E' to delete process filter (issue #699)
+    * By default, hide disk I/O ram1-** (issue #714)
+    * When Glances is starting the notifications should be delayed (issue #732)
+    * Add option (--disable-bg) to disable ANSI background colours (issue #738 by okdana)
+    * [WebUI] add "pointer" cursor for sortable columns (issue #704 by @notFloran)
+    * [WebUI] Make web page title configurable (issue #724)
+    * Do not show interface in down state (issue #765)
+    * InfluxDB > 0.9.3 needs float and not int for numerical value (issue#749 and issue#750 by nicolargo)
+
+Bugs corrected:
+
+    * Can't read sensors on a Thinkpad (issue #711)
+    * InfluxDB/OpenTSDB: tag parsing broken (issue #713)
+    * Grafana Dashboard outdated for InfluxDB 0.9.x (issue #648)
+    * '--tree' breaks process filter on Debian 8 (issue #768)
+    * Fix highlighting of process when it contains whitespaces (issue #546 by Alessio Sergi)
+    * Fix RAID support in Python 3 (issue #793 by Alessio Sergi)
+    * Use dict view objects to avoid issue (issue #758 by Alessio Sergi)
+    * System exit if Cpu not supported by the Cpuinfo lib (issue #754 by nicolargo)
+    * KeyError: 'cpucore' when exporting data to InfluxDB (issue #729) by nicolargo)
+
+Others:
+    * A new Glances docker container to monitor your Docker infrastructure is available here (issue #728): https://hub.docker.com/r/nicolargo/glances/
+    * Documentation is now generated automatically thanks to Sphinx and the Alessio Sergi patch (http://glances.readthedocs.org/en/latest/)
+
+Contributors summary:
+    * Nicolas Hennion: 112 commits
+    * Alessio Sergi: 55 commits
+    * Floran Brutel: 19 commits
+    * Nicolas Hart: 8 commits
+    * @desbma: 4 commits
+    * @dana: 2 commits
+    * Damien Martin, Raju Kadam, @georgewhewell: 1 commit
+
+Version 2.5.1
+=============
+
+Bugs corrected:
+
+    * Unable to unlock password protected servers in browser mode bug (issue #694)
+    * Correct issue when Glances is started in console on Windows OS
+    * [WebUI] when alert is ongoing hide level enhancement (issue #692)
+
+Version 2.5
+===========
+
+Enhancements and new features:
+
+    * Allow export of Docker and sensors plugins stats to InfluxDB, StatsD... (issue #600)
+    * Docker plugin shows IO and network bitrate (issue #520)
+    * Server password configuration for the browser mode (issue #500)
+    * Add support for OpenTSDB export (issue #638)
+    * Add additional stats (iowait, steal) to the perCPU plugin (issue #672)
+    * Support Fahrenheit unit in the sensor plugin using the --fahrenheit command line option (issue #620)
+    * When a process filter is set, display sum of CPU, MEM... (issue #681)
+    * Improve the QuickLookplugin by adding hardware CPU info (issue #673)
+    * WebUI display a message if server is not available (issue #564)
+    * Display an error if export is not used in the standalone/client mode (issue #614)
+    * New --disable-quicklook, --disable-cpu, --disable-mem, --disable-swap, --disable-load tags (issue #631)
+    * Complete refactoring of the WebUI thanks to the (awesome) Floran pull (issue #656)
+    * Network cumulative /combination feature available in the WebUI (issue #552)
+    * IRIX mode off implementation (issue#628)
+    * Short process name displays arguments (issue #609)
+    * Server password configuration for the browser mode (issue #500)
+    * Display an error if export is not used in the standalone/client mode (issue #614)
+
+Bugs corrected:
+
+    * The WebUI displays bad sensors stats (issue #632)
+    * Filter processes crashs with a bad regular expression pattern (issue #665)
+    * Error with IP plugin (issue #651)
+    * Crach with Docker plugin (issue #649)
+    * Docker plugin crashs with webserver mode (issue #654)
+    * Infrequently crashing due to assert (issue #623)
+    * Value for free disk space is counterintuative on ext file systems (issue #644)
+    * Try/catch for unexpected psutil.NoSuchProcess: process no longer exists (issue #432)
+    * Fatal error using Python 3.4 and Docker plugin bug (issue #602)
+    * Add missing new line before g man option (issue #595)
+    * Remove unnecessary type="text/css" for link (HTML5) (issue #595)
+    * Correct server mode issue when no network interface is available (issue #528)
+    * Avoid crach on olds kernels (issue #554)
+    * Avoid crashing if LC_ALL is not defined by user (issue #517)
+    * Add a disable HDD temperature option on the command line (issue #515)
+
+
+Version 2.4.2
+=============
+
+Bugs corrected:
+
+    * Process no longer exists (again) (issue #613)
+    * Crash when "top extended stats" is enabled on OS X (issue #612)
+    * Graphical percentage bar displays "?" (issue #608)
+    * Quick look doesn't work (issue #605)
+    * [Web UI] Display empty Battery sensors enhancement (issue #601)
+    * [Web UI] Per CPU plugin has to be improved (issue #566)
+
+Version 2.4.1
+=============
+
+Bugs corrected:
+
+    * Fatal error using Python 3.4 and Docker plugin bug (issue #602)
+
+Version 2.4
+===========
+
+Changes:
+
+    * Glances doesn't provide a system-wide configuration file by default anymore.
+      Just copy it in any of the supported locations. See glances-doc.html for
+      more information. (issue #541)
+    * The default key bindings have been changed to:
+      - 'u': sort processes by USER
+      - 'U': show cumulative network I/O
+    * No more translations
+
+Enhancements and new features:
+
+    * The Web user interface is now based on AngularJS (issue #473, #508, #468)
+    * Implement a 'quick look' plugin (issue #505)
+    * Add sort processes by USER (issue #531)
+    * Add a new IP information plugin (issue #509)
+    * Add RabbitMQ export module (issue #540 Thk to @Katyucha)
+    * Add a quiet mode (-q), can be useful using with export module
+    * Grab FAN speed in the Glances sensors plugin (issue #501)
+    * Allow logical mounts points in the FS plugin (issue #448)
+    * Add a --disable-hddtemp to disable HDD temperature module at startup (issue #515)
+    * Increase alert minimal delay to 6 seconds (issue #522)
+    * If the Curses application raises an exception, restore the terminal correctly (issue #537)
+
+Bugs corrected:
+
+    * Monitor list, all processes are take into account (issue #507)
+    * Duplicated --enable-history in the doc (issue #511)
+    * Sensors title is displayed if no sensors are detected (issue #510)
+    * Server mode issue when no network interface is available (issue #528)
+    * DEBUG mode activated by default with Python 2.6 (issue #512)
+    * Glances display of time trims the hours showing only minutes and seconds (issue #543)
+    * Process list header not decorating when sorting by command (issue #551)
+
+Version 2.3
+===========
+
+Enhancements and new features:
+
+    * Add the Docker plugin (issue #440) with per container CPU and memory monitoring (issue #490)
+    * Add the RAID plugin (issue #447)
+    * Add actions on alerts (issue #132). It is now possible to run action (command line) by triggers. Action could contain {{tag}} (Mustache) with stat value.
+    * Add InfluxDB export module (--export-influxdb) (issue #455)
+    * Add StatsD export module (--export-statsd) (issue #465)
+    * Refactor export module (CSV export option is now --export-csv). It is now possible to export stats from the Glances client mode (issue #463)
+    * The Web inteface is now based on Bootstrap / RWD grid (issue #417, #366 and #461) Thanks to Nicolas Hart @nclsHart
+    * It is now possible, through the configuration file, to define if an alarm should be logged or not (using the _log option) (issue #437)
+    * You can now set alarm for Disk IO
+    * API: add getAllLimits and getAllViews methods (issue #481) and allow CORS request (issue #479)
+    * SNMP client support NetApp appliance (issue #394)
+
+Bugs corrected:
+
+    *  R/W error with the glances.log file (issue #474)
+
+Other enhancement:
+
+    * Alert < 3 seconds are no longer displayed
+
+Version 2.2.1
+=============
+
+    * Fix incorrect kernel thread detection with --hide-kernel-threads (issue #457)
+    * Handle IOError exception if no /etc/os-release to use Glances on Synology DSM (issue #458)
+    * Check issue error in client/server mode (issue #459)
+
+Version 2.2
+===========
+
+Enhancements and new features:
+
+    * Add centralized curse interface with a Glances servers list to monitor (issue #418)
+    * Add processes tree view (--tree) (issue #444)
+    * Improve graph history feature (issue #69)
+    * Extended stats is disable by default (use --enable-process-extended to enable it - issue #430)
+    * Add a short key ('F') and a command line option (--fs-free-space) to display FS free space instead of used space (issue #411)
+    * Add a short key ('2') and a command line option (--disable-left-sidebar) to disable/enable the side bar (issue #429)
+    * Add CPU times sort short key ('t') in the curse interface (issue #449)
+    * Refactor operating system detection for GNU/Linux operating system
+    * Code optimization
+
+Bugs corrected:
+
+    * Correct a bug with Glances pip install --user (issue #383)
+    * Correct issue on battery stat update (issue #433)
+    * Correct issue on process no longer exist (issues #414 and #432)
+
+Version 2.1.2
+=============
+
+    Maintenance version (only needed for Mac OS X).
+
+Bugs corrected:
+
+    * Mac OS X: Error if Glances is not ran with sudo (issue #426)
+
+Version 2.1.1
+=============
+
+Enhancement:
+
+    * Automaticaly compute top processes number for the current screen (issue #408)
+    * CPU and Memory footprint optimization (issue #401)
+
+Bugs corrected:
+
+    * Mac OS X 10.9: Exception at start (issue #423)
+    * Process no longer exists (issue #421)
+    * Error with Glances Client with Python 3.4.1 (issue #419)
+    * TypeError: memory_maps() takes exactly 2 arguments (issue #413)
+    * No filesystem informations since Glances 2.0 bug enhancement (issue #381)
+
+Version 2.1
+===========
+
+    * Add user process filter feature
+      User can define a process filter pattern (as a regular expression).
+      The pattern could be defined from the command line (-f <pattern>)
+      or by pressing the ENTER key in the curse interface.
+      For the moment, process filter feature is only available in standalone mode.
+    * Add extended processes informations for top process
+      Top process stats availables: CPU affinity, extended memory information (shared, text, lib, datat, dirty, swap), open threads/files and TCP/UDP network sessions, IO nice level
+      For the moment, extended processes stats are only available in standalone mode.
+    * Add --process-short-name tag and '/' key to switch between short/command line
+    * Create a max_processes key in the configuration file
+      The goal is to reduce the number of displayed processes in the curses UI and
+      so limit the CPU footprint of the Glances standalone mode.
+      The API always return all the processes, the key is only active in the curses UI.
+      If the key is not define, all the processes will be displayed.
+      The default value is 20 (processes displayed).
+      For the moment, this feature is only available in standalone mode.
+    * Alias for network interfaces, disks and sensors
+      Users can configure alias from the Glances configuration file.
+    * Add Glances log message (in the /tmp/glances.log file)
+      The default log level is INFO, you can switch to the DEBUG mode using the -d option on the command line.
+    * Add RESTFul API to the Web server mode
+      RestFul API doc: https://github.com/nicolargo/glances/wiki/The-Glances-RESTFULL-JSON-API
+    * Improve SNMP fallback mode for Cisco IOS, VMware ESXi
+    * Add --theme-white feature to optimize display for white background
+    * Experimental history feature (--enable-history option on the command line)
+      This feature allows users to generate graphs within the curse interface.
+      Graphs are available for CPU, LOAD and MEM.
+      To generate graph, click on the 'g' key.
+      To reset the history, press the 'r' key.
+      Note: This feature uses the matplotlib library.
+    * CI: Improve Travis coverage
+
+Bugs corrected:
+
+    * Quitting glances leaves a column layout to the current terminal (issue #392)
+    * Glances crashes with malformed UTF-8 sequences in process command lines (issue #391)
+    * SNMP fallback mode is not Python 3 compliant (issue #386)
+    * Trouble using batinfo, hddtemp, pysensors w/ Python (issue #324)
+
+
+Version 2.0.1
+=============
+
+Maintenance version.
+
+Bugs corrected:
+
+    * Error when displaying numeric process user names (#380)
+    * Display users without username correctly (#379)
+    * Bug when parsing configuration file (#378)
+    * The sda2 partition is not seen by glances (#376)
+    * Client crash if server is ended during XML request (#375)
+    * Error with the Sensors module on Debian/Ubuntu (#373)
+    * Windows don't view all processes (#319)
+
+Version 2.0
+===========
+
+    Glances v2.0 is not a simple upgrade of the version 1.x but a complete code refactoring.
+    Based on a plugins system, it aims at providing an easy way to add new features.
+    - Core defines the basics and commons functions.
+    - all stats are grabbed through plugins (see the glances/plugins source folder).
+    - also outputs methods (Curse, Web mode, CSV) are managed as plugins.
+
+    The Curse interface is almost the same than the version 1.7. Some improvements have been made:
+    - space optimisation for the CPU, LOAD and MEM stats (justified alignment)
+    - CPU:
+        . CPU stats are displayed as soon as Glances is started
+        . steal CPU alerts are no more logged
+    - LOAD:
+        . 5 min LOAD alerts are no more logged
+    - File System:
+        . Display the device name (if space is available)
+    - Sensors:
+        . Sensors and HDD temperature are displayed in the same block
+    - Process list:
+        . Refactor columns: CPU%, MEM%, VIRT, RES, PID, USER, NICE, STATUS, TIME, IO, Command/name
+        . The running processes status is highlighted
+        . The process name is highlighted in the command line
+
+    Glances 2.0 brings a brand new Web Interface. You can run Glances in Web server mode and
+    consult the stats directly from a standard Web Browser.
+
+    The client mode can now fallback to a simple SNMP mode if Glances server is not found on the remote machine.
+
+    Complete release notes:
+    * Cut ifName and DiskName if they are too long in the curses interface (by Nicolargo)
+    * Windows CLI is OK but early experimental (by Nicolargo)
+    * Add bitrate limits to the networks interfaces (by Nicolargo)
+    * Batteries % stats are now in the sensors list (by Nicolargo)
+    * Refactor the client/server password security: using SHA256 (by Nicolargo,
+      based on Alessio Sergi's example script)
+    * Refactor the CSV output (by Nicolargo)
+    * Glances client fallback to SNMP server if Glances one not found (by Nicolargo)
+    * Process list: Highlight running/basename processes (by Alessio Sergi)
+    * New Web server mode thk to the Bottle library (by Nicolargo)
+    * Responsive design for Bottle interface (by Nicolargo)
+    * Remove HTML output (by Nicolargo)
+    * Enable/disable for optional plugins through the command line (by Nicolargo)
+    * Refactor the API (by Nicolargo)
+    * Load-5 alert are no longer logged (by Nicolargo)
+    * Rename In/Out by Read/Write for DiskIO according to #339 (by Nicolargo)
+    * Migrate from pysensors to py3sensors (by Alessio Sergi)
+    * Migration to PsUtil 2.x (by Nicolargo)
+    * New plugins system (by Nicolargo)
+    * Python 2.x and 3.x compatibility (by Alessio Sergi)
+    * Code quality improvements (by Alessio Sergi)
+    * Refactor unitaries tests (by Nicolargo)
+    * Development now follow the git flow workflow (by Nicolargo)
+
+
+==============================================================================
+Glances Version 1
+==============================================================================
+
+Version 1.7.7
+=============
+
+    * Fix CVS export [issue #348]
+    * Adapt to PSUtil 2.1.1
+    * Compatibility with Python 3.4
+    * Improve German update
+
+Version 1.7.6
+=============
+
+    * Adapt to psutil 2.0.0 API
+    * Fixed psutil 0.5.x support on Windows
+    * Fix help screen in 80x24 terminal size
+    * Implement toggle of process list display ('z' key)
+
+Version 1.7.5
+=============
+
+    * Force the Pypi installer to use the PsUtil branch 1.x (#333)
+
+Version 1.7.4
+=============
+
+    * Add threads number in the task summary line (#308)
+    * Add system uptime (#276)
+    * Add CPU steal % to cpu extended stats (#309)
+    * You can hide disk from the IOdisk view using the conf file (#304)
+    * You can hide network interface from the Network view using the conf file
+    * Optimisation of CPU consumption (around ~10%)
+    * Correct issue #314: Client/server mode always asks for password
+    * Correct issue #315: Defining password in client/server mode doesn't work as intended
+    * Correct issue #316: Crash in client server mode
+    * Correct issue #318: Argument parser, try-except blocks never get triggered
+
+Version 1.7.3
+=============
+
+    * Add --password argument to enter the client/server password from the prompt
+    * Fix an issue with the configuration file path (#296)
+    * Fix an issue with the HTML template (#301)
+
+Version 1.7.2
+=============
+
+    * Console interface is now Microsoft Windows compatible (thk to @fraoustin)
+    * Update documentation and Wiki regarding the API
+    * Added package name for python sources/headers in openSUSE/SLES/SLED
+    * Add FreeBSD packager
+    * Bugs corrected
+
+Version 1.7.1
+=============
+
+    * Fix IoWait error on FreeBSD / Mac OS
+    * HDDTemp module is now Python v3 compatible
+    * Don't warn a process is not running if countmin=0
+    * Add Pypi badge on the README.rst
+    * Update documentation
+    * Add document structure for http://readthedocs.org
+
+Version 1.7
+===========
+
+    * Add monitored processes list
+    * Add hard disk temperature monitoring (thanks to the HDDtemp daemon)
+    * Add batteries capacities information (thanks to the Batinfo lib)
+    * Add command line argument -r toggles processes (reduce CPU usage)
+    * Add command line argument -1 to run Glances in per CPU mode
+    * Platform/architecture is more specific now
+    * XML-RPC server: Add IPv6 support for the client/server mode
+    * Add support for local conf file
+    * Add a uninstall script
+    * Add getNetTimeSinceLastUpdate() getDiskTimeSinceLastUpdate() and getProcessDiskTimeSinceLastUpdate() in the API
+    * Add more translation: Italien, Chinese
+    * and last but not least... up to 100 hundred bugs corrected / software and
+    * docs improvements
+
+Version 1.6.1
+=============
+
+    * Add per-user settings (configuration file) support
+    * Add -z/--nobold option for better appearance under Solarized terminal
+    * Key 'u' shows cumulative net traffic
+    * Work in improving autoUnit
+    * Take into account the number of core in the CPU process limit
+    * API improvment add time_since_update for disk, process_disk and network
+    * Improve help display
+    * Add more dummy FS to the ignore list
+    * Code refactory: PsUtil < 0.4.1 is depredicated (Thk to Alessio)
+    * Correct a bug on the CPU process limit
+    * Fix crash bug when specifying custom server port
+    * Add Debian style init script for the Glances server
+
+Version 1.6
+===========
+
+    * Configuration file: user can defines limits
+    * In client/server mode, limits are set by the server side
+    * Display limits in the help screen
+    * Add per process IO (read and write) rate in B per second
+      IO rate only available on Linux from a root account
+    * If CPU iowait alert then sort by processes by IO rate
+    * Per CPU display IOwait (if data is available)
+    * Add password for the client/server mode (-P password)
+    * Process column style auto (underline) or manual (bold)
+    * Display a sort indicator (is space is available)
+    * Change the table key in the help screen
+
+Version 1.5.2
+=============
+
+    * Add sensors module (enable it with -e option)
+    * Improve CPU stats (IO wait, Nice, IRQ)
+    * More stats in lower space (yes it's possible)
+    * Refactor processes list and count (lower CPU/MEM footprint)
+    * Add functions to the RCP method
+    * Completed unit test
+    * and fixes...
+
+Version 1.5.1
+=============
+
+    * Patch for PsUtil 0.4 compatibility
+    * Test PsUtil version before running Glances
+
+Version 1.5
+===========
+
+    * Add a client/server mode (XMLRPC) for remote monitoring
+    * Correct a bug on process IO with non root users
+    * Add 'w' shortkey to delete finished warning message
+    * Add 'x' shortkey to delete finished warning/critical message
+    * Bugs correction
+    * Code optimization
+
+Version 1.4.2.2
+===============
+
+    * Add switch between bit/sec and byte/sec for network IO
+    * Add Changelog (generated with gitchangelog)
+
+Version 1.4.2.1
+===============
+
+    * Minor patch to solve memomy issue (#94) on Mac OS X
+
+Version 1.4.2
+=============
+
+    * Use the new virtual_memory() and virtual_swap() fct (PsUtil)
+    * Display "Top process" in logs
+    * Minor patch on man page for Debian packaging
+    * Code optimization (less try and except)
+
+Version 1.4.1.1
+===============
+
+    * Minor patch to disable Process IO for OS X (not available in PsUtil)
+
+Version 1.4.1
+=============
+
+    * Per core CPU stats (if space is available)
+    * Add Process IO Read/Write information (if space is available)
+    * Uniformize units
+
+Version 1.4
+===========
+
+    * Goodby StatGrab... Welcome to the PsUtil library !
+    * No more autotools, use setup.py to install (or package)
+    * Only major stats (CPU, Load and memory) use background colors
+    * Improve operating system name detection
+    * New system info: one-line layout and add Arch Linux support
+    * No decimal places for values < GB
+    * New memory and swap layout
+    * Add percentage of usage for both memory and swap
+    * Add MEM% usage, NICE, STATUS, UID, PID and running TIME per process
+    * Add sort by MEM% ('m' key)
+    * Add sort by Process name ('p' key)
+    * Multiple minor fixes, changes and improvements
+    * Disable Disk IO module from the command line (-d)
+    * Disable Mount module from the command line (-m)
+    * Disable Net rate module from the command line (-n)
+    * Improved FreeBSD support
+    * Cleaning code and style
+    * Code is now checked with pep8
+    * CSV and HTML output (experimental functions, no yet documentation)
+
+Version 1.3.7
+=============
+
+    * Display (if terminal space is available) an alerts history (logs)
+    * Add a limits classe to manage stats limits
+    * Manage black and white console (issue #31)
+
+Version 1.3.6
+=============
+
+    * Add control before libs import
+    * Change static Python path (issue #20)
+    * Correct a bug with a network interface disaippear (issue #27)
+    * Add French and Spanish translation (thx to Jean Bob)
+
+Version 1.3.5
+=============
+
+    * Add an help panel when Glances is running (key: 'h')
+    * Add keys descriptions in the syntax (--help | -h)
+
+Version 1.3.4
+=============
+
+    * New key: 'n' to enable/disable network stats
+    * New key: 'd' to enable/disable disk IO stats
+    * New key: 'f' to enable/disable FS stats
+    * Reorganised the screen when stat are not available|disable
+    * Force Glances to use the enmbeded fs stats (issue #16)
+
+Version 1.3.3
+=============
+
+    * Automatically swith between process short and long name
+    * Center the host / system information
+    * Always put the hour/date in the bottom/right
+    * Correct a bug if there is a lot of Disk/IO
+    * Add control about available libstatgrab functions
+
+Version 1.3.2
+=============
+
+    * Add alert for network bit rate°
+    * Change the caption
+    * Optimised net, disk IO and fs display (share the space)
+      Disable on Ubuntu because the libstatgrab return a zero value
+      for the network interface speed.
+
+Version 1.3.1
+=============
+
+    * Add alert on load (depend on number of CPU core)
+    * Fix bug when the FS list is very long
+
+Version 1.3
+===========
+
+    * Add file system stats (total and used space)
+    * Adapt unit dynamically (K, M, G)
+    * Add man page (Thanks to Edouard Bourguignon)
+
+Version 1.2
+===========
+
+    * Resize the terminal and the windows are adapted dynamically
+    * Refresh screen instantanetly when a key is pressed
+
+Version 1.1.3
+=============
+
+    * Add disk IO monitoring
+    * Add caption
+    * Correct a bug when computing the bitrate with the option -t
+    * Catch CTRL-C before init the screen (Bug #2)
+    * Check if mem.total = 0 before division (Bug #1)
