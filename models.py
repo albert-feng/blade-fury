@@ -50,6 +50,10 @@ class StockDailyTrading(Document):
     turnover_rate = StringField()  # 股票今日换手率
     date = DateTimeField(default=datetime.date.today())  # 收录股票交易数据的日期
     timestamp = IntField(default=int(time.time()))  # 收录数据时的时间戳
+    meta = {
+        'indexes': ['date', '#stock_number'],
+        'index_background': True,
+    }
 
 
 class StockMinTrading(Document):
@@ -79,6 +83,10 @@ class StockNotice(Document):
     notice_date = DateTimeField()  # 公告日期
     notice_url = StringField()  # 公告URL
     notice_content = StringField()  # 公告正文
+    meta = {
+        'indexes': ['notice_date', '#stock_number'],
+        'index_background': True,
+    }
 
 
 class StockMarginTrading(Document):
@@ -113,3 +121,13 @@ class QuantResult(Document):
     three_price = FloatField()  # 三个交易日之后回测时的价格
     five_back_test = BooleanField()  # 五个交易日之后的回测结果
     five_price = FloatField()  # 五个交易日之后的价格
+    meta = {
+        'indexes': ['date', '#stock_number', '#strategy_name'],
+        'index_background': True,
+    }
+
+
+if __name__ == '__main__':
+    StockNotice.ensure_indexes()
+    StockDailyTrading.ensure_indexes()
+    QuantResult.ensure_indexes()
