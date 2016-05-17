@@ -23,10 +23,14 @@ class StockInfo(Document):
     account_firm = StringField(max_length=100)  # 会计师事务所
     law_firm = StringField(max_length=100)  # 律师事务所
     industry_involved = StringField(max_length=100)  # 公司所属行业
-    market_plate = ListField()  # 股票所属的板块
+    market_plate = StringField()  # 股票所属的板块
     business_scope = StringField()  # 公司经营范围
     company_introduce = StringField()  # 公司简介
     area = StringField(max_length=20)  # 公司所在区域
+    meta = {
+        'indexes': ['#stock_number', '#stock_name', '$market_plate'],
+        'index_background': True,
+    }
 
 
 class StockDailyTrading(Document):
@@ -128,6 +132,7 @@ class QuantResult(Document):
 
 
 if __name__ == '__main__':
+    StockInfo.ensure_indexes()
     StockNotice.ensure_indexes()
     StockDailyTrading.ensure_indexes()
     QuantResult.ensure_indexes()

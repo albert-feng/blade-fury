@@ -20,6 +20,7 @@ from logger import setup_logging
 
 timeout = 30  # 发送http请求时的超时时间
 query_step = 100  # 每次查询数据库的步长，以防出现cursor超时的错误
+concept_separator = [u'，', u' ']
 
 
 def estimate_market(stock_number):
@@ -69,8 +70,9 @@ def collect_company_survey(stock_info):
 
     core_concept_url = core_concept.format(query_id)
     concept_html = send_request(core_concept_url)
-    concept_soup = BeautifulSoup(concept_html, 'lxml').find('div', class_='summary').find('p').text
-    stock_info.market_plate = concept_soup.replace(u'要点一：所属板块　', '').replace(u'。', '').split(u'，')
+    market_plate = BeautifulSoup(concept_html, 'lxml').find('div', class_='summary').find('p').text\
+        .replace(u'要点一：所属板块　', '').replace(u'。', '').strip()
+    stock_info.market_plate = market_plate
     stock_info.update_time = datetime.datetime.now()
     stock_info.save()
 
