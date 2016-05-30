@@ -3,12 +3,14 @@
 
 import argparse
 import platform
+import logging
 
 import pandas as pd
 from pandas import DataFrame
 
 from models import StockInfo
 from models import StockDailyTrading as SDT
+from logger import setup_logging
 
 
 def query_market_plate_stock(market_plate, filter_ruihua=True):
@@ -20,15 +22,13 @@ def query_market_plate_stock(market_plate, filter_ruihua=True):
     filtered_firm = u'瑞华会计师事务所'
 
     for i in stock_info:
-        for j in i.market_plate:
-            if market_plate in j:
+        if i.market_plate:
+            if market_plate in i.market_plate:
                 if filter_ruihua and filtered_firm not in i.account_firm:
                     # 由于老爸是瑞华会计师事务所的，我不能买卖这家事务所出具报告的上市公司股票
                     stocks.append(i)
-                    break
                 elif not filter_ruihua:
                     stocks.append(i)
-                    break
     return stocks
 
 
@@ -42,7 +42,11 @@ def main(market_plate=u'创业板', filter_ruihua=True):
 
     plate_stocks = []
     for i in stocks:
-        sdt = query_latest_trading(i.stock_number)
+        try:
+            sdt = query_latest_trading(i.stock_number)
+        except Exception, e:
+            logging.error('Query %s trading data failed: %s' % (i.stock_number, str(e)))
+            continue
         if sdt.today_closing_price > 0:
             item = {'stock_number': i.stock_number, 'stock_name': i.stock_name, 'increase_rate': sdt.increase_rate,
                     'today_closing_price': sdt.today_closing_price}
@@ -53,12 +57,13 @@ def main(market_plate=u'创业板', filter_ruihua=True):
 
     print market_plate
     print len(plate_stocks)
-    print '---------------------------------------------------'
-    frame = DataFrame(plate_stocks).set_index('stock_number').reindex(columns=['stock_name', 'today_closing_price',
-                                                                               'increase_rate'])
-    pd.set_option('display.max_rows', len(plate_stocks))
-    print frame
-    pd.reset_option('display.max_rows')
+    if len(plate_stocks):
+        print '---------------------------------------------------'
+        frame = DataFrame(plate_stocks).set_index('stock_number').reindex(columns=['stock_name', 'today_closing_price',
+                                                                                   'increase_rate'])
+        pd.set_option('display.max_rows', len(plate_stocks))
+        print frame
+        pd.reset_option('display.max_rows')
 
 
 def setup_argparse():
@@ -71,6 +76,7 @@ def setup_argparse():
     return args.market_plate, args.filter_rh
 
 if __name__ == '__main__':
+    setup_logging(__file__, logging.WARNING)
     market_plate, filter_rh = setup_argparse()
     if isinstance(market_plate, str):
         if platform.system() == 'Windows':
