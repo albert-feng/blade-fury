@@ -27,6 +27,8 @@ class StockInfo(Document):
     business_scope = StringField()  # 公司经营范围
     company_introduce = StringField()  # 公司简介
     area = StringField(max_length=20)  # 公司所在区域
+    total_value = IntField() #  公司总市值
+    circulated_value = IntField() #  公司流通市值
     meta = {
         'indexes': ['#stock_number', '#stock_name', '$market_plate'],
         'index_background': True,
@@ -127,6 +129,25 @@ class QuantResult(Document):
     five_price = FloatField()  # 五个交易日之后的价格
     meta = {
         'indexes': ['date', '#stock_number', '#strategy_name'],
+        'index_background': True,
+    }
+
+
+class ResearchReport(Document):
+    """
+    存放研究报告数据
+    """
+    stock_number = StringField(required=True, max_length=10)  # 股票编号
+    stock_name = StringField(required=True, max_length=20)  # 股票名称
+    date = DateTimeField(required=True)  # 研究报告发布的日期
+    title = StringField(required=True)  # 评级的机构
+    author = StringField()  # 作者
+    rate_change = StringField(max_length=10)  # 研究报告的评级变化
+    rate = StringField(max_length=10)  # 研究报告的评级
+    institution = StringField(required=True, max_length=20)  # 评级的机构
+    content = StringField()  # 评级报告的内容
+    meta = {
+        'indexes': ['date', '#stock_number'],
         'index_background': True,
     }
 

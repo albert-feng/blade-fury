@@ -9,12 +9,13 @@ import random
 import time
 import datetime
 import logging
+import json
 
 import requests
 from bs4 import BeautifulSoup
 
 from models import StockInfo
-from config import core_concept, company_survey, exchange_market
+from config import core_concept, company_survey, exchange_market, stock_value
 from logger import setup_logging
 
 
@@ -41,7 +42,6 @@ def send_request(url):
         'Accept-Encoding': 'gzip, deflate, sdch',
         'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4',
         'Connection': 'keep-alive',
-        'Host': 'f10.eastmoney.com',
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36',
     }
     r = requests.get(url, headers=headers, timeout=timeout)
@@ -73,6 +73,24 @@ def collect_company_survey(stock_info):
     market_plate = BeautifulSoup(concept_html, 'lxml').find('div', class_='summary').find('p').text\
         .replace(u'要点一：所属板块　', '').replace(u'。', '').strip()
     stock_info.market_plate = market_plate
+
+    if 'sh' in query_id:
+        q_id = stock_info.stock_number + '1'
+    elif 'sz' in query_id:
+        q_id = stock_info.stock_number + '2'
+
+    if q_id:
+        stock_value_url = stock_value.format(q_id)
+        try:
+            res = send_request(stock_value_url)
+            data = json.loads(res.replace('callback(', '').replace(')', ''))['Value']
+            circulated_value = int(data[45])
+            total_value = int(data[46])
+            stock_info.circulated_value = circulated_value
+            stock_info.total_value = total_value
+        except Exception, e:
+            logging.error('Error when get corparation value:' + str(e))
+
     stock_info.update_time = datetime.datetime.now()
     stock_info.save()
 
