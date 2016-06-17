@@ -67,7 +67,8 @@ def collect_his_trading(stock_number, stock_name):
                 increase_amount = float(i.find_all('td')[6].text.replace('&nbsp', '').strip())
                 turnover_rate = i.find_all('td')[7].text.replace('&nbsp', '').strip() + '%'
             except Exception, e:
-                logging.error('Collect %s %s data failed:%s' % (stock_number, str(date), e))
+                if '--' not in str(e):
+                    logging.error('Collect %s %s trading data failed:%s' % (stock_number, str(date), e))
                 continue
 
             if float(increase_rate.replace('%', '')) == 0.0 and float(turnover_rate.replace('%', '')) == 0.0:
