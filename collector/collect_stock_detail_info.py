@@ -89,7 +89,7 @@ def collect_company_survey(stock_info):
             stock_info.circulated_value = circulated_value
             stock_info.total_value = total_value
         except Exception, e:
-            logging.error('Error when get corparation value:' + str(e))
+            logging.error('Error when get %s value:%s' % (stock_info.stock_number, e))
 
     stock_info.update_time = datetime.datetime.now()
     stock_info.save()
