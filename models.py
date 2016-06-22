@@ -152,8 +152,22 @@ class ResearchReport(Document):
     }
 
 
+class BuffettIndex(Document):
+    """
+    用来计算每天的总市值/上一年度GDP的值
+    """
+    date = DateTimeField(required=True)  # 计算巴菲特指标的日期
+    total_value = FloatField(required=True)  # 存储当天的a股总市值，单位：万亿
+    buffett_index = StringField(required=True)  # 存储当天计算的巴菲特指标
+    meta = {
+        'indexes': ['date'],
+        'index_background': True,
+    }
+
+
 if __name__ == '__main__':
     StockInfo.ensure_indexes()
     StockNotice.ensure_indexes()
     StockDailyTrading.ensure_indexes()
     QuantResult.ensure_indexes()
+    BuffettIndex.ensure_indexes()
