@@ -34,3 +34,6 @@ datayes_token = '82afa4c4a1bfecc6cbd95a3eb8548ee0dea2fccc10f2521e76f194cb13001f4
 
 
 company_report = 'http://datainterface.eastmoney.com//EM_DataCenter/js.aspx?type=SR&sty=GGSR&js={"data":[(x)],"pages":"(pc)","update":"(ud)","count":"(count)"}&ps=1000&p=1'
+
+market_index = 'http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/Index.aspx?type=z&sortType=C&sortRule=-1&'\
+               'jsSort=1&ids=0000011,3990012,0003001,3990052,3990062,0009051,0000161&dt=1466650941761'

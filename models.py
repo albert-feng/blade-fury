@@ -62,6 +62,30 @@ class StockDailyTrading(Document):
     }
 
 
+class IndexDailyTrading(Document):
+    """
+    存储每天的指数交易数据
+    """
+
+    index_number = StringField(required=True)  # 指数编号
+    index_name = StringField(required=True)  # 指数名称
+    yesterday_closed_point = FloatField()  # 昨日收盘点数
+    today_opening_point = FloatField()  # 今日开盘点数
+    today_closing_point = FloatField()  # 今日收盘点数
+    today_highest_point = FloatField()  # 今日最高点数
+    today_lowest_point = FloatField()  # 今日最低点数
+    turnover_amount = IntField()  # 成交额 单位 /万
+    turnover_volume = IntField()  # 成交量 单位 /手
+    increase_point = FloatField()  # 上涨的点数
+    increase_rate = StringField()  # 指数的涨幅
+    date = DateTimeField(default=datetime.date.today())  # 收录指数交易数据的日期
+    timestamp = IntField(default=int(time.time()))  # 收录指数数据时的时间戳
+    meta = {
+        'indexes': ['date', '#index_number'],
+        'index_background': True,
+    }
+
+
 class StockMinTrading(Document):
     """
     存储股票交易分钟线数据
@@ -171,3 +195,4 @@ if __name__ == '__main__':
     StockDailyTrading.ensure_indexes()
     QuantResult.ensure_indexes()
     BuffettIndex.ensure_indexes()
+    IndexDailyTrading.ensure_indexes()
