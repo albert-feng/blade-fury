@@ -157,7 +157,7 @@ class StockReport(Document):
     institution = StringField(required=True, max_length=20)  # 评级的机构
     content = StringField()  # 评级报告的内容
     meta = {
-        'indexes': ['date', '#stock_number'],
+        'indexes': ['date', '#stock_number', '#info_code'],
         'index_background': True,
     }
 
@@ -182,3 +182,4 @@ if __name__ == '__main__':
     QuantResult.ensure_indexes()
     BuffettIndex.ensure_indexes()
     IndexDailyTrading.ensure_indexes()
+    StockReport.ensure_indexes()
