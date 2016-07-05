@@ -17,12 +17,12 @@ def total_market_value():
             total_value += float(i.total_value)
 
     trillion = 10.0 ** 12
-    return round(total_value/trillion, 3)
+    return round(total_value/trillion, 4)
 
 def save_data():
     global GDP
     total_value = total_market_value()
-    buffett_index = str(round(total_value/GDP, 4) * 100) + '%'
+    buffett_index = str(round(total_value/GDP, 6) * 100) + '%'
     bi = BuffettIndex(date=datetime.date.today(), buffett_index=buffett_index, total_value=total_value)
     try:
         bi.save()
