@@ -28,12 +28,9 @@ exchange_market = [{'market': 'sh', 'pattern': ['60'], 'cd': 'XSHG'},
 log_path = '/data/log/blade-fury.log'
 local_log_path = 'blade-fury.log'
 
-min_bar = [5, 15, 30, 60]
-minbar_url = 'https://api.wmcloud.com:443/data/v1/api/market/getBarRTIntraDay.json'
-datayes_token = '82afa4c4a1bfecc6cbd95a3eb8548ee0dea2fccc10f2521e76f194cb13001f49'
-
-
-company_report = 'http://datainterface.eastmoney.com//EM_DataCenter/js.aspx?type=SR&sty=GGSR&js={"data":[(x)],"pages":"(pc)","update":"(ud)","count":"(count)"}&ps=1000&p=1'
+company_report = 'http://datainterface.eastmoney.com//EM_DataCenter/js.aspx?type=SR&sty=GGSR&'\
+                 'js={"data":[(x)],"pages":"(pc)","update":"(ud)","count":"(count)"}&ps=1000&p=1'
+base_report_url = 'http://data.eastmoney.com/report/'
 
 market_index = 'http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/Index.aspx?type=z&sortType=C&sortRule=-1&'\
                'jsSort=1&ids=0000011,3990012,0003001,3990052,3990062,0009051,0000161&dt=1466650941761'

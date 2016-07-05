@@ -6,15 +6,14 @@
 """
 
 
-import random
-import time
 import datetime
 import logging
 
 import requests
 from bs4 import BeautifulSoup
+from mongoengine import Q
 
-from models import StockInfo
+from models import StockReport
 from config import company_report
 from logger import setup_logging
 
@@ -39,6 +38,14 @@ def send_request(url):
     return html
 
 
+def check_duplicate(info_code, date):
+    cursor = StockReport.objects(Q(info_code=info_code) & Q(date=date))
+    if cursor:
+        return True
+    else:
+        return False
+
+
 def collect_company_report():
     report_list = requests.get(company_report).json().get('data', [])
 
@@ -51,9 +58,23 @@ def collect_company_report():
         rate_change = r.get('change')
         rate = r.get('rate')
         institution = r.get('insName')
+        info_code = r.get('infoCode').strip()
 
-        content_url = 'http://data.eastmoney.com/report/' + date.strftime('%Y%m%d') + '/' + r.get('infoCode') + '.html'
-        content = BeautifulSoup(send_request(content_url), 'lxml').find('div', class_='newsContent').text
+        content_url = 'http://data.eastmoney.com/report/' + date.strftime('%Y%m%d') + '/' + info_code + '.html'
+        try:
+            content = BeautifulSoup(send_request(content_url), 'lxml').find('div', class_='newsContent').text.strip()
+        except Exception, e:
+            logging.error('Error when get %s report content:%s' % (stock_number, e))
+            continue
+
+        if not check_duplicate(info_code, date):
+            stock_report = StockReport(stock_number=stock_number, stock_name=stock_name, date=date, title=title,
+                                       author=author, rate_change=rate_change, rate=rate, institution=institution,
+                                       info_code=info_code, content=content)
+            try:
+                stock_report.save()
+            except Exception, e:
+                logging.error('Error when save %s report %s:%s' % (stock_number, info_code, e))
 
 
 if __name__ == '__main__':

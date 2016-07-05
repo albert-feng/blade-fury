@@ -86,21 +86,6 @@ class IndexDailyTrading(Document):
     }
 
 
-class StockMinTrading(Document):
-    """
-    存储股票交易分钟线数据
-    """
-
-    stock_number = StringField(required=True, max_length=10)  # 股票编号
-    stock_name = StringField(required=True, max_length=20)  # 股票名称
-    bar = IntField(required=True, choices=config.min_bar)  # 分钟线级别
-    bar_time = DateTimeField(required=True)  # 分钟线起始时间
-    close_price = FloatField(required=True)  # 分钟线结束价格
-    open_price = FloatField(required=True)  # 分钟线开始价格
-    high_price = FloatField(required=True)  # 分钟线最高价
-    low_price = FloatField(required=True)  # 分钟线最低价
-
-
 class StockNotice(Document):
     """
     存放股票公告信息
@@ -157,13 +142,14 @@ class QuantResult(Document):
     }
 
 
-class ResearchReport(Document):
+class StockReport(Document):
     """
     存放研究报告数据
     """
     stock_number = StringField(required=True, max_length=10)  # 股票编号
     stock_name = StringField(required=True, max_length=20)  # 股票名称
     date = DateTimeField(required=True)  # 研究报告发布的日期
+    info_code = StringField()  # 报告的东财ID
     title = StringField(required=True)  # 评级的机构
     author = StringField()  # 作者
     rate_change = StringField(max_length=10)  # 研究报告的评级变化

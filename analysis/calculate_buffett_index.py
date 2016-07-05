@@ -9,6 +9,7 @@ from models import StockInfo, BuffettIndex, StockDailyTrading as SDT
 
 GDP = 67.67
 
+
 def total_market_value():
     cursor = StockInfo.objects()
     total_value = 0.0
@@ -19,6 +20,7 @@ def total_market_value():
     trillion = 10.0 ** 12
     return round(total_value/trillion, 4)
 
+
 def save_data():
     global GDP
     total_value = total_market_value()
@@ -28,6 +30,7 @@ def save_data():
         bi.save()
     except Exception, e:
         logging.error('Error when save BuffettIndex data:' + str(e))
+
 
 def cal_buffett_index():
     today = datetime.date.today()
