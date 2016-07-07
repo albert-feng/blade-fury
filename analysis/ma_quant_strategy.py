@@ -68,23 +68,9 @@ def save_quant_result(sdt, strategy_name, strategy_direction='long'):
 
 
 def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date, half_year=False):
-    sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0)).order_by('-date')
+    sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date)).order_by('-date')
 
-    if float(sdt[0].increase_rate.replace('%', '')) == 0.0 and float(sdt[0].turnover_rate.replace('%', '')) == 0.0:
-        """
-        如果最新一天股票的状态是停牌，跳过
-        """
-        return
-
-    trading_data = []
-    for i in sdt:
-        """
-        去除交易数据里的停牌数据
-        """
-        if float(i.increase_rate.replace('%', '')) == 0.0 and float(i.turnover_rate.replace('%', '')) == 0.0:
-            continue
-        else:
-            trading_data.append(i)
+    trading_data = list(sdt)
     if len(trading_data) < long_ma_num + 5 or len(trading_data) < short_ma_num + 5:
         """
         如果交易数据不够，跳过
@@ -93,8 +79,7 @@ def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date, half_year=Fals
 
     if half_year and sdt.count() >= 120:
         today_price = sdt[0].today_closing_price
-        avg_price = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0)).order_by('-date')\
-                       .limit(120).average('today_closing_price')
+        avg_price = sdt.limit(120).average('today_closing_price')
         if today_price < avg_price:
             return
 
@@ -146,7 +131,7 @@ def start_quant_analysis(short_ma_num, long_ma_num, qr_date, half_year=False):
                 continue
 
             try:
-                quant_stock(i.stock_number, short_ma_num, long_ma_num, qr_date)
+                quant_stock(i.stock_number, short_ma_num, long_ma_num, qr_date, half_year)
             except Exception, e:
                 logging.error('Error when collect %s notice: %s' % (i.stock_number, e))
         skip += query_step
