@@ -102,7 +102,11 @@ def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date, half_year=Fals
         strategy_direction = 'long'
     else:
         strategy_direction = 'short'
-    strategy_name = 'ma_%s_%s_%s' % (strategy_direction, short_ma_num, long_ma_num)
+
+    if half_year:
+        strategy_name = 'ma_halfyear_%s_%s_%s' % (strategy_direction, short_ma_num, long_ma_num)
+    else:
+        strategy_name = 'ma_%s_%s_%s' % (strategy_direction, short_ma_num, long_ma_num)
 
     short_ma_list = calculate_ma_list(trading_data, short_ma_num, 2)
     long_ma_list = calculate_ma_list(trading_data, long_ma_num, 2)
