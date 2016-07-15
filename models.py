@@ -27,8 +27,8 @@ class StockInfo(Document):
     business_scope = StringField()  # 公司经营范围
     company_introduce = StringField()  # 公司简介
     area = StringField(max_length=20)  # 公司所在区域
-    total_value = IntField() #  公司总市值
-    circulated_value = IntField() #  公司流通市值
+    total_value = IntField()  # 公司总市值
+    circulated_value = IntField()  # 公司流通市值
     meta = {
         'indexes': ['#stock_number', '#stock_name', '$market_plate'],
         'index_background': True,
@@ -54,6 +54,8 @@ class StockDailyTrading(Document):
     today_average_price = FloatField()  # 股票今日平均价格 单位 rmb
     quantity_relative_ratio = FloatField()  # 股票今日量比
     turnover_rate = StringField()  # 股票今日换手率
+    total_stock = IntField()  # 股票的当日总股本
+    circulation_stock = IntField()  # 股票的当日流通股
     date = DateTimeField(default=datetime.date.today())  # 收录股票交易数据的日期
     timestamp = IntField(default=int(time.time()))  # 收录数据时的时间戳
     meta = {

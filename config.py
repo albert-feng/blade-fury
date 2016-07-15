@@ -16,8 +16,8 @@ company_survey = 'http://f10.eastmoney.com/f10_v2/CompanySurvey.aspx?code={}'
 company_accouncement = 'http://data.eastmoney.com/Notice/NoticeStock.aspx?type=0&stockcode={}&pn=1'
 eastmoney_data = 'http://data.eastmoney.com'
 stock_value = 'http://nuff.eastmoney.com/EM_Finance2015TradeInterface/JS.ashx?id={}'
-rzrq_sh = 'http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=FD&sty=MTND&mkt=1&st=C&sr=1&p=1&ps=1000'
-rzrq_sz = 'http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=FD&sty=MTND&mkt=2&st=C&sr=1&p=1&ps=1000'
+rzrq_sh = 'http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=FD&sty=MTND&mkt=1&st=C&sr=1&p=1&ps=2000'
+rzrq_sz = 'http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=FD&sty=MTND&mkt=2&st=C&sr=1&p=1&ps=2000'
 rzrq_api = [rzrq_sh, rzrq_sz]
 
 history_trading = 'http://soft-f9.eastmoney.com/soft/gp9.php?code={}'
