@@ -59,7 +59,7 @@ def quant_stock(stock_number, **kwargs):
     today_macd = df.iloc[-1]
     yestoday_macd = df.iloc[-2]
 
-    if today_macd['dif'] < 0 and today_macd['dea'] < 0 and today_macd['macd'] > 0 and yestoday_macd['macd'] < 0:
+    if today_macd['dif'] < 0 and today_macd['dea'] < 0 < today_macd['macd'] and yestoday_macd['macd'] < 0:
         strategy_direction = 'long'
         strategy_name = 'macd_long_%s_%s_%s' % (kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
 

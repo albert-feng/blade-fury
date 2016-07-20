@@ -44,7 +44,7 @@ def back_test_success(strategy_name, date):
     for k, v in back_test_attr.iteritems():
         qualified_sample = [qr for qr in cursor if qr[k] is not None]
         if not qualified_sample:
-            res_by_date['count'] = cursor.count()
+            res_by_date['count'] = int(cursor.count())
             continue
 
         succ_sample = [q for q in qualified_sample if q[k] is True]
@@ -59,7 +59,7 @@ def back_test_success(strategy_name, date):
                 yield_expectation += (i.init_price - i[v[0]])/i.init_price
 
         res_by_date[v[1]] = str(round(yield_expectation/len(qualified_sample), 4) * 100) + '%'
-        res_by_date['count'] = cursor.count()
+        res_by_date['count'] = int(cursor.count())
     return res_by_date
 
 
