@@ -31,7 +31,7 @@ class StockInfo(Document):
     total_value = IntField()  # 公司总市值
     circulated_value = IntField()  # 公司流通市值
     meta = {
-        'indexes': ['#stock_number', '#stock_name', '$market_plate'],
+        'indexes': ['#stock_number', '#stock_name', '$market_plate', 'total_value', 'circulated_value'],
         'index_background': True,
     }
 
