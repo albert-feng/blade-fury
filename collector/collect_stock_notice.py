@@ -56,9 +56,9 @@ def collect_notice(stock_info):
     notice_list_html = send_request(req_url)
     notice_list_soup = BeautifulSoup(notice_list_html, 'lxml')
 
-    notice_list = notice_list_soup.find('div', class_='cont').find_all('li')
+    notice_list = notice_list_soup.find('div', class_='snBox').find('div', class_='cont').find_all('li')
     for i in notice_list:
-        notice_title = i.find('span', class_='title').text
+        notice_title = i.find('span', class_='title').find('a').text
         notice_cate = i.find('span', class_='cate').text
         notice_date_str = i.find('span', class_='date').text
         notice_date = datetime.datetime.strptime(notice_date_str, '%Y-%m-%d')
@@ -67,7 +67,7 @@ def collect_notice(stock_info):
         if not check_duplicate(notice_title, notice_cate, notice_date):
             notice_html = send_request(notice_url)
             notice_soup = BeautifulSoup(notice_html, 'lxml')
-            notice_content = notice_soup.find('pre').text
+            notice_content = notice_soup.find('pre').text.strip()
 
             stock_notice = StockNotice(stock_number=stock_info.stock_number, stock_name=stock_info.stock_name,
                                        notice_title=notice_title, notice_cate=notice_cate, notice_date=notice_date,
