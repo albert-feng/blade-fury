@@ -30,7 +30,7 @@ def strategy_statistics(strategy_name):
 
     frame = DataFrame(bt_result)
     pd.set_option('display.width', 200)
-    pd.set_option('display.max_rows', 400)
+    pd.set_option('display.max_rows', 2000)
     print frame.reindex(['count', 'one_back_test', 'one_yield_expectation', 'three_back_test', 'three_yield_expectation',
                          'five_back_test', 'five_yield_expectation']).T
     pd.set_option('display.width', None)

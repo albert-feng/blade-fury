@@ -60,7 +60,7 @@ class StockDailyTrading(Document):
     date = DateTimeField(default=datetime.date.today())  # 收录股票交易数据的日期
     timestamp = IntField(default=int(time.time()))  # 收录数据时的时间戳
     meta = {
-        'indexes': ['date', '-date', 'quantity_relative_ratio', '#stock_number'],
+        'indexes': ['date', '-date', 'stock_number'],
         'index_background': True,
     }
 
@@ -84,7 +84,7 @@ class IndexDailyTrading(Document):
     date = DateTimeField(default=datetime.date.today())  # 收录指数交易数据的日期
     timestamp = IntField(default=int(time.time()))  # 收录指数数据时的时间戳
     meta = {
-        'indexes': ['date', '#index_number'],
+        'indexes': ['date', 'index_number'],
         'index_background': True,
     }
 
