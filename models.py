@@ -31,7 +31,7 @@ class StockInfo(Document):
     total_value = IntField()  # 公司总市值
     circulated_value = IntField()  # 公司流通市值
     meta = {
-        'indexes': ['#stock_number', '#stock_name', '$market_plate', 'total_value', 'circulated_value'],
+        'indexes': ['stock_number'],
         'index_background': True,
     }
 
@@ -60,7 +60,7 @@ class StockDailyTrading(Document):
     date = DateTimeField(default=datetime.date.today())  # 收录股票交易数据的日期
     timestamp = IntField(default=int(time.time()))  # 收录数据时的时间戳
     meta = {
-        'indexes': ['date', '-date', 'stock_number'],
+        'indexes': ['date', 'stock_number'],
         'index_background': True,
     }
 
@@ -102,7 +102,7 @@ class StockNotice(Document):
     notice_url = StringField()  # 公告URL
     notice_content = StringField()  # 公告正文
     meta = {
-        'indexes': ['notice_date', '#stock_number'],
+        'indexes': ['notice_date', 'stock_number'],
         'index_background': True,
     }
 
@@ -140,7 +140,7 @@ class QuantResult(Document):
     five_back_test = BooleanField()  # 五个交易日之后的回测结果
     five_price = FloatField()  # 五个交易日之后的价格
     meta = {
-        'indexes': ['date', '#stock_number', '#strategy_name'],
+        'indexes': ['date', 'stock_number'],
         'index_background': True,
     }
 
@@ -160,7 +160,7 @@ class StockReport(Document):
     institution = StringField(required=True, max_length=20)  # 评级的机构
     content = StringField()  # 评级报告的内容
     meta = {
-        'indexes': ['date', '#stock_number', '#info_code'],
+        'indexes': ['date', 'stock_number'],
         'index_background': True,
     }
 

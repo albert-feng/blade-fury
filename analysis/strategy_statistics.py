@@ -16,7 +16,7 @@ back_test_attr = {'one_back_test': ['one_price', 'one_yield_expectation'],
                   'five_back_test': ['five_price', 'five_yield_expectation']}
 
 
-def strategy_statistics(strategy_name):
+def strategy_statistics(strategy_name, strategy_count):
     all_qr = QR.objects(strategy_name=strategy_name)
     if not all_qr:
         print 'Wrong Strategy Name!'
@@ -24,6 +24,7 @@ def strategy_statistics(strategy_name):
 
     trading_date = SDT.objects(stock_number__startswith='300').distinct('date')
     trading_date.sort()
+    trading_date = trading_date[0-strategy_count:]
     bt_result = {}
     for d in trading_date:
         bt_result[str(d.date())] = back_test_success(strategy_name, d)
@@ -66,10 +67,15 @@ def back_test_success(strategy_name, date):
 def setup_argparse():
     parser = argparse.ArgumentParser(description=u'查询某个策略的回测统计结果')
     parser.add_argument(u'-s', action=u'store', dest='strategy_name', required=True, help=u'策略名')
+    parser.add_argument(u'-c', action=u'store', type=int, dest='strategy_count', required=False, help=u'返回策略数')
     args = parser.parse_args()
-    return args.strategy_name
+
+    strategy_count = args.strategy_count
+    if not strategy_count:
+        strategy_count = 50
+    return args.strategy_name, strategy_count
 
 
 if __name__ == '__main__':
-    strategy_name = setup_argparse()
-    strategy_statistics(strategy_name)
+    strategy_name, strategy_count = setup_argparse()
+    strategy_statistics(strategy_name, strategy_count)
