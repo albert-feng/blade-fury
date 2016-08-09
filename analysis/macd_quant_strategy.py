@@ -41,12 +41,13 @@ def restore_right(trading_data):
 
 def quant_stock(stock_number, **kwargs):
     sdt_li = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
-                         Q(date__lte=kwargs['date'])).order_by('date')[-200:]
+                         Q(date__lte=kwargs['date'])).order_by('-date')[:200]
     stock_name = sdt_li[0].stock_name
 
     trading_data = []
     for s in sdt_li:
         trading_data.append({'date': s.date, 'price': s.today_closing_price, 'total_stock': s.total_stock})
+    trading_data.reverse()
     # trading_data = restore_right(trading_data)
 
     df = DataFrame(trading_data).set_index(['date'])
