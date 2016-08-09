@@ -70,13 +70,6 @@ def save_quant_result(sdt, strategy_name, strategy_direction='long'):
 def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date, half_year=False):
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date)).order_by('-date')
 
-    trading_data = list(sdt)
-    if len(trading_data) < long_ma_num + 5 or len(trading_data) < short_ma_num + 5:
-        """
-        如果交易数据不够，跳过
-        """
-        return
-
     if half_year and sdt.count() >= 120:
         today_price = sdt[0].today_closing_price
         avg_price = sdt.limit(120).average('today_closing_price')
@@ -93,15 +86,15 @@ def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date, half_year=Fals
     else:
         strategy_name = 'ma_%s_%s_%s' % (strategy_direction, short_ma_num, long_ma_num)
 
-    short_ma_list = calculate_ma_list(trading_data, short_ma_num, 2)
-    long_ma_list = calculate_ma_list(trading_data, long_ma_num, 2)
+    short_ma_list = calculate_ma_list(sdt[:short_ma_num+5], short_ma_num, 2)
+    long_ma_list = calculate_ma_list(sdt[:long_ma_num+5], long_ma_num, 2)
     ma_difference = calculate_ma_difference(short_ma_list, long_ma_list)
 
     if ma_difference[0] > 0 > ma_difference[1]:
         """
         当短期均线向上穿过长期均线的时候
         """
-        save_quant_result(trading_data[0], strategy_name, strategy_direction)
+        save_quant_result(sdt[0], strategy_name, strategy_direction)
 
 
 def start_quant_analysis(short_ma_num, long_ma_num, qr_date, half_year=False):
