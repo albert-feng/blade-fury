@@ -67,24 +67,15 @@ def save_quant_result(sdt, strategy_name, strategy_direction='long'):
             qr.save()
 
 
-def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date, half_year=False):
+def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date):
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date)).order_by('-date')
-
-    if half_year and sdt.count() >= 120:
-        today_price = sdt[0].today_closing_price
-        avg_price = sdt.limit(120).average('today_closing_price')
-        if today_price < avg_price:
-            return
 
     if short_ma_num <= long_ma_num:
         strategy_direction = 'long'
     else:
         strategy_direction = 'short'
 
-    if half_year:
-        strategy_name = 'ma_halfyear_%s_%s_%s' % (strategy_direction, short_ma_num, long_ma_num)
-    else:
-        strategy_name = 'ma_%s_%s_%s' % (strategy_direction, short_ma_num, long_ma_num)
+    strategy_name = 'ma_%s_%s_%s' % (strategy_direction, short_ma_num, long_ma_num)
 
     short_ma_list = calculate_ma_list(sdt[:short_ma_num+5], short_ma_num, 2)
     long_ma_list = calculate_ma_list(sdt[:long_ma_num+5], long_ma_num, 2)
@@ -97,7 +88,7 @@ def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date, half_year=Fals
         save_quant_result(sdt[0], strategy_name, strategy_direction)
 
 
-def start_quant_analysis(short_ma_num, long_ma_num, qr_date, half_year=False):
+def start_quant_analysis(short_ma_num, long_ma_num, qr_date):
     if not SDT.objects(date=qr_date).count():
         print 'Not a Trading Date'
         return
@@ -108,7 +99,7 @@ def start_quant_analysis(short_ma_num, long_ma_num, qr_date, half_year=False):
         logging.error('Error when query StockInfo:' + str(e))
         raise e
 
-    stocks_count = len(all_stocks)
+    stocks_count = all_stocks.count()
     skip = 0
 
     while skip < stocks_count:
@@ -124,7 +115,7 @@ def start_quant_analysis(short_ma_num, long_ma_num, qr_date, half_year=False):
                 continue
 
             try:
-                quant_stock(i.stock_number, short_ma_num, long_ma_num, qr_date, half_year)
+                quant_stock(i.stock_number, short_ma_num, long_ma_num, qr_date)
             except Exception, e:
                 logging.error('Error when collect %s notice: %s' % (i.stock_number, e))
         skip += query_step
@@ -135,8 +126,6 @@ def setup_argparse():
     parser.add_argument(u'-s', action=u'store', dest='short_ma', required=True, help=u'短期均线数')
     parser.add_argument(u'-l', action=u'store', dest='long_ma', required=True, help=u'长期均线数')
     parser.add_argument(u'-t', action=u'store', dest='qr_date', required=False, help=u'计算均线的日期')
-    parser.add_argument(u'-y', action=u'store_true', dest='half_year', required=False,
-                        help=u'如果添加这个参数，则在结果里只考虑半年线以上的票')
 
     args = parser.parse_args()
 
@@ -149,10 +138,10 @@ def setup_argparse():
     else:
         qr_date = datetime.date.today()
 
-    return int(args.short_ma), int(args.long_ma), qr_date, args.half_year
+    return int(args.short_ma), int(args.long_ma), qr_date
 
 
 if __name__ == '__main__':
     setup_logging(__file__, logging.WARNING)
-    short_ma, long_ma, qr_date, half_year = setup_argparse()
-    start_quant_analysis(short_ma, long_ma, qr_date, half_year)
+    short_ma, long_ma, qr_date = setup_argparse()
+    start_quant_analysis(short_ma, long_ma, qr_date)

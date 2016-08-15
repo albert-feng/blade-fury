@@ -140,7 +140,7 @@ class QuantResult(Document):
     five_back_test = BooleanField()  # 五个交易日之后的回测结果
     five_price = FloatField()  # 五个交易日之后的价格
     meta = {
-        'indexes': ['date', 'stock_number', ('strategy_name', 'date'), ('strategy_name', '-date')],
+        'indexes': ['date', ('strategy_name', 'date'), ('strategy_name', '-date')],
         'index_background': True,
     }
 
