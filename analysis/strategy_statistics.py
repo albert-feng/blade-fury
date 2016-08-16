@@ -22,7 +22,7 @@ def strategy_statistics(strategy_name, strategy_count):
         print 'Wrong Strategy Name!'
         return
 
-    trading_date = SDT.objects(stock_number__startswith='300').distinct('date')
+    trading_date = QR.objects().distinct('date')
     trading_date.sort()
     trading_date = trading_date[0-strategy_count:]
     bt_result = {}

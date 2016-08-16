@@ -70,7 +70,7 @@ def save_quant_result(sdt, strategy_name, strategy_direction='long'):
 def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date):
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date)).order_by('-date')
 
-    if sdt.count < long_ma_num + 3:
+    if sdt.count < long_ma_num + 5:
         print 'Trading data not enough'
         return
     if short_ma_num <= long_ma_num:
@@ -120,7 +120,7 @@ def start_quant_analysis(short_ma_num, long_ma_num, qr_date):
             try:
                 quant_stock(i.stock_number, short_ma_num, long_ma_num, qr_date)
             except Exception, e:
-                logging.error('Error when collect %s notice: %s' % (i.stock_number, e))
+                logging.error('Error when quant %s ma strategy: %s' % (i.stock_number, e))
         skip += query_step
 
 
