@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import time
 import datetime
 import logging
 import argparse
@@ -41,9 +42,7 @@ def restore_right(trading_data):
 
 def quant_stock(stock_number, stock_name, **kwargs):
     sdt_li = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
-                         Q(date__lte=kwargs['date'])).order_by('-date')
-    if sdt_li.count() > 200:
-        sdt_li = sdt_li[:200]
+                         Q(date__lte=kwargs['date'])).order_by('-date')[:200]
 
     trading_data = []
     for s in sdt_li:
