@@ -70,6 +70,9 @@ def save_quant_result(sdt, strategy_name, strategy_direction='long'):
 def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date):
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date)).order_by('-date')
 
+    if sdt.count < long_ma_num + 3:
+        print 'Trading data not enough'
+        return
     if short_ma_num <= long_ma_num:
         strategy_direction = 'long'
     else:
