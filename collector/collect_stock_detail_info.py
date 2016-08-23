@@ -57,7 +57,13 @@ def collect_company_survey(stock_info):
     company_survey_url = company_survey.format(query_id)
     survey_html = send_request(company_survey_url)
     survey_soup = BeautifulSoup(survey_html, 'lxml')
+    if not survey_soup or survey_soup.find('table', id='Table0'):
+        return
+
     survey_table = survey_soup.find('table', id='Table0').find_all('td')
+    if not survey_table:
+        return
+
     stock_info.stock_name = survey_table[4].text.strip()
     stock_info.company_name_cn = survey_table[0].text.strip()
     stock_info.company_name_en = survey_table[1].text.strip()
