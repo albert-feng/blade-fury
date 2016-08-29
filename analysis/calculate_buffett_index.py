@@ -14,7 +14,7 @@ def total_market_value():
     cursor = StockInfo.objects()
     total_value = 0.0
     for i in cursor:
-        if u'退市' not in i.stock_name and isinstance(i.total_value, int):
+        if i.stock_name and u'退市' not in i.stock_name and isinstance(i.total_value, int):
             total_value += float(i.total_value)
 
     trillion = 10.0 ** 12

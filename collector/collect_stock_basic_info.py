@@ -57,7 +57,8 @@ def collect_stock_info():
     for i in stock_data:
         stock = i.split(',')
         stock_number = stock[1]
-        stock_info = StockInfo(stock_number=stock_number, update_time=datetime.datetime.now())
+        stock_name = stock[2]
+        stock_info = StockInfo(stock_number=stock_number, stock_name=stock_name, update_time=datetime.datetime.now())
 
         if not check_duplicate(stock_info):
             try:
