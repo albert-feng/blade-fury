@@ -14,7 +14,7 @@ from models import StockInfo, QuantResult as QR, StockDailyTrading as SDT
 
 
 step = 100  # 一次从数据库取出打股票数量
-
+ema_volume = 150
 
 def check_duplicate(qr):
     if isinstance(qr, QR):
@@ -42,8 +42,9 @@ def restore_right(trading_data):
 
 def quant_stock(stock_number, stock_name, **kwargs):
     sdt_li = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
-                         Q(date__lte=kwargs['date'])).order_by('-date')[:200]
-    if not sdt_li:
+                         Q(date__lte=kwargs['date'])).order_by('-date')[:ema_volume]
+    if not len(sdt_li) < ema_volume:
+        # not enough data for calculate ema
         return
 
     trading_data = []

@@ -73,6 +73,9 @@ def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date):
     if not sdt:
         # return if not trading data
         return
+    if len(sdt[:short_ma_num]) < short_ma_num or len(sdt[:long_ma_num]) < long_ma_num:
+        # trading data not enough
+        return
     if short_ma_num <= long_ma_num:
         strategy_direction = 'long'
     else:
@@ -92,7 +95,7 @@ def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date):
 
 
 def start_quant_analysis(short_ma_num, long_ma_num, qr_date):
-    if not SDT.objects(date=qr_date).count():
+    if not SDT.objects(date=qr_date):
         print 'Not a Trading Date'
         return
 
