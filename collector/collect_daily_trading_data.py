@@ -103,7 +103,7 @@ def check_duplicate(sdt):
         if trading_date:
             latest_sdt = trading_date[0]
             check_item = ['today_opening_price', 'today_closing_price', 'today_highest_price', 'today_lowest_price',
-                          'increase_amount', 'increase_rate', 'quantity_relative_ratio', 'turnover_rate']
+                          'increase_amount', 'increase_rate', 'turnover_rate']
             for i in check_item:
                 if sdt[i] != latest_sdt[i]:
                     return False
