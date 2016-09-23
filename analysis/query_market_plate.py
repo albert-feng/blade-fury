@@ -4,6 +4,7 @@
 import argparse
 import platform
 import logging
+import datetime
 
 import pandas as pd
 from pandas import DataFrame
@@ -47,9 +48,11 @@ def main(market_plate=u'创业板', filter_ruihua=True):
         except Exception, e:
             logging.error('Query %s trading data failed: %s' % (i.stock_number, str(e)))
             continue
-        if sdt.today_closing_price > 0:
-            item = {'stock_number': i.stock_number, 'stock_name': i.stock_name, 'increase_rate': sdt.increase_rate,
-                    'today_closing_price': sdt.today_closing_price}
+
+        today = datetime.date.today()
+        if sdt.today_closing_price > 0 and sdt.date.date() == today:
+            item = {u'stock_number': i.stock_number, u'stock_name': i.stock_name, u'increase_rate': sdt.increase_rate,
+                    u'today_closing_price': sdt.today_closing_price}
             plate_stocks.append(item)
 
     plate_stocks = sorted(plate_stocks, key=lambda stock: float(stock.get('increase_rate').replace('%', '')),
