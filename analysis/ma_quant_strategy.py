@@ -25,10 +25,11 @@ def calculate_ma(sdt_list):
         if isinstance(i, SDT):
             number += i.today_closing_price
 
-    return round(number/len(sdt_list), 2)
+    return round(number/len(sdt_list), 4)
 
 
-def calculate_ma_list(sdt_list, ma, ma_amount=3):
+def calculate_ma_list(sdt_list, ma, ma_amount, qr_date):
+    sdt_list = restoration_right(sdt_list, qr_date)
     ma_list = []
     for i in xrange(0, ma_amount):
         ma_list.append(calculate_ma(sdt_list[i: ma+i]))
@@ -39,7 +40,7 @@ def calculate_ma_difference(li_1, li_2):
     ma_difference = []
     if len(li_1) == len(li_2):
         for i in xrange(0, len(li_1)):
-            ma_difference.append(round(li_1[i]-li_2[i], 2))
+            ma_difference.append(round(li_1[i]-li_2[i], 4))
 
         return ma_difference
 
@@ -67,6 +68,20 @@ def save_quant_result(sdt, strategy_name, strategy_direction='long'):
             qr.save()
 
 
+def restoration_right(sdt, qr_date):
+    standard_total_stock = sdt[1].total_stock
+    for s in sdt:
+        if s.date == qr_date:
+            continue
+
+        total_stock = s.total_stock
+        if standard_total_stock == total_stock or not total_stock:
+            continue
+        else:
+            s.today_closing_price = s.today_closing_price * total_stock / standard_total_stock
+    return sdt
+
+
 def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date):
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date)).order_by('-date')
 
@@ -83,8 +98,8 @@ def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date):
 
     strategy_name = 'ma_%s_%s_%s' % (strategy_direction, short_ma_num, long_ma_num)
 
-    short_ma_list = calculate_ma_list(sdt[:short_ma_num+5], short_ma_num, 2)
-    long_ma_list = calculate_ma_list(sdt[:long_ma_num+5], long_ma_num, 2)
+    short_ma_list = calculate_ma_list(sdt[:short_ma_num+5], short_ma_num, 2, qr_date)
+    long_ma_list = calculate_ma_list(sdt[:long_ma_num+5], long_ma_num, 2, qr_date)
     ma_difference = calculate_ma_difference(short_ma_list, long_ma_list)
 
     if ma_difference[0] > 0 > ma_difference[1]:
