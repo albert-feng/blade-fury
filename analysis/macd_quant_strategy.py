@@ -49,7 +49,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
         trading_data.append({'date': s.date, 'price': s.today_closing_price, 'total_stock': s.total_stock})
     trading_data.reverse()
-    # trading_data = restore_right(trading_data)
+    sorted(trading_data, key=lambda data: data['date'])
 
     df = DataFrame(trading_data).set_index(['date'])
     df['short_ema'] = df['price'].ewm(span=kwargs['short_ema']).mean()
@@ -61,7 +61,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
     today_macd = df.iloc[-1]
     yestoday_macd = df.iloc[-2]
 
-    if today_macd['dif'] < 0 and today_macd['dea'] < 0 < today_macd['macd'] and yestoday_macd['macd'] < 0:
+    if yestoday_macd['macd'] < 0 < today_macd['macd']:
         strategy_direction = 'long'
         strategy_name = 'macd_long_%s_%s_%s' % (kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
 
