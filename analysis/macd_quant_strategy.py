@@ -40,7 +40,10 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     trading_data = []
     qr_date = kwargs['date']
-    standard_total_stock = sdt_li[1].total_stock
+    standard_total_stock = sdt_li[0].total_stock
+    if not standard_total_stock:
+        standard_total_stock = sdt_li[1].total_stock
+
     for s in sdt_li:
         if s.date != qr_date:
             total_stock = s.total_stock
