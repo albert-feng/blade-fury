@@ -40,6 +40,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
     standard_total_stock = sdt_li[0].total_stock
     if not standard_total_stock:
         standard_total_stock = sdt_li[1].total_stock
+    if not standard_total_stock:
+        return
 
     for s in sdt_li:
         if s.date != qr_date:
@@ -48,7 +50,6 @@ def quant_stock(stock_number, stock_name, **kwargs):
                 s.today_closing_price = s.today_closing_price * total_stock / standard_total_stock
 
         trading_data.append({'date': s.date, 'price': s.today_closing_price, 'total_stock': s.total_stock})
-    trading_data.reverse()
     sorted(trading_data, key=lambda data: data['date'])
 
     df = DataFrame(trading_data).set_index(['date'])
