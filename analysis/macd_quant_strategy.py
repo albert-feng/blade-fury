@@ -50,7 +50,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         else:
             today_closing_price = s.today_closing_price
         trading_data.append({'date': s.date, 'price': today_closing_price, 'total_stock': s.total_stock})
-    sorted(trading_data, key=lambda data: data['date'])
+    trading_data.reverse()
 
     df = DataFrame(trading_data).set_index(['date'])
     df['short_ema'] = df['price'].ewm(span=kwargs['short_ema']).mean()
