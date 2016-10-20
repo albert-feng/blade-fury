@@ -57,7 +57,7 @@ def collect_his_trading(stock_number, stock_name):
     if his_table:
         his_data = his_table.find_all('tr')[1:]
         for i in his_data:
-            date = datetime.datetime.strptime(i.find('p', class_='date').text, '%Y-%m-%d')
+            date = datetime.datetime.strptime(i.find('p', class_='date').text.strip(), '%Y-%m-%d')
             try:
                 today_opening_price = float(i.find_all('td')[1].text.replace('&nbsp', '').strip())
                 today_highest_price = float(i.find_all('td')[2].text.replace('&nbsp', '').strip())
@@ -77,20 +77,18 @@ def collect_his_trading(stock_number, stock_name):
                 # 去掉停牌期间的行情数据
                 continue
 
-            if not check_exists(stock_number, date):
+            if check_exists(stock_number, date):
+                sdt = SDT.objects(Q(stock_number=stock_number) & Q(date=date)).next()
+                if not sdt.total_stock or not sdt.circulation_stock:
+                    sdt.total_stock = total_stock
+                    sdt.circulation_stock = circulation_stock
+                    sdt.save()
+            else:  # 添加股本相关数据
                 sdt = SDT(stock_number=stock_number, stock_name=stock_name, date=date,
                           today_opening_price=today_opening_price, today_highest_price=today_highest_price,
                           today_lowest_price=today_lowest_price, today_closing_price=today_closing_price,
                           increase_rate=increase_rate, increase_amount=increase_amount, turnover_rate=turnover_rate,
                           total_stock=total_stock, circulation_stock=circulation_stock)
-                sdt.save()
-            else:  # 添加股本相关数据
-                sdt = SDT.objects(Q(stock_number=stock_number) & Q(date=date)).next()
-                if not sdt.total_stock:
-                    sdt.total_stock = total_stock
-                if not sdt.circulation_stock:
-                    sdt.circulation_stock = circulation_stock
-
                 sdt.save()
 
 
