@@ -51,8 +51,8 @@ def main(market_plate=u'创业板', filter_ruihua=True):
 
         today = datetime.date.today()
         if sdt.today_closing_price > 0 and sdt.date.date() == today:
-            item = {u'stock_number': i.stock_number, u'stock_name': i.stock_name, u'increase_rate': sdt.increase_rate,
-                    u'today_closing_price': sdt.today_closing_price}
+            item = {u'stock_number': i.stock_number, u'stock_name': i.stock_name.encode('utf-8'),
+                    u'increase_rate': sdt.increase_rate, u'today_closing_price': sdt.today_closing_price}
             plate_stocks.append(item)
 
     plate_stocks = sorted(plate_stocks, key=lambda stock: float(stock.get('increase_rate').replace('%', '')),

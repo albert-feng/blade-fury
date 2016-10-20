@@ -78,7 +78,11 @@ def restoration_right(sdt, qr_date):
         if standard_total_stock == total_stock or not total_stock:
             continue
         else:
-            s.today_closing_price = s.today_closing_price * total_stock / standard_total_stock
+            try:
+                s.today_closing_price = s.today_closing_price * total_stock / standard_total_stock
+            except Exception, e:
+                logging.error('%s_%s_%s_%s' % (s.stock_number, s.date, total_stock, standard_total_stock))
+                raise e
     return sdt
 
 
