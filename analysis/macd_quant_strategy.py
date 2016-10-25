@@ -34,12 +34,16 @@ def check_duplicate(qr):
 def quant_stock(stock_number, stock_name, **kwargs):
     sdt_li = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
                          Q(date__lte=kwargs['date'])).order_by('-date')[:ema_volume]
+    if not sdt_li:
+        return
 
     trading_data = []
     qr_date = kwargs['date']
     standard_total_stock = sdt_li[0].total_stock
     if not standard_total_stock:
         standard_total_stock = sdt_li[1].total_stock
+    if not standard_total_stock:
+        standard_total_stock = sdt_li[2].total_stock
     if not standard_total_stock:
         return
 

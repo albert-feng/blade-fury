@@ -70,6 +70,8 @@ def save_quant_result(sdt, strategy_name, strategy_direction='long'):
 
 def restoration_right(sdt, qr_date):
     standard_total_stock = sdt[1].total_stock
+    if not standard_total_stock:
+        standard_total_stock = sdt[2].total_stock
     for s in sdt:
         if s.date == qr_date:
             continue
