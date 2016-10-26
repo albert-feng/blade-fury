@@ -71,8 +71,10 @@ def start_mining_notice():
     df = DataFrame(notice_data).set_index(['stock_number', 'date'])
     pd.set_option('display.width', 400)
     pd.set_option('display.max_colwidth', 150)
+    pd.set_option('display.max_rows', 800)
     print df
     pd.set_option('display.width', None)
+    pd.set_option('display.max_rows', None)
 
 
 if __name__ == '__main__':
