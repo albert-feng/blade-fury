@@ -102,7 +102,7 @@ class StockNotice(Document):
     notice_url = StringField()  # 公告URL
     notice_content = StringField()  # 公告正文
     meta = {
-        'indexes': ['notice_date', 'stock_number'],
+        'indexes': ['notice_date', 'stock_number', ('stock_number', '-notice_date')],
         'index_background': True,
     }
 

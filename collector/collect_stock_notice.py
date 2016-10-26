@@ -40,9 +40,8 @@ def send_request(url):
     return html
 
 
-def check_duplicate(notice_title, notice_cate, notice_date):
+def check_duplicate(notice_title, notice_date):
     cursor = StockNotice.objects(Q(notice_title=notice_title) &
-                                 Q(notice_cate=notice_cate) &
                                  Q(notice_date=notice_date))
 
     if cursor:
@@ -67,7 +66,7 @@ def collect_notice(stock_info):
         notice_date = datetime.datetime.strptime(notice_date_str, '%Y-%m-%d')
         notice_url = eastmoney_data + i.find('a').get('href')
 
-        if not check_duplicate(notice_title, notice_cate, notice_date):
+        if not check_duplicate(notice_title, notice_date):
             notice_html = send_request(notice_url)
             notice_soup = BeautifulSoup(notice_html, 'lxml')
             notice_content = ''
