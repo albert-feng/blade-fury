@@ -68,7 +68,7 @@ def start_mining_notice():
                 notice_data += notice
         skip += query_step
 
-    df = DataFrame(notice_data).set_index(['stock_number', 'date'])
+    df = DataFrame(notice_data).sort_values(by=['stock_number', 'date'], ascending=[True, True]).set_index(['stock_number', 'date'])
     pd.set_option('display.width', 400)
     pd.set_option('display.max_colwidth', 150)
     pd.set_option('display.max_rows', 800)
