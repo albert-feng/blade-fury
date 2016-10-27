@@ -5,6 +5,8 @@
 import datetime
 import logging
 import json
+import codecs
+from os.path import exists
 
 from mongoengine import Q
 import pandas as pd
@@ -33,7 +35,7 @@ def collect_event_notice(stock_number):
     for n in cursor:
         for i in mining_keywords:
             if i in n.notice_title:
-                notice.append({'url': n.notice_url, 'title': n.notice_title, 'date': n.notice_date, 'stock_number': n.stock_number})
+                notice.append({'url': n.notice_url, 'date': n.notice_date, 'stock_number': n.stock_number})
     return notice
 
 
@@ -68,11 +70,20 @@ def start_mining_notice():
                 notice_data += notice
         skip += query_step
 
-    df = DataFrame(notice_data).sort_values(by=['stock_number', 'date'], ascending=[True, True]).set_index(['stock_number', 'date'])
+    df = DataFrame(notice_data).sort_values(by=['stock_number', 'date'], ascending=[True, True])\
+                               .set_index(['stock_number', 'date'])
     pd.set_option('display.width', 400)
     pd.set_option('display.max_colwidth', 150)
     pd.set_option('display.max_rows', 800)
-    print df
+
+    notice_path = '/root/healing-ward/notice_mining/%s.txt' % datetime.date.today()
+    notice_data =  df.to_string()
+    if exists(notice_path):
+        print notice_data
+    else:
+        with codecs.open(notice_path, 'w+', 'utf-8') as fd:
+            fd.write(notice_data)
+
     pd.set_option('display.width', None)
     pd.set_option('display.max_rows', None)
 
