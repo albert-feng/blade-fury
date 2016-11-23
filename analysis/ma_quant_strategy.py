@@ -1,118 +1,91 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""
-根据均线系统来进行选股
-"""
-
-
-import argparse
-import logging
+import time
 import datetime
+import logging
+import argparse
+from operator import attrgetter
 
 from mongoengine import Q
+from pandas import DataFrame
 
 from logger import setup_logging
-from models import StockInfo, StockDailyTrading as SDT, QuantResult as QR
+from models import StockInfo, QuantResult as QR, StockDailyTrading as SDT
 
 
 query_step = 100  # 一次从数据库中取出的数据量
 
 
-def calculate_ma(sdt_list):
-    number = 0
-    for i in sdt_list:
-        if isinstance(i, SDT):
-            number += i.today_closing_price
-
-    return round(number/len(sdt_list), 4)
-
-
-def calculate_ma_list(sdt_list, ma, ma_amount, qr_date):
-    sdt_list = restoration_right(sdt_list, qr_date)
-    ma_list = []
-    for i in xrange(0, ma_amount):
-        ma_list.append(calculate_ma(sdt_list[i: ma+i]))
-    return ma_list
-
-
-def calculate_ma_difference(li_1, li_2):
-    ma_difference = []
-    if len(li_1) == len(li_2):
-        for i in xrange(0, len(li_1)):
-            ma_difference.append(round(li_1[i]-li_2[i], 4))
-
-        return ma_difference
-
-
-def check_duplicate(stock_number, date, strategy_name):
-    cursor = QR.objects(Q(stock_number=stock_number) & Q(date=date) & Q(strategy_name=strategy_name))
-
-    if cursor:
-        return True
-    else:
-        return False
-
-
-def save_quant_result(sdt, strategy_name, strategy_direction='long'):
-    if isinstance(sdt, SDT):
-        stock_number = sdt.stock_number
-        stock_name = sdt.stock_name
-        date = sdt.date
-        strategy_name = strategy_name
-        init_price = sdt.today_closing_price
-
-        if not check_duplicate(stock_number, date, strategy_name):
-            qr = QR(stock_number=stock_number, stock_name=stock_name, date=date, strategy_name=strategy_name,
-                    init_price=init_price, strategy_direction=strategy_direction)
-            qr.save()
-
-
-def restoration_right(sdt, qr_date):
-    standard_total_stock = sdt[1].total_stock
-    if not standard_total_stock:
-        standard_total_stock = sdt[2].total_stock
-    for s in sdt:
-        if s.date == qr_date:
-            continue
-
-        total_stock = s.total_stock
-        if standard_total_stock == total_stock or not total_stock:
-            continue
+def check_duplicate(qr):
+    if isinstance(qr, QR):
+        try:
+            cursor = QR.objects(Q(stock_number=qr.stock_number) & Q(strategy_name=qr.strategy_name) &
+                                Q(date=qr.date))
+        except Exception, e:
+            logging.error('Error when check dupliate %s strategy %s date %s: %s' % (qr.stock_number, qr.strategy_name,
+                                                                                    qr.date, e))
+        if cursor:
+            return True
         else:
-            try:
-                s.today_closing_price = s.today_closing_price * total_stock / standard_total_stock
-            except Exception, e:
-                logging.error('%s_%s_%s_%s' % (s.stock_number, s.date, total_stock, standard_total_stock))
-                raise e
-    return sdt
+            return False
+
+
+def format_trading_data(sdt, qr_date):
+    trading_data = []
+    standard_total_stock = sdt[1].total_stock if sdt[1].total_stock else sdt[2].total_stock
+    if not standard_total_stock:
+        return []
+
+    for i in sdt:
+        if not i.total_stock:
+            price = i.today_closing_price
+        else:
+            if standard_total_stock == i.total_stock:
+                price = i.today_closing_price
+            else:
+                price = i.today_closing_price * i.total_stock / standard_total_stock
+        trading_data.append({'stock_number': i.stock_number, 'stock_name': i.stock_name,
+                             'date': i.date, 'price': price})
+    trading_data.reverse()
+    return trading_data
 
 
 def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date):
-    sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date)).order_by('-date')
-
-    if not sdt:
-        # return if not trading data
-        return
-    if len(sdt[:short_ma_num]) < short_ma_num or len(sdt[:long_ma_num]) < long_ma_num:
-        # trading data not enough
-        return
     if short_ma_num <= long_ma_num:
         strategy_direction = 'long'
+        quant_count = long_ma_num + 5
     else:
         strategy_direction = 'short'
-
+        quant_count = short_ma_num + 5
     strategy_name = 'ma_%s_%s_%s' % (strategy_direction, short_ma_num, long_ma_num)
 
-    short_ma_list = calculate_ma_list(sdt[:short_ma_num+5], short_ma_num, 2, qr_date)
-    long_ma_list = calculate_ma_list(sdt[:long_ma_num+5], long_ma_num, 2, qr_date)
-    ma_difference = calculate_ma_difference(short_ma_list, long_ma_list)
+    sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
+                      Q(date__lte=qr_date)).order_by('-date')[:quant_count]
+    if len(sdt) < quant_count:
+        # trading data not enough
+        return
 
-    if ma_difference[0] > 0 > ma_difference[1]:
-        """
-        当短期均线向上穿过长期均线的时候
-        """
-        save_quant_result(sdt[0], strategy_name, strategy_direction)
+    trading_data = format_trading_data(sdt, qr_date)
+    if not trading_data:
+        return
+
+    df = DataFrame(trading_data).set_index(['date'])
+    df['short_ma'] = df['price'].rolling(window=short_ma_num, center=False).mean()
+    df['long_ma'] = df['price'].rolling(window=long_ma_num, center=False).mean()
+    df['diff'] = df['short_ma'] - df['long_ma']
+
+    today_ma = df.iloc[-1]
+    yestoday_ma = df.iloc[-2]
+
+    if today_ma['diff'] > 0 > yestoday_ma['diff']:
+        qr = QR(
+            stock_number=stock_number, stock_name=today_ma['stock_name'], date=today_macd.name,
+            strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today_macd['price']
+        )
+
+        if not check_duplicate(qr):
+            qr.save()
 
 
 def start_quant_analysis(short_ma_num, long_ma_num, qr_date):
