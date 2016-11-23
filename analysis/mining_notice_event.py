@@ -17,7 +17,7 @@ from models import StockInfo,StockNotice as SN
 
 
 mining_keywords = [u'要约收购', u'协议收购', u'异常波动', u'权益变动', u'股东增持', u'股票异动', u'交易异常', u'受让', u'股份转让']
-time_interval = 5
+time_interval = 3
 timeout = 30  # 发送http请求的超时时间
 query_step = 30  # 一次从数据库中取出的数据量
 
