@@ -29,7 +29,7 @@ def collect_event_notice(stock_number):
     today = datetime.date.today()
     delta = datetime.timedelta(days=time_interval)
 
-    cursor = SN.objects(Q(stock_number=stock_number) & Q(notice_date__gte=today-delta)).order_by('notice_date')
+    cursor = SN.objects(Q(stock_number=stock_number) & Q(date__gte=today-delta)).order_by('date')
     if not cursor:
         return []
 
@@ -37,7 +37,7 @@ def collect_event_notice(stock_number):
     for n in cursor:
         for i in mining_keywords:
             if i in n.notice_title:
-                notice.append({'url': n.notice_url, 'date': n.notice_date, 'stock_number': n.stock_number})
+                notice.append({'url': n.content_url, 'date': n.date, 'stock_number': n.stock_number})
                 break
     return notice
 
@@ -78,6 +78,8 @@ def start_mining_notice():
                 notice_data += notice
         skip += query_step
 
+    if not notice_data:
+        return
     df = DataFrame(notice_data).sort_values(by=['stock_number', 'date'], ascending=[True, True])\
                                .set_index(['stock_number', 'date'])
     pd.set_option('display.width', 400)

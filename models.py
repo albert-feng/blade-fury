@@ -96,13 +96,12 @@ class StockNotice(Document):
 
     stock_number = StringField(required=True, max_length=10)  # 股票编号
     stock_name = StringField(required=True, max_length=20)  # 股票名称
-    notice_title = StringField()  # 公告标题
-    notice_cate = StringField()  # 公告类型
-    notice_date = DateTimeField()  # 公告日期
-    notice_url = StringField()  # 公告URL
-    notice_content = StringField()  # 公告正文
+    title = StringField()  # 公告标题
+    code = StringField()
+    date = DateTimeField()  # 公告日期
+    content_url = StringField()  # 公告URL
     meta = {
-        'indexes': ['notice_date', 'stock_number', ('stock_number', '-notice_date')],
+        'indexes': ['date', 'stock_number', ('stock_number', '-date')],
         'index_background': True,
     }
 

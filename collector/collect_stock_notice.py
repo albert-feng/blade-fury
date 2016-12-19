@@ -9,13 +9,15 @@ import random
 import time
 import datetime
 import logging
+import json
+import chardet
 
 import requests
 from bs4 import BeautifulSoup
 from mongoengine import Q
 
 from models import StockInfo, StockNotice
-from config import company_accouncement, eastmoney_data
+from config import eastmoney_data, company_notice, single_notice
 from logger import setup_logging
 
 
@@ -40,8 +42,8 @@ def send_request(url):
     return html
 
 
-def check_duplicate(notice_url):
-    cursor = StockNotice.objects(notice_url=notice_url)
+def is_exists(notice_code):
+    cursor = StockNotice.objects(code=notice_code)
 
     if cursor:
         return True
@@ -50,33 +52,20 @@ def check_duplicate(notice_url):
 
 
 def collect_notice(stock_info):
-    req_url = company_accouncement.format(stock_info.stock_number)
-    notice_list_html = send_request(req_url)
-    notice_list_soup = BeautifulSoup(notice_list_html, 'lxml')
+    req_url = company_notice.format(stock_info.stock_number)
+    raw_data = send_request(req_url).replace('var', '').replace('=', '').replace(';', '').strip()
+    notice_data = json.loads(raw_data).get('data', [])
 
-    if not notice_list_soup or not notice_list_soup.find('div', class_='snBox'):
-        return
+    for n in notice_data:
+        notice_title = n.get('NOTICETITLE')
+        notice_code = n.get('INFOCODE')
+        notice_date = datetime.datetime.strptime(n.get('NOTICEDATE').split('T')[0], '%Y-%m-%d')
+        notice_url = single_notice.format(stock_info.stock_number, notice_code)
 
-    notice_list = notice_list_soup.find('div', class_='snBox').find('div', class_='cont').find_all('li')
-    for i in notice_list:
-        notice_title = i.find('span', class_='title').find('a').text
-        notice_cate = i.find('span', class_='cate').text
-        notice_date_str = i.find('span', class_='date').text
-        notice_date = datetime.datetime.strptime(notice_date_str, '%Y-%m-%d')
-        notice_url = eastmoney_data + i.find('a').get('href')
-
-        if not check_duplicate(notice_url):
-            notice_html = send_request(notice_url)
-            notice_soup = BeautifulSoup(notice_html, 'lxml')
-            notice_content = ''
-            if notice_soup:
-                notice_content = notice_soup.find('pre').text.strip()
-
-            stock_notice = StockNotice(stock_number=stock_info.stock_number, stock_name=stock_info.stock_name,
-                                       notice_title=notice_title, notice_cate=notice_cate, notice_date=notice_date,
-                                       notice_url=notice_url, notice_content=notice_content)
+        if not is_exists(notice_code):
+            stock_notice = StockNotice(title=notice_title, code=notice_code, date=notice_date,
+                content_url=notice_url, stock_number=stock_info.stock_number, stock_name=stock_info.stock_name)
             stock_notice.save()
-            time.sleep(random.random())
 
 
 def start_collect_notice():
@@ -101,9 +90,9 @@ def start_collect_notice():
                 collect_notice(i)
             except Exception, e:
                 logging.error('Error when collect %s notice: %s' % (i.stock_number, e))
-            time.sleep(random.random())
+            # time.sleep(random.random())
         skip += query_step
-        time.sleep(random.random()*10)
+        # time.sleep(random.random()*10)
 
 
 if __name__ == '__main__':
