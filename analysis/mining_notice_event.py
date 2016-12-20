@@ -36,7 +36,7 @@ def collect_event_notice(stock_number):
     notice = []
     for n in cursor:
         for i in mining_keywords:
-            if i in n.notice_title:
+            if i in n.title:
                 notice.append({'url': n.content_url, 'date': n.date, 'stock_number': n.stock_number})
                 break
     return notice
