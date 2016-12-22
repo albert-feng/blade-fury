@@ -28,7 +28,7 @@ history_trading = 'http://soft-f9.eastmoney.com/soft/gp9.php?code={}'
 exchange_market = [{'market': 'sh', 'pattern': ['60'], 'cd': 'XSHG'},
                    {'market': 'sz', 'pattern': ['00', '30'], 'cd': 'XSHE'}]
 
-log_path = '/data/log/blade-fury.log'
+log_path = '/data/log/blade-fury/blade-fury.log'
 local_log_path = 'blade-fury.log'
 
 company_report = 'http://datainterface.eastmoney.com//EM_DataCenter/js.aspx?type=SR&sty=GGSR&'\
