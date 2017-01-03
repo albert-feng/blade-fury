@@ -67,8 +67,11 @@ def quant_stock(stock_number, stock_name, **kwargs):
     yestoday_macd = df.iloc[-2]
 
     if yestoday_macd['macd'] < 0 < today_macd['macd']:
-        strategy_direction = 'long'
-        strategy_name = 'macd_long_%s_%s_%s' % (kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
+        if kwargs['short_ema'] <= kwargs['long_ema']:
+            strategy_direction = 'long'
+        else:
+            strategy_direction = 'short'
+        strategy_name = 'macd_%s_%s_%s_%s' % (strategy_direction, kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
 
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=today_macd.name,
