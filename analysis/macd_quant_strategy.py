@@ -69,7 +69,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
     strategy_direction = ''
     if yestoday_macd['macd'] < 0 < today_macd['macd']:
         strategy_direction = 'long'
-    elif yestoday_macd['macd'] > 0 > today_macd['macd']
+    elif yestoday_macd['macd'] > 0 > today_macd['macd']:
         strategy_direction = 'short'
 
     if strategy_direction:
