@@ -17,6 +17,7 @@ from logger import setup_logging
 
 
 timeout = 60
+retry = 5
 
 
 def request_and_handle_data(url):
@@ -52,9 +53,16 @@ def collect_stock_daily_trading():
     获取并保存每日股票交易数据
     """
     url = eastmoney_stock_api
-    data = request_and_handle_data(url)
+    data = {}
+    global retry
+    while retry > 0:
+        try:
+            data = request_and_handle_data(url)
+            retry = 0
+        except Exception:
+            retry -= 1
 
-    stock_data = data['rank']
+    stock_data = data.get('rank', [])
     for i in stock_data:
         stock = i.split(',')
         stock_number = stock[1]
