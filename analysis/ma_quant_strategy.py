@@ -10,7 +10,7 @@ from pandas import DataFrame
 
 from logger import setup_logging
 from models import StockInfo, QuantResult as QR, StockDailyTrading as SDT
-from analysis.technical_analysis_util import calculate_ma
+from analysis.technical_analysis_util import calculate_ma, format_trading_data
 
 
 query_step = 100  # 一次从数据库中取出的数据量
@@ -28,25 +28,6 @@ def check_duplicate(qr):
             return True
         else:
             return False
-
-
-def format_trading_data(sdt):
-    trading_data = []
-    standard_total_stock = sdt[1].total_stock if sdt[1].total_stock else sdt[2].total_stock
-    if not standard_total_stock:
-        return []
-
-    for i in sdt:
-        if not i.total_stock:
-            price = i.today_closing_price
-        else:
-            if standard_total_stock == i.total_stock:
-                price = i.today_closing_price
-            else:
-                price = i.today_closing_price * i.total_stock / standard_total_stock
-        trading_data.append({'date': i.date, 'price': price})
-    trading_data.reverse()
-    return trading_data
 
 
 def quant_stock(stock_number, short_ma, long_ma, qr_date):

@@ -10,7 +10,7 @@ from pandas import DataFrame
 
 from logger import setup_logging
 from models import StockInfo, QuantResult as QR, StockDailyTrading as SDT
-from analysis.technical_analysis_util import calculate_macd
+from analysis.technical_analysis_util import calculate_macd, format_trading_data
 
 
 step = 100  # 一次从数据库取出打股票数量
@@ -32,29 +32,12 @@ def check_duplicate(qr):
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
-    sdt_li = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
-                         Q(date__lte=kwargs['date'])).order_by('-date')[:ema_volume]
-    if len(sdt_li) < ema_volume:
+    sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
+                      Q(date__lte=kwargs['date'])).order_by('-date')[:ema_volume]
+    if len(sdt) < ema_volume-50:
         return
 
-    trading_data = []
-    standard_total_stock = sdt_li[0].total_stock
-    if not standard_total_stock:
-        standard_total_stock = sdt_li[1].total_stock
-    if not standard_total_stock:
-        standard_total_stock = sdt_li[2].total_stock
-    if not standard_total_stock:
-        return
-
-    for s in sdt_li:
-        total_stock = s.total_stock
-        if total_stock and total_stock != standard_total_stock:
-            today_closing_price = s.today_closing_price * float(total_stock) / float(standard_total_stock)
-        else:
-            today_closing_price = s.today_closing_price
-        trading_data.append({'date': s.date, 'price': today_closing_price})
-    trading_data.reverse()
-
+    trading_data = format_trading_data(sdt)
     df = calculate_macd(DataFrame(trading_data), kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
     today_macd = df.iloc[-1]
     yestoday_macd = df.iloc[-2]
