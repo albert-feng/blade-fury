@@ -64,7 +64,7 @@ def quant_stock(stock_number, short_ma, long_ma, qr_date):
         # trading data not enough
         return
 
-    trading_data = format_trading_data(sdt, qr_date)
+    trading_data = format_trading_data(sdt)
     if not trading_data:
         return
 
@@ -74,7 +74,7 @@ def quant_stock(stock_number, short_ma, long_ma, qr_date):
 
     if today_ma['diff_ma'] > 0 > yestoday_ma['diff_ma']:
         qr = QR(
-            stock_number=stock_number, stock_name=today_ma['stock_name'], date=today_ma.name,
+            stock_number=stock_number, stock_name=sdt[0].stock_name, date=today_ma.name,
             strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today_ma['price']
         )
         if not check_duplicate(qr):
