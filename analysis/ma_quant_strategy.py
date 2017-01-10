@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import time
 import datetime
 import logging
 import argparse
-from operator import attrgetter
 
 from mongoengine import Q
 from pandas import DataFrame
 
 from logger import setup_logging
 from models import StockInfo, QuantResult as QR, StockDailyTrading as SDT
+from analysis.technical_analysis_util import calculate_ma
 
 
 query_step = 100  # 一次从数据库中取出的数据量
@@ -31,7 +30,7 @@ def check_duplicate(qr):
             return False
 
 
-def format_trading_data(sdt, qr_date):
+def format_trading_data(sdt):
     trading_data = []
     standard_total_stock = sdt[1].total_stock if sdt[1].total_stock else sdt[2].total_stock
     if not standard_total_stock:
@@ -45,20 +44,19 @@ def format_trading_data(sdt, qr_date):
                 price = i.today_closing_price
             else:
                 price = i.today_closing_price * i.total_stock / standard_total_stock
-        trading_data.append({'stock_number': i.stock_number, 'stock_name': i.stock_name,
-                             'date': i.date, 'price': price})
+        trading_data.append({'date': i.date, 'price': price})
     trading_data.reverse()
     return trading_data
 
 
-def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date):
-    if short_ma_num <= long_ma_num:
+def quant_stock(stock_number, short_ma, long_ma, qr_date):
+    if short_ma <= long_ma:
         strategy_direction = 'long'
-        quant_count = long_ma_num + 5
+        quant_count = long_ma + 5
     else:
         strategy_direction = 'short'
-        quant_count = short_ma_num + 5
-    strategy_name = 'ma_%s_%s_%s' % (strategy_direction, short_ma_num, long_ma_num)
+        quant_count = short_ma + 5
+    strategy_name = 'ma_%s_%s_%s' % (strategy_direction, short_ma, long_ma)
 
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
                       Q(date__lte=qr_date)).order_by('-date')[:quant_count]
@@ -70,25 +68,20 @@ def quant_stock(stock_number, short_ma_num, long_ma_num, qr_date):
     if not trading_data:
         return
 
-    df = DataFrame(trading_data).set_index(['date'])
-    df['short_ma'] = df['price'].rolling(window=short_ma_num, center=False).mean()
-    df['long_ma'] = df['price'].rolling(window=long_ma_num, center=False).mean()
-    df['diff'] = df['short_ma'] - df['long_ma']
-
+    df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
     today_ma = df.iloc[-1]
     yestoday_ma = df.iloc[-2]
 
-    if today_ma['diff'] > 0 > yestoday_ma['diff']:
+    if today_ma['diff_ma'] > 0 > yestoday_ma['diff_ma']:
         qr = QR(
             stock_number=stock_number, stock_name=today_ma['stock_name'], date=today_ma.name,
             strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today_ma['price']
         )
-
         if not check_duplicate(qr):
             qr.save()
 
 
-def start_quant_analysis(short_ma_num, long_ma_num, qr_date):
+def start_quant_analysis(short_ma, long_ma, qr_date):
     if not SDT.objects(date=qr_date):
         print 'Not a Trading Date'
         return
@@ -115,7 +108,7 @@ def start_quant_analysis(short_ma_num, long_ma_num, qr_date):
                 continue
 
             try:
-                quant_stock(i.stock_number, short_ma_num, long_ma_num, qr_date)
+                quant_stock(i.stock_number, short_ma, long_ma, qr_date)
             except Exception, e:
                 logging.error('Error when quant %s ma strategy: %s' % (i.stock_number, e))
         skip += query_step
