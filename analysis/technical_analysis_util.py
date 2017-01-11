@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import logging
 
 from pandas import DataFrame
+from models import QuantResult as QR
+from mongoengine import Q
 
 
 def format_trading_data(sdt):
@@ -46,3 +49,17 @@ def calculate_ma(df, short_ma, long_ma):
         return df
     else:
         raise Exception('df type is wrong')
+
+
+def check_duplicate_strategy(qr):
+    if isinstance(qr, QR):
+        try:
+            cursor = QR.objects(Q(stock_number=qr.stock_number) & Q(strategy_name=qr.strategy_name) &
+                                Q(date=qr.date))
+        except Exception, e:
+            logging.error('Error when check dupliate %s strategy %s date %s: %s' % (qr.stock_number, qr.strategy_name,
+                                                                                    qr.date, e))
+        if cursor:
+            return True
+        else:
+            return False

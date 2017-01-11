@@ -10,25 +10,11 @@ from pandas import DataFrame
 
 from logger import setup_logging
 from models import StockInfo, QuantResult as QR, StockDailyTrading as SDT
-from analysis.technical_analysis_util import calculate_macd, format_trading_data
+from analysis.technical_analysis_util import calculate_macd, format_trading_data, check_duplicate_strategy
 
 
 step = 100  # 一次从数据库取出打股票数量
 ema_volume = 150
-
-
-def check_duplicate(qr):
-    if isinstance(qr, QR):
-        try:
-            cursor = QR.objects(Q(stock_number=qr.stock_number) & Q(strategy_name=qr.strategy_name) &
-                                Q(date=qr.date))
-        except Exception, e:
-            logging.error('Error when check dupliate %s strategy %s date %s: %s' % (qr.stock_number, qr.strategy_name,
-                                                                                    qr.date, e))
-        if cursor:
-            return True
-        else:
-            return False
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
@@ -55,7 +41,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
             strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today_macd['price']
         )
 
-        if not check_duplicate(qr):
+        if not check_duplicate_strategy(qr):
             qr.save()
 
 
