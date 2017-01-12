@@ -8,7 +8,6 @@ from pandas import DataFrame
 from mongoengine import Q
 
 from models import QuantResult as QR
-from models import StockDailyTrading as SDT
 
 
 back_test_attr = {'one_back_test': ['one_price', 'one_yield_expectation'],
@@ -32,8 +31,8 @@ def strategy_statistics(strategy_name, strategy_count):
     frame = DataFrame(bt_result)
     pd.set_option('display.width', 200)
     pd.set_option('display.max_rows', 2000)
-    print frame.reindex(['count', 'one_back_test', 'one_yield_expectation', 'three_back_test', 'three_yield_expectation',
-                         'five_back_test', 'five_yield_expectation']).T
+    print frame.reindex(['count', 'one_back_test', 'one_yield_expectation', 'three_back_test',
+                         'three_yield_expectation', 'five_back_test', 'five_yield_expectation']).T
     pd.set_option('display.width', None)
     pd.set_option('display.max_rows', None)
 

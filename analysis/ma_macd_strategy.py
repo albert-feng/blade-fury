@@ -23,6 +23,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
                       Q(date__lte=kwargs['date'])).order_by('-date')[:ema_volume]
     if len(sdt) < ema_volume-50:
         return
+    if float(sdt[0].increase_rate.replace('%')) > 9:
+        return
 
     trading_data = format_trading_data(sdt)
     df = calculate_macd(DataFrame(trading_data), kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
