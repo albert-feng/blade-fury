@@ -15,7 +15,7 @@ back_test_attr = {'one_back_test': ['one_price', 'one_yield_expectation'],
                   'five_back_test': ['five_price', 'five_yield_expectation']}
 
 
-def strategy_statistics(strategy_name, strategy_count):
+def strategy_statistics(strategy_name, strategy_count, stock_model=''):
     all_qr = QR.objects(strategy_name=strategy_name)
     if not all_qr:
         print 'Wrong Strategy Name!'
@@ -26,7 +26,7 @@ def strategy_statistics(strategy_name, strategy_count):
     trading_date = trading_date[0-strategy_count:]
     bt_result = {}
     for d in trading_date:
-        bt_result[str(d.date())] = back_test_success(strategy_name, d)
+        bt_result[str(d.date())] = back_test_success(strategy_name, d, stock_model)
 
     frame = DataFrame(bt_result)
     pd.set_option('display.width', 200)
@@ -37,8 +37,11 @@ def strategy_statistics(strategy_name, strategy_count):
     pd.set_option('display.max_rows', None)
 
 
-def back_test_success(strategy_name, date):
-    cursor = QR.objects(Q(strategy_name=strategy_name) & Q(date=date))
+def back_test_success(strategy_name, date, stock_model=''):
+    if stock_model:
+        cursor = QR.objects(Q(strategy_name=strategy_name) & Q(date=date) & Q(stock_number__startswith=stock_model))
+    else:
+        cursor = QR.objects(Q(strategy_name=strategy_name) & Q(date=date))
 
     res_by_date = {}
     for k, v in back_test_attr.iteritems():
@@ -67,14 +70,18 @@ def setup_argparse():
     parser = argparse.ArgumentParser(description=u'查询某个策略的回测统计结果')
     parser.add_argument(u'-s', action=u'store', dest='strategy_name', required=True, help=u'策略名')
     parser.add_argument(u'-c', action=u'store', type=int, dest='strategy_count', required=False, help=u'返回策略数')
+    parser.add_argument(u'-m', action=u'store', dest='stock_model', required=False, help=u'匹配的股票类型')
     args = parser.parse_args()
 
     strategy_count = args.strategy_count
     if not strategy_count:
         strategy_count = 50
-    return args.strategy_name, strategy_count
+    stock_model = args.stock_model
+    if not stock_model:
+        stock_model = ''
+    return args.strategy_name, strategy_count, stock_model
 
 
 if __name__ == '__main__':
-    strategy_name, strategy_count = setup_argparse()
-    strategy_statistics(strategy_name, strategy_count)
+    strategy_name, strategy_count, stock_model = setup_argparse()
+    strategy_statistics(strategy_name, strategy_count, stock_model)

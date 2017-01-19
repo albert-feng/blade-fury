@@ -1,3 +1,5 @@
+requests
+requests-file
 backports-abc
 backports.shutil-get-terminal-size
 backports.ssl-match-hostname
@@ -46,8 +48,6 @@ pyparsing
 python-dateutil
 python-debian
 pytz
-requests
-requests-file
 simplegeneric
 singledispatch
 six
