@@ -10,7 +10,7 @@ mongodb_config = {
 
 # 数据都是从东财爬的...
 eastmoney_stock_api = 'http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/index.aspx?type=s&sortType=C'\
-                      '&sortRule=-1&style=33&pageSize=3000&page=1'
+                      '&sortRule=-1&style=33&pageSize=4000&page=1'
 core_concept = 'http://f10.eastmoney.com/f10_v2/CoreConception.aspx?code={}'
 company_survey = 'http://f10.eastmoney.com/f10_v2/CompanySurvey.aspx?code={}'
 

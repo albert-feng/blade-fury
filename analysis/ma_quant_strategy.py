@@ -30,6 +30,8 @@ def quant_stock(stock_number, short_ma, long_ma, qr_date):
     if len(sdt) < quant_count:
         # trading data not enough
         return
+    if float(sdt[0].increase_rate.replace('%', '')) > 9:
+        return
 
     trading_data = format_trading_data(sdt)
     if not trading_data:
