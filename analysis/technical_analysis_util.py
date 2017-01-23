@@ -3,6 +3,7 @@
 
 import logging
 
+import numpy as np
 import talib as ta
 from pandas import DataFrame
 from models import QuantResult as QR
@@ -65,8 +66,9 @@ def calculate_kdj(df, fastk_period=9):
     if isinstance(df, DataFrame):
         if df.index.name != 'date':
             df = df.set_index(['date'])
-        df['k'], df['d'] = ta.STOCH(df['high_price'], df['low_price'], df['close_price'], fastk_period=fastk_period,
-                                    slowk_period=3, slowk_matype=0, slowd_period=3, slowd_matype=0)
+        df['k'], df['d'] = ta.STOCH(np.array(df['high_price']), np.array(df['low_price']), np.array(df['close_price']),
+                                    fastk_period=fastk_period, slowk_period=3, slowk_matype=0, slowd_period=3,
+                                    slowd_matype=0)
         df['k_d_dif'] = df['k'] - df['d']
         return df
     else:
