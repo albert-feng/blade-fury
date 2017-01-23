@@ -40,7 +40,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         strategy_name = 'macd_%s_%s_%s_%s' % (strategy_direction, kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=today_macd.name,
-            strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today_macd['price']
+            strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today_macd['close_price']
         )
 
         if not check_duplicate_strategy(qr):

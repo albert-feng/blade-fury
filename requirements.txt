@@ -57,3 +57,4 @@ traitlets
 urllib3
 Werkzeug
 zope.interface
+TA-Lib

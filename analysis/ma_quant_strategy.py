@@ -44,7 +44,7 @@ def quant_stock(stock_number, short_ma, long_ma, qr_date):
     if today_ma['diff_ma'] > 0 > yestoday_ma['diff_ma']:
         qr = QR(
             stock_number=stock_number, stock_name=sdt[0].stock_name, date=today_ma.name,
-            strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today_ma['price']
+            strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today_ma['close_price']
         )
         if not check_duplicate_strategy(qr):
             qr.save()
