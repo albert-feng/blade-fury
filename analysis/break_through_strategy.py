@@ -36,7 +36,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         and today['close_price'] > today['short_ma'] and today['close_price'] > today['long_ma']\
         and today['quantity_relative_ratio'] > 1.5:
         qr = QR(
-            stock_number=stock_number, stock_name=stock_name, date=kwargs['qr_date'],
+            stock_number=stock_number, stock_name=stock_name, date=today.name,
             strategy_direction=strategy_direction, strategy_name=strategy_name,
             init_price=today['close_price']
         )
