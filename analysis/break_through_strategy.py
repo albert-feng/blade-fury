@@ -26,6 +26,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     if len(sdt) < ema_volume-50:
         return
+    if float(sdt[0].increase_rate.replace('%', '')) > 9:
+        return
 
     trading_data = format_trading_data(sdt)
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
