@@ -16,7 +16,7 @@ from analysis.technical_analysis_util import calculate_ma, format_trading_data, 
 query_step = 100  # 一次从数据库中取出的数据量
 
 
-def quant_stock(stock_number, short_ma, long_ma, qr_date):
+def quant_stock(stock_number, stock_name, short_ma, long_ma, qr_date):
     if short_ma <= long_ma:
         strategy_direction = 'long'
         quant_count = long_ma + 5
@@ -77,7 +77,7 @@ def start_quant_analysis(short_ma, long_ma, qr_date):
                 continue
 
             try:
-                quant_stock(i.stock_number, short_ma, long_ma, qr_date)
+                quant_stock(i.stock_number, i.stock_name, short_ma, long_ma, qr_date)
             except Exception, e:
                 logging.error('Error when quant %s ma strategy: %s' % (i.stock_number, e))
         skip += query_step
@@ -106,4 +106,4 @@ def setup_argparse():
 if __name__ == '__main__':
     setup_logging(__file__, logging.WARNING)
     short_ma, long_ma, qr_date = setup_argparse()
-    start_quant_analysis(short_ma, long_ma, qr_date)
+    start_quant_analysis(short_ma=short_ma, long_ma=long_ma, qr_date=qr_date)

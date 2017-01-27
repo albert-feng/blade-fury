@@ -6,8 +6,11 @@ import logging
 import numpy as np
 import talib as ta
 from pandas import DataFrame
-from models import QuantResult as QR
+from models import QuantResult as QR, StockDailyTrading as SDT, StockInfo
 from mongoengine import Q
+
+
+query_step = 100
 
 
 def format_trading_data(sdt):
@@ -31,7 +34,7 @@ def format_trading_data(sdt):
                 high_price = i.today_highest_price * i.total_stock / standard_total_stock
                 low_price = i.today_lowest_price * i.total_stock / standard_total_stock
         trading_data.append({'date': i.date, 'close_price': close_price, 'high_price': high_price,
-                             'low_price': low_price})
+                             'low_price': low_price, 'quantity_relative_ratio': i.quantity_relative_ratio})
     trading_data = sorted(trading_data, key=lambda x: x['date'], reverse=False)
     return trading_data
 
@@ -87,3 +90,40 @@ def check_duplicate_strategy(qr):
             return True
         else:
             return False
+
+
+def start_quant_analysis(**kwargs):
+    if not kwargs.get('qr_date') or not kwargs.get('quant_stock'):
+        print 'no qr_date or quant_stock function'
+        return
+
+    if not SDT.objects(date=kwargs['qr_date']):
+        print 'Not a Trading Date'
+        return
+
+    try:
+        all_stocks = StockInfo.objects()
+    except Exception, e:
+        logging.error('Error when query StockInfo:' + str(e))
+        raise e
+
+    stocks_count = all_stocks.count()
+    skip = 0
+
+    while skip < stocks_count:
+        try:
+            stocks = StockInfo.objects().skip(skip).limit(query_step)
+        except Exception, e:
+            logging.error('Error when query skip %s  StockInfo:%s' % (skip, e))
+            stocks = []
+
+        for i in stocks:
+            if i.account_firm and u'瑞华会计师' in i.account_firm:
+                # 过滤瑞华的客户
+                continue
+
+            try:
+                kwargs['quant_stock'](i.stock_number, i.stock_name, **kwargs)
+            except Exception, e:
+                logging.error('Error when quant %s ma strategy: %s' % (i.stock_number, e))
+        skip += query_step
