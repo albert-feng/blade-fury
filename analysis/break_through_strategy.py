@@ -67,5 +67,4 @@ def setup_argparse():
 if __name__ == '__main__':
     setup_logging(__file__, logging.WARNING)
     short_ma, long_ma, qr_date = setup_argparse()
-    print qr_date
     start_quant_analysis(short_ma=short_ma, long_ma=long_ma, qr_date=qr_date, quant_stock=quant_stock)
