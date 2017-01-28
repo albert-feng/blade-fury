@@ -34,9 +34,10 @@ def quant_stock(stock_number, stock_name, **kwargs):
     today = df.iloc[-1]
     yestoday = df.iloc[-2]
 
+    break_through = 1.8
     if yestoday['close_price'] < yestoday['short_ma'] and yestoday['close_price'] < yestoday['long_ma']\
         and today['close_price'] > today['short_ma'] and today['close_price'] > today['long_ma']\
-        and today['quantity_relative_ratio'] > 1.5:
+        and today['quantity_relative_ratio'] > break_through:
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=today.name,
             strategy_direction=strategy_direction, strategy_name=strategy_name,
