@@ -9,7 +9,7 @@ from mongoengine import Q
 from pandas import DataFrame
 
 from logger import setup_logging
-from models import StockInfo, QuantResult as QR, StockDailyTrading as SDT
+from models import QuantResult as QR, StockDailyTrading as SDT
 from analysis.technical_analysis_util import calculate_ma, format_trading_data, check_duplicate_strategy
 from analysis.technical_analysis_util import start_quant_analysis
 

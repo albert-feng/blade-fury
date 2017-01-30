@@ -20,7 +20,7 @@ ema_volume = 150
 
 def quant_stock(stock_number, stock_name, **kwargs):
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
-                      Q(date__lte=kwargs['date'])).order_by('-date')[:ema_volume]
+                      Q(date__lte=kwargs['qr_date'])).order_by('-date')[:ema_volume]
     if len(sdt) < ema_volume-50:
         return
     if float(sdt[0].increase_rate.replace('%', '')) > 9:
@@ -87,4 +87,4 @@ if __name__ == '__main__':
     dif_ema = 9
     short_ma, long_ma, qr_date = setup_argparse()
     start_quant_analysis(short_ma=short_ma, long_ma=long_ma, short_ema=short_ema, long_ema=long_ema,
-                         dif_ema=dif_ema, date=qr_date, quant_stock=quant_stock)
+                         dif_ema=dif_ema, qr_date=qr_date, quant_stock=quant_stock)
