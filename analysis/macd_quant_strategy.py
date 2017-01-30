@@ -9,8 +9,9 @@ from mongoengine import Q
 from pandas import DataFrame
 
 from logger import setup_logging
-from models import StockInfo, QuantResult as QR, StockDailyTrading as SDT
+from models import QuantResult as QR, StockDailyTrading as SDT
 from analysis.technical_analysis_util import calculate_macd, format_trading_data, check_duplicate_strategy
+from analysis.technical_analysis_util import start_quant_analysis
 
 
 step = 100  # 一次从数据库取出打股票数量
@@ -47,34 +48,6 @@ def quant_stock(stock_number, stock_name, **kwargs):
             qr.save()
 
 
-def start_quant_analysis(**kwargs):
-    if not SDT.objects(date=kwargs['date']):
-        print 'Not a Trading Day'
-        return
-
-    stock_count = StockInfo.objects().count()
-    skip = 0
-
-    while skip < stock_count:
-        try:
-            stocks = StockInfo.objects().skip(skip).limit(step)
-        except Exception, e:
-            logging.error('Error when query StockInfo:' + str(e))
-            stocks = []
-
-        for s in stocks:
-            if s.account_firm and u'瑞华会计师' in s.account_firm:
-                # 过滤瑞华的客户
-                continue
-
-            try:
-                quant_stock(s.stock_number, s.stock_name, **kwargs)
-            except Exception, e:
-                logging.error('Error when macd quant %s:%s' % (s.stock_number, e))
-
-        skip += step
-
-
 def setup_argparse():
     parser = argparse.ArgumentParser(description=u'根据长短均线的金叉来选股')
     parser.add_argument(u'-s', action=u'store', dest='short_ema', required=True, help=u'短期指数加权均线数')
@@ -99,4 +72,5 @@ def setup_argparse():
 if __name__ == '__main__':
     setup_logging(__file__, logging.WARNING)
     short_ema, long_ema, dif_ema, date = setup_argparse()
-    start_quant_analysis(short_ema=short_ema, long_ema=long_ema, dif_ema=dif_ema, date=date)
+    start_quant_analysis(short_ema=short_ema, long_ema=long_ema, dif_ema=dif_ema, date=date,
+                         quant_stock=quant_stock)

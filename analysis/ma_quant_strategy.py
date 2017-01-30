@@ -11,12 +11,16 @@ from pandas import DataFrame
 from logger import setup_logging
 from models import StockInfo, QuantResult as QR, StockDailyTrading as SDT
 from analysis.technical_analysis_util import calculate_ma, format_trading_data, check_duplicate_strategy
+from analysis.technical_analysis_util import start_quant_analysis
 
 
 query_step = 100  # 一次从数据库中取出的数据量
 
 
-def quant_stock(stock_number, stock_name, short_ma, long_ma, qr_date):
+def quant_stock(stock_number, stock_name, **kwargs):
+    short_ma = kwargs['short_ma']
+    long_ma = kwargs['long_ma']
+    qr_date = kwargs['qr_date']
     if short_ma <= long_ma:
         strategy_direction = 'long'
         quant_count = long_ma + 5
@@ -43,44 +47,12 @@ def quant_stock(stock_number, stock_name, short_ma, long_ma, qr_date):
 
     if today_ma['diff_ma'] > 0 > yestoday_ma['diff_ma']:
         qr = QR(
-            stock_number=stock_number, stock_name=sdt[0].stock_name, date=today_ma.name,
-            strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today_ma['close_price']
+            stock_number=stock_number, stock_name=stock_name, date=today_ma.name,
+            strategy_direction=strategy_direction, strategy_name=strategy_name,
+            init_price=today_ma['close_price']
         )
         if not check_duplicate_strategy(qr):
             qr.save()
-
-
-def start_quant_analysis(short_ma, long_ma, qr_date):
-    if not SDT.objects(date=qr_date):
-        print 'Not a Trading Date'
-        return
-
-    try:
-        all_stocks = StockInfo.objects()
-    except Exception, e:
-        logging.error('Error when query StockInfo:' + str(e))
-        raise e
-
-    stocks_count = all_stocks.count()
-    skip = 0
-
-    while skip < stocks_count:
-        try:
-            stocks = StockInfo.objects().skip(skip).limit(query_step)
-        except Exception, e:
-            logging.error('Error when query skip %s  StockInfo:%s' % (skip, e))
-            stocks = []
-
-        for i in stocks:
-            if i.account_firm and u'瑞华会计师' in i.account_firm:
-                # 过滤瑞华的客户
-                continue
-
-            try:
-                quant_stock(i.stock_number, i.stock_name, short_ma, long_ma, qr_date)
-            except Exception, e:
-                logging.error('Error when quant %s ma strategy: %s' % (i.stock_number, e))
-        skip += query_step
 
 
 def setup_argparse():
@@ -106,4 +78,4 @@ def setup_argparse():
 if __name__ == '__main__':
     setup_logging(__file__, logging.WARNING)
     short_ma, long_ma, qr_date = setup_argparse()
-    start_quant_analysis(short_ma=short_ma, long_ma=long_ma, qr_date=qr_date)
+    start_quant_analysis(short_ma=short_ma, long_ma=long_ma, qr_date=qr_date, quant_stock=quant_stock)

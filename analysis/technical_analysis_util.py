@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import datetime
 
 import numpy as np
 import talib as ta
@@ -93,8 +94,11 @@ def check_duplicate_strategy(qr):
 
 
 def start_quant_analysis(**kwargs):
-    if not kwargs.get('qr_date') or not kwargs.get('quant_stock'):
-        print 'no qr_date or quant_stock function'
+    if not kwargs.get('qr_date'):
+        print 'no qr_date'
+        return
+    if not kwargs.get('quant_stock'):
+        print 'not quant_stock funtion'
         return
 
     if not SDT.objects(date=kwargs['qr_date']):
