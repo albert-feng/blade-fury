@@ -68,7 +68,7 @@ def collect_his_trading(stock_number, stock_name):
                 turnover_rate = i.find_all('td')[7].text.replace('&nbsp', '').strip() + '%'
                 total_stock = int(i.find_all('td')[10].text.replace('&nbsp', '').replace(',', '').strip())
                 circulation_stock = int(i.find_all('td')[12].text.replace('&nbsp', '').replace(',', '').strip())
-                turnover_amount_msg = i.find_all('td')[7].text.replace('&nbsp', '').strip()
+                turnover_amount_msg = i.find_all('td')[9].text.replace('&nbsp', '').strip()
 
                 turnover_amount = 0
                 if u'万' in turnover_amount_msg:
