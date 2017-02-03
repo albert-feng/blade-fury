@@ -68,6 +68,16 @@ def collect_his_trading(stock_number, stock_name):
                 turnover_rate = i.find_all('td')[7].text.replace('&nbsp', '').strip() + '%'
                 total_stock = int(i.find_all('td')[10].text.replace('&nbsp', '').replace(',', '').strip())
                 circulation_stock = int(i.find_all('td')[12].text.replace('&nbsp', '').replace(',', '').strip())
+                turnover_amount_msg = i.find_all('td')[7].text.replace('&nbsp', '').strip()
+
+                turnover_amount = 0
+                if u'万' in turnover_amount_msg:
+                    turnover_amount = int(turnover_amount_msg.replace(u'万', ''))
+                elif u'亿' in turnover_amount_msg:
+                    turnover_amount = float(turnover_amount_msg.replace(u'亿', '')) * 10000
+
+                if turnover_amount_msg.isdigit() and int(turnover_amount_msg) == 0:
+                    return
             except Exception, e:
                 if '--' not in str(e):
                     logging.error('Collect %s %s trading data failed:%s' % (stock_number, str(date), e))
@@ -79,16 +89,17 @@ def collect_his_trading(stock_number, stock_name):
 
             if check_exists(stock_number, date):
                 sdt = SDT.objects(Q(stock_number=stock_number) & Q(date=date)).next()
-                if not sdt.total_stock or not sdt.circulation_stock:
+                if not sdt.total_stock or not sdt.circulation_stock or not sdt.turnover_amount:
                     sdt.total_stock = total_stock
                     sdt.circulation_stock = circulation_stock
+                    sdt.turnover_amount = turnover_amount
                     sdt.save()
             else:  # 添加股本相关数据
                 sdt = SDT(stock_number=stock_number, stock_name=stock_name, date=date,
                           today_opening_price=today_opening_price, today_highest_price=today_highest_price,
                           today_lowest_price=today_lowest_price, today_closing_price=today_closing_price,
                           increase_rate=increase_rate, increase_amount=increase_amount, turnover_rate=turnover_rate,
-                          total_stock=total_stock, circulation_stock=circulation_stock)
+                          total_stock=total_stock, circulation_stock=circulation_stock, turnover_amount=turnover_amount)
                 sdt.save()
 
 
