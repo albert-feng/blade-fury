@@ -29,6 +29,7 @@ def send_request(url):
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36',
     }
     r = requests.get(url, headers=headers, timeout=timeout)
+    r.encoding =  'utf-8'
     html = r.text
 
     if not html:
@@ -68,8 +69,8 @@ def collect_his_trading(stock_number, stock_name):
                 turnover_rate = i.find_all('td')[7].text.replace('&nbsp', '').strip() + '%'
                 total_stock = int(i.find_all('td')[10].text.replace('&nbsp', '').replace(',', '').strip())
                 circulation_stock = int(i.find_all('td')[12].text.replace('&nbsp', '').replace(',', '').strip())
-                turnover_amount_msg = i.find_all('td')[9].text.replace('&nbsp', '').strip()
 
+                turnover_amount_msg = i.find_all('td')[9].text.replace('&nbsp', '').strip()
                 turnover_amount = 0
                 if u'万' in turnover_amount_msg:
                     turnover_amount = int(turnover_amount_msg.replace(u'万', ''))
