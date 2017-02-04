@@ -45,6 +45,7 @@ def send_request(url):
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36',
     }
     r = requests.get(url, headers=headers, timeout=timeout)
+    r.encoding = 'utf-8'
     html = r.text
     if not html:
         logging.warning('No data when request this url:' + url)

@@ -33,6 +33,7 @@ def request_and_handle_data(url):
 
     try:
         r = requests.get(url, headers=headers, timeout=timeout)
+        r.encoding = 'utf-8'
     except Exception, e:
         logging.error('Request url %s failed: %s' % (url, e))
         raise e
