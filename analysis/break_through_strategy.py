@@ -85,8 +85,9 @@ def collect_stock_daily_trading():
         sdt.today_average_price = float(stock[12])
         sdt.quantity_relative_ratio = float(stock[22])
         sdt.turnover_rate = stock[23]
+        sdt.date = datetime.datetime.combine(datetime.date.today(), datetime.time(0,0))
 
-        if float(sdt.turnover_rate.replace('%', '')) == 0.0:
+        if sdt.turnover_amount == 0:
             # 去掉停牌的交易数据
             continue
         today_trading[stock_number] = sdt
@@ -112,13 +113,12 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     today_sdt = SDT.objects(date=kwargs['qr_date'])
     if kwargs['qr_date'] == datetime.date.today() and not today_sdt:
-        today_trading = collect_stock_daily_trading
+        today_trading = kwargs.get('today_trading', {})
         if not today_trading.get(stock_number):
             return
 
         sdt = list(sdt)
         sdt.insert(0, today_trading.get(stock_number))
-
     trading_data = format_trading_data(sdt)
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
     today = df.iloc[-1]
@@ -153,7 +153,7 @@ def setup_argparse():
 
     if args.qr_date:
         try:
-            qr_date = datetime.datetime.strptime(args.qr_date, '%Y-%m-%d')
+            qr_date = datetime.datetime.strptime(args.qr_date, '%Y-%m-%d').date()
         except Exception, e:
             print 'Wrong date form'
             raise e
@@ -166,12 +166,15 @@ def setup_argparse():
 if __name__ == '__main__':
     setup_logging(__file__, logging.WARNING)
     short_ma, long_ma, qr_date, real_time = setup_argparse()
+    today_trading = {}
+    if real_time:
+        today_trading = collect_stock_daily_trading()
     real_time_res = start_quant_analysis(short_ma=short_ma, long_ma=long_ma, qr_date=qr_date, quant_stock=quant_stock,
-                                         real_time=real_time)
+                                         real_time=real_time, today_trading=today_trading)
     if real_time_res and real_time:
         quant_data = [{'stock_number': i.stock_number, 'stock_name': i.stock_name, 'price': i.init_price}
                       for i in real_time_res]
-        df = DataFrame(quant_data).set_index('stock_number')
+        df = DataFrame(quant_data).set_index('stock_number').sort_index()
         pd.set_option('display.max_rows', len(real_time_res) + 10)
         print df
         pd.reset_option('display.max_rows')
