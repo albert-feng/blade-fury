@@ -53,7 +53,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
             stock_number=stock_number, stock_name=stock_name, date=today_macd.name,
             strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today_macd['close_price']
         )
-        if real_time:
+        if real_time and strategy_direction == 'long':
             return qr
         if not check_duplicate_strategy(qr):
             qr.save()
