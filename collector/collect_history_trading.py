@@ -73,9 +73,9 @@ def collect_his_trading(stock_number, stock_name):
                 turnover_amount_msg = i.find_all('td')[9].text.replace('&nbsp', '').strip()
                 turnover_amount = 0
                 if u'万' in turnover_amount_msg:
-                    turnover_amount = int(turnover_amount_msg.replace(u'万', ''))
+                    turnover_amount = int(float(turnover_amount_msg.replace(u'万', '')))
                 elif u'亿' in turnover_amount_msg:
-                    turnover_amount = float(turnover_amount_msg.replace(u'亿', '')) * 10000
+                    turnover_amount = int(float(turnover_amount_msg.replace(u'亿', '')) * 10000)
 
                 if turnover_amount_msg.isdigit() and int(turnover_amount_msg) == 0:
                     return
