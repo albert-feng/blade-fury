@@ -3,15 +3,21 @@
 
 import logging
 import datetime
+import json
 
+import requests
 import numpy as np
 import talib as ta
+import pandas as pd
 from pandas import DataFrame
 from models import QuantResult as QR, StockDailyTrading as SDT, StockInfo
 from mongoengine import Q
+from config import eastmoney_stock_api
 
 
 query_step = 100
+timeout = 60
+retry = 5
 
 
 def format_trading_data(sdt):
@@ -135,3 +141,83 @@ def start_quant_analysis(**kwargs):
                 quant_res.append(qr)
         skip += query_step
     return quant_res
+
+
+def request_and_handle_data(url):
+    headers = {
+        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Encoding': 'gzip, deflate, sdch',
+        'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4',
+        'Cache-Control': 'no-cache',
+        'Connection': 'keep-alive',
+        'Host': 'hqdigi2.eastmoney.com',
+        'Pragma': 'no-cache',
+        'Upgrade-Insecure-Requests': '1',
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36'
+    }
+
+    try:
+        r = requests.get(url, headers=headers, timeout=timeout)
+        r.encoding = 'utf-8'
+    except Exception, e:
+        logging.error('Request url %s failed: %s' % (url, e))
+        raise e
+
+    try:
+        data = json.loads(r.text.replace('var js=', '').replace('rank', '\"rank\"').replace('pages', '\"pages\"'))
+    except Exception, e:
+        logging.error('Handle data failed:' + str(e))
+        raise e
+
+    return data
+
+
+def collect_stock_daily_trading():
+    """
+    获取并保存每日股票交易数据
+    """
+    url = eastmoney_stock_api
+    data = {}
+    global retry
+    while retry > 0:
+        try:
+            data = request_and_handle_data(url)
+            retry = 0
+        except Exception:
+            retry -= 1
+
+    stock_data = data.get('rank', [])
+    today_trading = {}
+    for i in stock_data:
+        stock = i.split(',')
+        stock_number = stock[1]
+        stock_name = stock[2]
+        sdt = SDT(stock_number=stock_number, stock_name=stock_name)
+        sdt.yesterday_closed_price = float(stock[3])
+        sdt.today_opening_price = float(stock[4])
+        sdt.today_closing_price = float(stock[5])
+        sdt.today_highest_price = float(stock[6])
+        sdt.today_lowest_price = float(stock[7])
+        sdt.turnover_amount = int(stock[8])
+        sdt.turnover_volume = int(stock[9])
+        sdt.increase_amount = float(stock[10])
+        sdt.increase_rate = stock[11]
+        sdt.today_average_price = float(stock[12])
+        sdt.quantity_relative_ratio = float(stock[22])
+        sdt.turnover_rate = stock[23]
+        sdt.date = datetime.datetime.combine(datetime.date.today(), datetime.time(0,0))
+
+        if sdt.turnover_amount == 0:
+            # 去掉停牌的交易数据
+            continue
+        today_trading[stock_number] = sdt
+    return today_trading
+
+
+def display_quant(real_time_res):
+    quant_data = [{'stock_number': i.stock_number, 'stock_name': i.stock_name, 'price': i.init_price}
+                  for i in real_time_res]
+    df = DataFrame(quant_data).set_index('stock_number').sort_index()
+    pd.set_option('display.max_rows', len(real_time_res) + 10)
+    print df
+    pd.reset_option('display.max_rows')
