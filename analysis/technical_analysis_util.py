@@ -113,6 +113,7 @@ def start_quant_analysis(**kwargs):
 
     stocks_count = all_stocks.count()
     skip = 0
+    quant_res = []
 
     while skip < stocks_count:
         try:
@@ -127,7 +128,10 @@ def start_quant_analysis(**kwargs):
                 continue
 
             try:
-                kwargs['quant_stock'](i.stock_number, i.stock_name, **kwargs)
+                qr = kwargs['quant_stock'](i.stock_number, i.stock_name, **kwargs)
             except Exception, e:
                 logging.error('Error when quant %s ma strategy: %s' % (i.stock_number, e))
+            if isinstance(qr, QR):
+                quant_res.append(qr)
         skip += query_step
+    return quant_res

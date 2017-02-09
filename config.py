@@ -31,7 +31,7 @@ exchange_market = [{'market': 'sh', 'pattern': ['60'], 'cd': 'XSHG'},
 log_path = '/data/log/blade-fury/blade-fury.log'
 local_log_path = 'blade-fury.log'
 
-company_report = 'http://datainterface.eastmoney.com//EM_DataCenter/js.aspx?type=SR&sty=GGSR&'\
+company_report = 'http://datainterface.eastmoney.com/EM_DataCenter/js.aspx?type=SR&sty=GGSR&'\
                  'js={"data":[(x)],"pages":"(pc)","update":"(ud)","count":"(count)"}&ps=1000&p=1'
 base_report_url = 'http://data.eastmoney.com/report/'
 
