@@ -28,7 +28,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
     strategy_name = 'break_through_%s_%s_%s' % (strategy_direction, kwargs['short_ma'], kwargs['long_ma'])
 
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
-                      Q(date__lte=kwargs['qr_date'])).order_by('-date')[:ema_volume]
+                      Q(date__lte=kwargs['qr_date'])).order_by('-date')[:kwargs['long_ma']+10]
 
     if len(sdt) < ema_volume-50:
         return

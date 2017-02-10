@@ -217,7 +217,7 @@ def collect_stock_daily_trading():
 def display_quant(real_time_res):
     quant_data = [{'stock_number': i.stock_number, 'stock_name': i.stock_name, 'price': i.init_price}
                   for i in real_time_res]
-    df = DataFrame(quant_data).set_index('stock_number').sort_index()
+    df = DataFrame(quant_data).set_index('stock_number').sort_index().reindex(columns=['stock_name', 'price'])
     pd.set_option('display.max_rows', len(real_time_res) + 10)
     print df
     pd.reset_option('display.max_rows')
