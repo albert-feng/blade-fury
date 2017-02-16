@@ -19,7 +19,6 @@ from analysis.technical_analysis_util import calculate_ma, start_quant_analysis,
 
 ema_volume = 150
 timeout = 60
-retry = 5
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
@@ -30,10 +29,12 @@ def quant_stock(stock_number, stock_name, **kwargs):
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
                       Q(date__lte=kwargs['qr_date'])).order_by('-date')[:kwargs['long_ma']+10]
 
+    if not sdt:
+        return
     if float(sdt[0].increase_rate.replace('%', '')) > 9:
         return
-    if sdt[0].today_closing_price <= sdt[0].today_average_price:
-        return
+    #if sdt[0].today_closing_price <= sdt[0].today_average_price:
+    #    return
     if sdt[0].turnover_amount <= sdt[1].turnover_amount:
         return
 
