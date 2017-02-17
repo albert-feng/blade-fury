@@ -33,8 +33,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
     if float(sdt[0].increase_rate.replace('%', '')) > 9:
         return
-    #if sdt[0].today_closing_price <= sdt[0].today_average_price:
-    #    return
+    if sdt[0].today_closing_price <= sdt[0].today_average_price:
+        return
     if sdt[0].turnover_amount <= sdt[1].turnover_amount:
         return
 
