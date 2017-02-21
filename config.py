@@ -14,7 +14,7 @@ eastmoney_stock_api = 'http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplicati
 core_concept = 'http://f10.eastmoney.com/f10_v2/CoreConception.aspx?code={}'
 company_survey = 'http://f10.eastmoney.com/f10_v2/CompanySurvey.aspx?code={}'
 
-company_notice = 'http://data.eastmoney.com/notices/getdata.ashx?StockCode={}&CodeType=1&PageIndex=1&PageSize=50'
+company_notice = 'http://data.eastmoney.com/notices/getdata.ashx?StockCode={}&CodeType=1&PageIndex=1&PageSize=100'
 single_notice = 'http://data.eastmoney.com/notices/detail/{}/{},JUU0JUJBJTlBJUU3JThFJTlCJUU5JUExJUJG.html'
 
 eastmoney_data = 'http://data.eastmoney.com'
