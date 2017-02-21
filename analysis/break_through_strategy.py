@@ -44,6 +44,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
             today_trading = kwargs.get('today_trading', {})
             if not today_trading.get(stock_number):
                 return
+            if float(today_trading.get(stock_number).increase_rate.replace('%', '')) > 9:
+                return
 
             sdt = list(sdt)
             sdt.insert(0, today_trading.get(stock_number))
@@ -54,19 +56,20 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     break_through = 1.8
     if yestoday['close_price'] < yestoday['short_ma'] and yestoday['close_price'] < yestoday['long_ma']\
-        and today['close_price'] > today['short_ma'] and today['close_price'] > today['long_ma']\
-        and today['quantity_relative_ratio'] > break_through:
-        qr = QR(
-            stock_number=stock_number, stock_name=stock_name, date=today.name,
-            strategy_direction=strategy_direction, strategy_name=strategy_name,
-            init_price=today['close_price']
-        )
+        and today['close_price'] > today['short_ma'] and today['close_price'] > today['long_ma']:
+        if  today['quantity_relative_ratio'] > break_through or\
+            today['turnover_amount']/float(yestoday['turnover_amount']) > break_through:
+            qr = QR(
+                stock_number=stock_number, stock_name=stock_name, date=today.name,
+                strategy_direction=strategy_direction, strategy_name=strategy_name,
+                init_price=today['close_price']
+            )
 
-        if real_time:
-            return qr
-        if not check_duplicate_strategy(qr):
-            qr.save()
-            return qr
+            if real_time:
+                return qr
+            if not check_duplicate_strategy(qr):
+                qr.save()
+                return qr
     return ''
 
 

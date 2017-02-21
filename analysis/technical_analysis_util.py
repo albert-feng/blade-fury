@@ -41,7 +41,8 @@ def format_trading_data(sdt):
                 high_price = i.today_highest_price * i.total_stock / standard_total_stock
                 low_price = i.today_lowest_price * i.total_stock / standard_total_stock
         trading_data.append({'date': i.date, 'close_price': close_price, 'high_price': high_price,
-                             'low_price': low_price, 'quantity_relative_ratio': i.quantity_relative_ratio})
+                             'low_price': low_price, 'quantity_relative_ratio': i.quantity_relative_ratio,
+                             'turnover_amount': i.turnover_amount})
     trading_data = sorted(trading_data, key=lambda x: x['date'], reverse=False)
     return trading_data
 
