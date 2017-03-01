@@ -17,7 +17,6 @@ from analysis.technical_analysis_util import format_trading_data, check_duplicat
 from analysis.technical_analysis_util import calculate_ma, start_quant_analysis, collect_stock_daily_trading
 
 
-ema_volume = 150
 timeout = 60
 
 
@@ -31,10 +30,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     if not sdt:
         return
-    if float(sdt[0].increase_rate.replace('%', '')) > 9:
-        return
-    if sdt[0].today_closing_price <= sdt[0].today_average_price:
-        return
+    #if sdt[0].today_closing_price <= sdt[0].today_average_price:
+    #    return
     if sdt[0].turnover_amount <= sdt[1].turnover_amount:
         return
 
@@ -44,11 +41,13 @@ def quant_stock(stock_number, stock_name, **kwargs):
             today_trading = kwargs.get('today_trading', {})
             if not today_trading.get(stock_number):
                 return
-            if float(today_trading.get(stock_number).increase_rate.replace('%', '')) > 9:
-                return
 
             sdt = list(sdt)
             sdt.insert(0, today_trading.get(stock_number))
+
+    if float(sdt[0].increase_rate.replace('%', '')) > 9.5:
+        return
+
     trading_data = format_trading_data(sdt)
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
     today = df.iloc[-1]
