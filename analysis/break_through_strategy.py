@@ -47,6 +47,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     if float(sdt[0].increase_rate.replace('%', '')) > 9.5:
         return
+    if sdt[0].today_opening_price > sdt[0].today_closing_price:
+        return
 
     trading_data = format_trading_data(sdt)
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
