@@ -30,8 +30,9 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     if not sdt:
         return
-    #if sdt[0].today_closing_price <= sdt[0].today_average_price:
-    #    return
+    if not real_time:
+        if sdt[0].today_closing_price <= sdt[0].today_average_price:
+            return
     if sdt[0].turnover_amount <= sdt[1].turnover_amount:
         return
 
@@ -46,8 +47,6 @@ def quant_stock(stock_number, stock_name, **kwargs):
             sdt.insert(0, today_trading.get(stock_number))
 
     if float(sdt[0].increase_rate.replace('%', '')) > 9.5:
-        return
-    if sdt[0].today_opening_price > sdt[0].today_closing_price:
         return
 
     trading_data = format_trading_data(sdt)
