@@ -45,6 +45,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
             sdt = list(sdt)
             sdt.insert(0, today_trading.get(stock_number))
+    if sdt[0].today_closing_price < sdt[0].today_opening_price:
+        return
 
     trading_data = format_trading_data(sdt)
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
