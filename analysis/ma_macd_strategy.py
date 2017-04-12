@@ -16,6 +16,7 @@ from analysis.technical_analysis_util import calculate_macd, calculate_ma, start
 
 step = 100  # 一次从数据库取出打股票数量
 ema_volume = 150
+half_num = 120
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
@@ -39,8 +40,12 @@ def quant_stock(stock_number, stock_name, **kwargs):
     trading_data = format_trading_data(sdt)
     df = calculate_macd(DataFrame(trading_data), kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
     df = calculate_ma(df, kwargs['short_ma'], kwargs['long_ma'])
+    df['half_ma'] = df['close_price'].rolling(window=half_num, center=False).mean()
     today_analysis = df.iloc[-1]
     yestoday_analysis = df.iloc[-2]
+
+    if today_analysis['close_price'] < today_analysis['half_ma']:
+        return ''
 
     if short_ma <= long_ma:
         strategy_direction = 'long'

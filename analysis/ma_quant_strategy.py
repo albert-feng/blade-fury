@@ -15,6 +15,7 @@ from analysis.technical_analysis_util import start_quant_analysis, collect_stock
 
 
 query_step = 100  # 一次从数据库中取出的数据量
+half_num = 120
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
@@ -28,14 +29,14 @@ def quant_stock(stock_number, stock_name, **kwargs):
     else:
         strategy_direction = 'short'
         quant_count = short_ma + 5
+    if quant_count < half_num:
+        quant_count += half_num
     strategy_name = 'ma_%s_%s_%s' % (strategy_direction, short_ma, long_ma)
 
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
                       Q(date__lte=qr_date)).order_by('-date')[:quant_count]
     if len(sdt) < quant_count:
         # trading data not enough
-        return
-    if float(sdt[0].increase_rate.replace('%', '')) > 9:
         return
 
     if real_time:
@@ -52,8 +53,12 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
 
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
+    df['half_ma'] = df['close_price'].rolling(window=half_num, center=False).mean()
     today_ma = df.iloc[-1]
     yestoday_ma = df.iloc[-2]
+
+    if today_ma['close_price'] < today_ma['half_ma']:
+        return
 
     if today_ma['diff_ma'] > 0 > yestoday_ma['diff_ma']:
         qr = QR(

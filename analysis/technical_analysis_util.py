@@ -134,6 +134,7 @@ def start_quant_analysis(**kwargs):
                 # 过滤瑞华的客户
                 continue
 
+            qr = ''
             try:
                 qr = kwargs['quant_stock'](i.stock_number, i.stock_name, **kwargs)
             except Exception, e:

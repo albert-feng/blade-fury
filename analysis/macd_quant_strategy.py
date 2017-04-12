@@ -16,6 +16,7 @@ from analysis.technical_analysis_util import start_quant_analysis, collect_stock
 
 step = 100  # 一次从数据库取出打股票数量
 ema_volume = 150
+half_num = 120
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
@@ -23,23 +24,27 @@ def quant_stock(stock_number, stock_name, **kwargs):
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
                       Q(date__lte=kwargs['qr_date'])).order_by('-date')[:ema_volume]
     if len(sdt) < ema_volume-50:
-        return
+        return ''
     if float(sdt[0].increase_rate.replace('%', '')) > 9:
-        return
+        return ''
 
     if real_time:
         today_sdt = SDT.objects(date=kwargs['qr_date'])
         if kwargs['qr_date'] == datetime.date.today() and not today_sdt:
             today_trading = kwargs.get('today_trading', {})
             if not today_trading.get(stock_number):
-                return
+                return ''
 
             sdt = list(sdt)
             sdt.insert(0, today_trading.get(stock_number))
     trading_data = format_trading_data(sdt)
     df = calculate_macd(DataFrame(trading_data), kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
+    df['half_ma'] = df['close_price'].rolling(window=half_num, center=False).mean()
     today_macd = df.iloc[-1]
     yestoday_macd = df.iloc[-2]
+
+    if today_macd['close_price'] < today_macd['half_ma']:
+        return ''
 
     strategy_direction = ''
     if yestoday_macd['macd'] < 0 < today_macd['macd']:
