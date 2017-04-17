@@ -60,7 +60,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         )
         if real_time and strategy_direction == 'long':
             return qr
-        if not check_duplicate_strategy(qr):
+        if not real_time and not check_duplicate_strategy(qr):
             qr.save()
             return qr
     return ''
