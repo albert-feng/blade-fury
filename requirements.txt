@@ -42,7 +42,7 @@ ptyprocess
 pyasn1
 pycparser
 pycrypto
-pyinotify
+#pyinotify
 pymongo
 pyparsing
 python-dateutil

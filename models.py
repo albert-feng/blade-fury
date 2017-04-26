@@ -164,6 +164,22 @@ class StockReport(Document):
     }
 
 
+class StockNews(Document):
+    """
+    存放股票新闻数据
+    """
+
+    stock_number = StringField(required=True, max_length=10)  # 股票编号
+    stock_name = StringField(required=True, max_length=20)  # 股票名称
+    date = DateTimeField(required=True)  # 研究报告发布的日期
+    title = StringField()  # 公告标题
+    content_url = StringField()  # 公告URL
+    meta = {
+        'indexes': ['date', 'stock_number', ('stock_number', '-date')],
+        'index_background': True,
+    }
+
+
 class BuffettIndex(Document):
     """
     用来计算每天的总市值/上一年度GDP的值

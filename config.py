@@ -17,6 +17,9 @@ company_survey = 'http://f10.eastmoney.com/f10_v2/CompanySurvey.aspx?code={}'
 company_notice = 'http://data.eastmoney.com/notices/getdata.ashx?StockCode={}&CodeType=1&PageIndex=1&PageSize=100'
 single_notice = 'http://data.eastmoney.com/notices/detail/{}/{},JUU0JUJBJTlBJUU3JThFJTlCJUU5JUExJUJG.html'
 
+company_news = 'http://guba.eastmoney.com/list,{},1,f.html'
+guba_domain = 'guba.eastmoney.com'
+
 eastmoney_data = 'http://data.eastmoney.com'
 stock_value = 'http://nuff.eastmoney.com/EM_Finance2015TradeInterface/JS.ashx?id={}'
 rzrq_sh = 'http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=FD&sty=MTND&mkt=1&st=C&sr=1&p=1&ps=2000'
