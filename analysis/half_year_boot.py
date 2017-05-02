@@ -64,7 +64,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         # 过滤当日价格低于半年线的
         return
     inspect_period = df['price_half_diff'].iloc[inspect_start: inspect_end]
-    if inspect_period.max() < 0 or inspect_period.min() > 0:
+    if inspect_period.max() < 0:
         return
 
     if today_ma['diff_ma'] > 0 > yestoday_ma['diff_ma']:

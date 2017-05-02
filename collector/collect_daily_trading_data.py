@@ -79,7 +79,8 @@ def collect_stock_daily_trading():
         sdt.increase_amount = float(stock[10])
         sdt.increase_rate = stock[11]
         sdt.today_average_price = float(stock[12])
-        sdt.quantity_relative_ratio = float(stock[22])
+        quantity_relative_ratio = 0 if stock[22] == '-' else stock[22]
+        sdt.quantity_relative_ratio = float(quantity_relative_ratio)
         sdt.turnover_rate = stock[23]
 
         if float(sdt.turnover_rate.replace('%', '')) == 0.0:
