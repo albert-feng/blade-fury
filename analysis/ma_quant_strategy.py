@@ -53,12 +53,12 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
 
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
-    df['half_ma'] = df['close_price'].rolling(window=half_num, center=False).mean()
+    # df['half_ma'] = df['close_price'].rolling(window=half_num, center=False).mean()
     today_ma = df.iloc[-1]
     yestoday_ma = df.iloc[-2]
 
-    if today_ma['close_price'] < today_ma['half_ma']:
-        return
+    # if today_ma['close_price'] < today_ma['half_ma']:
+    #     return
 
     if today_ma['diff_ma'] > 0 > yestoday_ma['diff_ma']:
         qr = QR(

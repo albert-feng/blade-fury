@@ -39,12 +39,12 @@ def quant_stock(stock_number, stock_name, **kwargs):
             sdt.insert(0, today_trading.get(stock_number))
     trading_data = format_trading_data(sdt)
     df = calculate_macd(DataFrame(trading_data), kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
-    df['half_ma'] = df['close_price'].rolling(window=half_num, center=False).mean()
+    # df['half_ma'] = df['close_price'].rolling(window=half_num, center=False).mean()
     today_macd = df.iloc[-1]
     yestoday_macd = df.iloc[-2]
 
-    if today_macd['close_price'] < today_macd['half_ma']:
-        return ''
+    # if today_macd['close_price'] < today_macd['half_ma']:
+    #     return ''
 
     strategy_direction = ''
     if yestoday_macd['macd'] < 0 < today_macd['macd']:
