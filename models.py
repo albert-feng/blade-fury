@@ -14,7 +14,7 @@ class StockInfo(Document):
     """
     存储股票及其公司的本身的信息
     """
-    stock_number = StringField(primary_key=True, required=True, max_length=10)  # 股票编号
+    stock_number = StringField(required=True, max_length=10)  # 股票编号
     stock_name = StringField(max_length=20)  # 股票名称
     used_name = StringField()  # 曾用名
     create_time = DateTimeField(default=datetime.datetime.now)
