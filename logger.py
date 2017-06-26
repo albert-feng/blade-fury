@@ -23,8 +23,8 @@ def setup_logging(file=__file__, level=logging.INFO):
             format='%(asctime)s ' + file + ' - %(levelname)s: %(message)s',
         )
     except Exception:
-        print 'Setup Default log failed...'
-        print 'Setup log in blade-fury'
+        print('Setup Default log failed...')
+        print('Setup log in blade-fury')
         log_local = join(dirname(__file__), local_log_path)
         logging.basicConfig(
             filename=log_local,

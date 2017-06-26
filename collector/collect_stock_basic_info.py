@@ -34,13 +34,13 @@ def request_and_handle_data(url):
     try:
         r = requests.get(url, headers=headers, timeout=timeout)
         r.encoding = 'utf-8'
-    except Exception, e:
+    except Exception as e:
         logging.error('Request url %s failed: %s' % (url, e))
         raise e
 
     try:
         data = json.loads(r.text.replace('var js=', '').replace('rank', '\"rank\"').replace('pages', '\"pages\"'))
-    except Exception, e:
+    except Exception as e:
         logging.error('Handle data failed:' + str(e))
         raise e
 
@@ -64,7 +64,7 @@ def collect_stock_info():
         if not check_duplicate(stock_info):
             try:
                 stock_info.save()
-            except Exception, e:
+            except Exception as e:
                 logging.error('Saving %s data failed:' % (stock_info.stock_number, e))
 
 
@@ -74,7 +74,7 @@ def check_duplicate(stock_info):
     """
     try:
         cursor = StockInfo.objects(stock_number=stock_info.stock_number)
-    except Exception, e:
+    except Exception as e:
         logging.error('Query %s data failed: %s' % (stock_info.stock_number, e))
         raise e
     if cursor:

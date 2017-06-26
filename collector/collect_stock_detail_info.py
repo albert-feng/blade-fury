@@ -93,7 +93,7 @@ def collect_company_survey(stock_info):
             total_value = int(data[46])
             stock_info.circulated_value = circulated_value
             stock_info.total_value = total_value
-        except Exception, e:
+        except Exception as e:
             logging.error('Error when get %s value:%s' % (stock_info.stock_number, e))
 
     stock_info.update_time = datetime.datetime.now()
@@ -103,7 +103,7 @@ def collect_company_survey(stock_info):
 def start_collect_detail():
     try:
         all_stocks = StockInfo.objects()
-    except Exception, e:
+    except Exception as e:
         logging.error('Error when query StockInfo:' + str(e))
         raise e
 
@@ -113,14 +113,14 @@ def start_collect_detail():
     while skip < stocks_count:
         try:
             stocks = StockInfo.objects().skip(skip).limit(query_step)
-        except Exception, e:
+        except Exception as e:
             logging.error('Error when query skip %s  StockInfo:%s' % (skip, e))
             stocks = []
 
         for i in stocks:
             try:
                 collect_company_survey(i)
-            except Exception, e:
+            except Exception as e:
                 logging.error('Error when collect %s data: %s' % (i.stock_number, e))
             time.sleep(random.random())
         skip += query_step
