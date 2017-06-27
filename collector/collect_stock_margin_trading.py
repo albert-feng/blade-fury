@@ -24,7 +24,6 @@ def send_request(req_url):
         'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-        'Host': 'datainterface.eastmoney.com',
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36',
     }
     r = requests.get(req_url, headers=headers, timeout=timeout)

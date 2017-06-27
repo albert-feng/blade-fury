@@ -65,6 +65,18 @@ class StockDailyTrading(Document):
     }
 
 
+class StockWeeklyTrading(Document):
+    """
+    存储股票周线数据
+    """
+
+    stock_number = StringField(required=True, max_length=10)  # 股票编号
+    stock_name = StringField(required=True, max_length=20)  # 股票名称
+
+
+
+
+
 class IndexDailyTrading(Document):
     """
     存储每天的指数交易数据
