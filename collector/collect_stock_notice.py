@@ -5,19 +5,15 @@
 用来获取股票公告，数据来自东财，获取最新的25个公告，如果又新的公告出来，之前的也不会删除
 """
 
-import random
-import time
+
 import datetime
 import logging
 import json
-import chardet
 
 import requests
-from bs4 import BeautifulSoup
-from mongoengine import Q
 
 from models import StockInfo, StockNotice
-from config import eastmoney_data, company_notice, single_notice
+from config import company_notice, single_notice
 from logger import setup_logging
 
 

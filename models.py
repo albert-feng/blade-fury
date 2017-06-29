@@ -72,9 +72,28 @@ class StockWeeklyTrading(Document):
 
     stock_number = StringField(required=True, max_length=10)  # 股票编号
     stock_name = StringField(required=True, max_length=20)  # 股票名称
-
-
-
+    first_trade_date = DateTimeField(required=True)  # 首个交易日
+    last_trade_date = DateTimeField(required=True)  # 最后交易日
+    trade_days = IntField()  # 交易天数
+    pre_close_price = FloatField()  # 昨收价
+    weekly_open_price = FloatField()  # 开盘价
+    weekly_close_price = FloatField()  # 收盘价
+    weekly_highest_price = FloatField()  # 最高价
+    weekly_lowest_price = FloatField()  # 最低价
+    weekly_avg_price = FloatField()  # 成交均价
+    ad_open_price = FloatField()  # 后复权开盘价
+    ad_close_price = FloatField() # 后复权收盘价
+    ad_highest_price = FloatField()  # 后复权最高价
+    ad_lowest_price = FloatField()  # 后复权最低价
+    range_percent = StringField()  # 振幅 单位 %
+    increase_rate = StringField()  # 涨幅 单位 %
+    turnover_amount = IntField()  # 成交额 单位 /万
+    turnover_volume = IntField()  # 成交量 单位 /手
+    meta = {
+        'indexes': ['stock_number', 'last_trade_date', 'trade_days', ('stock_number', 'last_trade_date'),
+                   ('stock_number', '-last_trade_date')],
+        'index_background': True,
+    }
 
 
 class IndexDailyTrading(Document):

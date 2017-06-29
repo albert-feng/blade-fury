@@ -97,7 +97,6 @@ def setup_argparse():
     return start_date, end_date
 
 
-
 if __name__ == '__main__':
     setup_logging(__file__, logging.WARNING)
     start_date, end_date = setup_argparse()
