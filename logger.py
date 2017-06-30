@@ -8,11 +8,7 @@ from os.path import dirname, join, exists
 from config import log_path, local_log_path
 
 
-log_path = log_path
-
-
 def setup_logging(file=__file__, level=logging.INFO):
-    global log_path
     try:
         if not exists(dirname(log_path)):
             os.mkdirs(dirname(log_path))
