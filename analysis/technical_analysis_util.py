@@ -10,7 +10,7 @@ import numpy as np
 import talib as ta
 import pandas as pd
 from pandas import DataFrame
-from models import QuantResult as QR, StockDailyTrading as SDT, StockInfo
+from models import QuantResult as QR, StockDailyTrading as SDT, StockInfo, StockWeeklyTrading as SWT
 from mongoengine import Q
 from config import eastmoney_stock_api
 
@@ -20,30 +20,41 @@ timeout = 60
 retry = 5
 
 
-def format_trading_data(sdt):
+def format_trading_data(stock_trading_data):
     trading_data = []
-    standard_total_stock = sdt[1].total_stock if sdt[1].total_stock else sdt[2].total_stock
-    if not standard_total_stock:
-        return trading_data
 
-    for i in sdt:
-        if not i.total_stock:
-            close_price = i.today_closing_price
-            high_price = i.today_highest_price
-            low_price = i.today_lowest_price
-        else:
-            if standard_total_stock == i.total_stock:
+    if isinstance(stock_trading_data, SDT):
+        standard_total_stock = stock_trading_data[1].total_stock if stock_trading_data[1].total_stock else stock_trading_data[2].total_stock
+        if not standard_total_stock:
+            return trading_data
+
+        for i in stock_trading_data:
+            if not i.total_stock:
                 close_price = i.today_closing_price
                 high_price = i.today_highest_price
                 low_price = i.today_lowest_price
             else:
-                close_price = i.today_closing_price * i.total_stock / standard_total_stock
-                high_price = i.today_highest_price * i.total_stock / standard_total_stock
-                low_price = i.today_lowest_price * i.total_stock / standard_total_stock
-        trading_data.append({'date': i.date, 'close_price': close_price, 'high_price': high_price,
-                             'low_price': low_price, 'quantity_relative_ratio': i.quantity_relative_ratio,
-                             'turnover_amount': i.turnover_amount})
-    trading_data = sorted(trading_data, key=lambda x: x['date'], reverse=False)
+                if standard_total_stock == i.total_stock:
+                    close_price = i.today_closing_price
+                    high_price = i.today_highest_price
+                    low_price = i.today_lowest_price
+                else:
+                    close_price = i.today_closing_price * i.total_stock / standard_total_stock
+                    high_price = i.today_highest_price * i.total_stock / standard_total_stock
+                    low_price = i.today_lowest_price * i.total_stock / standard_total_stock
+            trading_data.append({'date': i.date, 'close_price': close_price, 'high_price': high_price,
+                                 'low_price': low_price, 'quantity_relative_ratio': i.quantity_relative_ratio,
+                                 'turnover_amount': i.turnover_amount})
+
+    elif isinstance(stock_trading_data, SWT):
+        for i in stock_trading_data:
+            trading_data.append({
+                'date': i.last_trade_date,
+                'close_price': i.weekly_close_price,
+            })
+
+    if trading_data:
+        trading_data = sorted(trading_data, key=lambda x: x['date'], reverse=False)
     return trading_data
 
 
@@ -152,7 +163,7 @@ def request_and_handle_data(url):
         'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4',
         'Cache-Control': 'no-cache',
         'Connection': 'keep-alive',
-        'Host': 'hqdigi2.eastmoney.com',
+        # 'Host': 'hqdigi2.eastmoney.com',
         'Pragma': 'no-cache',
         'Upgrade-Insecure-Requests': '1',
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36'

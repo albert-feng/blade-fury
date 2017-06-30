@@ -74,9 +74,14 @@ def collect_stock_data(stock_number, start_date, end_date):
         try:
             swt.first_trade_date = datetime.strptime(i.get('firstTradeDate'), '%Y-%m-%d %H:%M:%S')
             swt.last_trade_date = datetime.strptime(i.get('lastTradeDate'), '%Y-%m-%d %H:%M:%S')
+            swt.end_date = datetime.strptime(i.get('endDate'), '%Y-%m-%d %H:%M:%S')
         except Exception as e:
             logging.error('Format time failed:' + str(e))
             continue
+        if swt.last_trade_date != swt.end_date:
+            # 只保存完成周的数据
+            continue
+
         swt.trade_days = int(i.get('numDays'))
         swt.pre_close_price = float(i.get('preClosePrice'))
         swt.weekly_open_price = float(i.get('openPrice'))
