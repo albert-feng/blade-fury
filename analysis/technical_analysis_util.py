@@ -23,7 +23,7 @@ retry = 5
 def format_trading_data(stock_trading_data):
     trading_data = []
 
-    if isinstance(stock_trading_data, SDT):
+    if isinstance(stock_trading_data[0], SDT):
         standard_total_stock = stock_trading_data[1].total_stock if stock_trading_data[1].total_stock else stock_trading_data[2].total_stock
         if not standard_total_stock:
             return trading_data
@@ -46,7 +46,7 @@ def format_trading_data(stock_trading_data):
                                  'low_price': low_price, 'quantity_relative_ratio': i.quantity_relative_ratio,
                                  'turnover_amount': i.turnover_amount})
 
-    elif isinstance(stock_trading_data, SWT):
+    elif isinstance(stock_trading_data[0], SWT):
         for i in stock_trading_data:
             trading_data.append({
                 'date': i.last_trade_date,
