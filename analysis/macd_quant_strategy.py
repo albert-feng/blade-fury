@@ -15,15 +15,14 @@ from analysis.technical_analysis_util import start_quant_analysis, collect_stock
 
 
 step = 100  # 一次从数据库取出打股票数量
-ema_volume = 150
-half_num = 120
+year_num = 250
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
     real_time = kwargs.get('real_time', False)
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
-                      Q(date__lte=kwargs['qr_date'])).order_by('-date')[:ema_volume]
-    if len(sdt) < ema_volume-50:
+                      Q(date__lte=kwargs['qr_date'])).order_by('-date')[:year_num+10]
+    if len(sdt) < year_num:
         return ''
     if float(sdt[0].increase_rate.replace('%', '')) > 9:
         return ''
@@ -39,12 +38,12 @@ def quant_stock(stock_number, stock_name, **kwargs):
             sdt.insert(0, today_trading.get(stock_number))
     trading_data = format_trading_data(sdt)
     df = calculate_macd(DataFrame(trading_data), kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
-    # df['half_ma'] = df['close_price'].rolling(window=half_num, center=False).mean()
+    df['year_ma'] = df['close_price'].rolling(window=year_num, center=False).mean()
     today_macd = df.iloc[-1]
     yestoday_macd = df.iloc[-2]
 
-    # if today_macd['close_price'] < today_macd['half_ma']:
-    #     return ''
+    if today_macd['close_price'] < today_macd['year_ma']:
+        return ''
 
     strategy_direction = ''
     if yestoday_macd['macd'] < 0 < today_macd['macd']:
@@ -53,7 +52,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
         strategy_direction = 'short'
 
     if strategy_direction:
-        strategy_name = 'macd_%s_%s_%s_%s' % (strategy_direction, kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
+        strategy_name = 'macd_%s_%s_%s_%s' % (strategy_direction, kwargs['short_ema'], kwargs['long_ema'],
+                                              kwargs['dif_ema'])
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=today_macd.name,
             strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today_macd['close_price']

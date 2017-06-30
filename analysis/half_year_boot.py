@@ -14,8 +14,7 @@ from analysis.technical_analysis_util import calculate_ma, format_trading_data, 
 from analysis.technical_analysis_util import start_quant_analysis, collect_stock_daily_trading, display_quant
 
 
-query_step = 100  # 一次从数据库中取出的数据量
-half_num = 120
+half_num = 250
 inspect_start = -30
 inspect_end = -1
 
@@ -55,12 +54,12 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
 
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
-    df['half_ma'] = df['close_price'].rolling(window=half_num, center=False).mean()
-    df['price_half_diff'] = df['close_price'] - df['half_ma']
+    df['year_ma'] = df['close_price'].rolling(window=half_num, center=False).mean()
+    df['price_half_diff'] = df['close_price'] - df['year_ma']
     today_ma = df.iloc[-1]
     yestoday_ma = df.iloc[-2]
 
-    if today_ma['close_price'] < today_ma['half_ma']:
+    if today_ma['close_price'] < today_ma['year_ma']:
         # 过滤当日价格低于半年线的
         return
     inspect_period = df['price_half_diff'].iloc[inspect_start: inspect_end]
