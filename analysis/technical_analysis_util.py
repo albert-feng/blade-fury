@@ -18,6 +18,7 @@ from config import eastmoney_stock_api
 query_step = 100
 timeout = 60
 retry = 5
+year_num = 250
 
 
 def format_trading_data(stock_trading_data):
