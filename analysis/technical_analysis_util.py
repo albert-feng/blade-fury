@@ -84,6 +84,28 @@ def calculate_ma(df, short_ma, long_ma):
         raise Exception('df type is wrong')
 
 
+def check_year_ma(stock_number, qr_date):
+    """
+    去掉年线以下的
+    :param stock_number:
+    :param qr_date:
+    :return:
+    """
+    sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
+                      Q(date__lte=qr_date)).order_by('-date')[:year_num+5]
+
+    trading_data = format_trading_data(sdt)
+    if not trading_data:
+        return False
+    df = DataFrame(trading_data)
+    df['year_ma'] = df['close_price'].rolling(window=year_num, center=False).mean()
+    today_ma = df.iloc[-1]
+    if today_ma['close_price'] > today_ma['year_ma']:
+        return True
+    else:
+        return False
+
+
 def calculate_kdj(df, fastk_period=9):
     if isinstance(df, DataFrame):
         if df.index.name != 'date':

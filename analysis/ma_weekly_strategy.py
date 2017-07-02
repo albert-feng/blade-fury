@@ -12,32 +12,10 @@ from pandas import DataFrame
 from logger import setup_logging
 from models import QuantResult as QR, StockDailyTrading as SDT, StockWeeklyTrading as SWT
 from analysis.technical_analysis_util import calculate_ma, format_trading_data, check_duplicate_strategy
-from analysis.technical_analysis_util import start_quant_analysis
+from analysis.technical_analysis_util import start_quant_analysis, check_year_ma
 
 
 year_num = 250
-
-
-def check_year_ma(stock_number, qr_date):
-    """
-    去掉年线以下的
-    :param stock_number:
-    :param qr_date:
-    :return:
-    """
-    sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
-                      Q(date__lte=qr_date)).order_by('-date')[:year_num+5]
-
-    trading_data = format_trading_data(sdt)
-    if not trading_data:
-        return False
-    df = DataFrame(trading_data)
-    df['year_ma'] = df['close_price'].rolling(window=year_num, center=False).mean()
-    today_ma = df.iloc[-1]
-    if today_ma['close_price'] > today_ma['year_ma']:
-        return True
-    else:
-        return False
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
@@ -60,20 +38,20 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if not swt:
         return
 
+    extra_data = dict()
     if swt[0].last_trade_date < qr_date:
         # 当没有当周数据时，用日线数据补
-        sdt = SDT.object(Q(stock_number=stock_number) & Q(date=qr_date))
+        sdt = SDT.objects(Q(stock_number=stock_number) & Q(date=qr_date))
         if not sdt:
             return
 
         qr_date_trading = sdt[0]
-        extra_data = SWT()
-        extra_data.stock_number = qr_date_trading.stock_number
-        extra_data.weekly_close_price = qr_date_trading.today_closing_price
-        extra_data.last_trade_date = qr_date_trading.date
-        swt.insert(0, extra_data)
+        extra_data['close_price'] = qr_date_trading.today_closing_price
+        extra_data['date'] = qr_date_trading.date
 
     trading_data = format_trading_data(swt)
+    if extra_data:
+        trading_data.insert(0, extra_data)
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
     today_ma = df.iloc[-1]
     yestoday_ma = df.iloc[-2]
@@ -112,6 +90,5 @@ def setup_argparse():
 if __name__ == '__main__':
     setup_logging(__file__, logging.WARNING)
     short_ma, long_ma, qr_date = setup_argparse()
-    today_trading = {}
 
     real_time_res = start_quant_analysis(short_ma=short_ma, long_ma=long_ma, qr_date=qr_date, quant_stock=quant_stock)
