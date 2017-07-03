@@ -64,7 +64,7 @@ def collect_company_report():
         content_url = 'http://data.eastmoney.com/report/' + date.strftime('%Y%m%d') + '/' + info_code + '.html'
         try:
             content = BeautifulSoup(send_request(content_url), 'lxml').find('div', class_='newsContent').text.strip()
-        except Exception, e:
+        except Exception as e:
             logging.error('Error when get %s report content:%s' % (stock_number, e))
             continue
 
@@ -74,7 +74,7 @@ def collect_company_report():
                                        info_code=info_code, content=content)
             try:
                 stock_report.save()
-            except Exception, e:
+            except Exception as e:
                 logging.error('Error when save %s report %s:%s' % (stock_number, info_code, e))
 
 

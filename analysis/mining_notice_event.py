@@ -45,7 +45,7 @@ def collect_event_notice(stock_number):
 def start_mining_notice():
     try:
         all_stocks = StockInfo.objects()
-    except Exception, e:
+    except Exception as e:
         logging.error('Error when query StockInfo:' + str(e))
         raise e
 
@@ -56,7 +56,7 @@ def start_mining_notice():
     while skip < stocks_count:
         try:
             stocks = StockInfo.objects().skip(skip).limit(query_step)
-        except Exception, e:
+        except Exception as e:
             logging.error('Error when query skip %s  StockInfo:%s' % (skip, e))
             stocks = []
 
@@ -72,7 +72,7 @@ def start_mining_notice():
 
             try:
                 notice = collect_event_notice(i.stock_number)
-            except Exception, e:
+            except Exception as e:
                 logging.error('Error when collect %s notice: %s' % (i.stock_number, e))
             if notice:
                 notice_data += notice

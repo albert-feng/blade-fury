@@ -45,7 +45,7 @@ def main(market_plate=u'创业板', filter_ruihua=True):
     for i in stocks:
         try:
             sdt = query_latest_trading(i.stock_number)
-        except Exception, e:
+        except Exception as e:
             logging.error('Query %s trading data failed: %s' % (i.stock_number, str(e)))
             continue
 

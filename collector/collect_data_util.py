@@ -32,7 +32,7 @@ def send_request(url, headers):
     try:
         r = requests.get(url, headers=default_headers, timeout=timeout)
         r.encoding = 'utf-8'
-    except Exception, e:
+    except Exception as e:
         logging.error('Request url %s failed: %s' % (url, e))
         raise e
     r.encoding = 'utf-8'
@@ -47,7 +47,7 @@ def request_and_handle_data(url, headers={}):
 
     try:
         data = json.loads(res.replace('var js=', '').replace('rank', '\"rank\"').replace('pages', '\"pages\"'))
-    except Exception, e:
+    except Exception as e:
         logging.error('Handle data failed:' + str(e))
         raise e
 

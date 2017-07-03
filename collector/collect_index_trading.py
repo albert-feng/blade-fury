@@ -37,13 +37,13 @@ def request_data(url):
     try:
         r = requests.get(url, headers=headers, timeout=timeout)
         r.encoding = 'utf-8'
-    except Exception, e:
+    except Exception as e:
         logging.error('Request url %s failed: %s' % (url, e))
         raise e
 
     try:
         data = json.loads(r.text.replace('var js=', '').replace('quotation','\"quotation\"'))
-    except Exception, e:
+    except Exception as e:
         logging.error('Error when loads market index data:' + str(e))
         raise e
 
@@ -63,7 +63,7 @@ def save_index_data(idt):
 
         try:
             idt.save()
-        except Exception, e:
+        except Exception as e:
             logging.error('Error when save market index data:' + str(e))
 
 

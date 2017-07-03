@@ -23,7 +23,7 @@ def start_collect_data(start_date, end_date):
 
     try:
         all_stocks = StockInfo.objects()
-    except Exception, e:
+    except Exception as e:
         logging.error('Error when query StockInfo:' + str(e))
         raise e
 
@@ -33,7 +33,7 @@ def start_collect_data(start_date, end_date):
     while skip < stocks_count:
         try:
             stocks = StockInfo.objects().skip(skip).limit(query_step)
-        except Exception, e:
+        except Exception as e:
             logging.error('Error when query skip %s  StockInfo:%s' % (skip, e))
             stocks = []
 

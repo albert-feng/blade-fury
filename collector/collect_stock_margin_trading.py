@@ -81,6 +81,6 @@ if __name__ == '__main__':
     for url in rzrq_api:
         try:
             collect_margin_trading(url)
-        except Exception, e:
+        except Exception as e:
             logging.error('Collect margin trading %s failed:%s' % (url, e))
     logging.info('collect stock margin trading success')

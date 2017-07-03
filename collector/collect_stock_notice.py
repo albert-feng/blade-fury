@@ -68,7 +68,7 @@ def collect_notice(stock_info):
 def start_collect_notice():
     try:
         all_stocks = StockInfo.objects()
-    except Exception, e:
+    except Exception as e:
         logging.error('Error when query StockInfo:' + str(e))
         raise e
 
@@ -78,14 +78,14 @@ def start_collect_notice():
     while skip < stocks_count:
         try:
             stocks = StockInfo.objects().skip(skip).limit(query_step)
-        except Exception, e:
+        except Exception as e:
             logging.error('Error when query skip %s  StockInfo:%s' % (skip, e))
             stocks = []
 
         for i in stocks:
             try:
                 collect_notice(i)
-            except Exception, e:
+            except Exception as e:
                 logging.error('Error when collect %s notice: %s' % (i.stock_number, e))
             # time.sleep(random.random())
         skip += query_step

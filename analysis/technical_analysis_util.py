@@ -127,7 +127,7 @@ def check_duplicate_strategy(qr):
         try:
             cursor = QR.objects(Q(stock_number=qr.stock_number) & Q(strategy_name=qr.strategy_name) &
                                 Q(date=qr.date))
-        except Exception, e:
+        except Exception as e:
             logging.error('Error when check dupliate %s strategy %s date %s: %s' % (qr.stock_number, qr.strategy_name,
                                                                                     qr.date, e))
         if cursor:
@@ -150,7 +150,7 @@ def start_quant_analysis(**kwargs):
 
     try:
         all_stocks = StockInfo.objects()
-    except Exception, e:
+    except Exception as e:
         logging.error('Error when query StockInfo:' + str(e))
         raise e
 
@@ -161,7 +161,7 @@ def start_quant_analysis(**kwargs):
     while skip < stocks_count:
         try:
             stocks = StockInfo.objects().skip(skip).limit(query_step)
-        except Exception, e:
+        except Exception as e:
             logging.error('Error when query skip %s  StockInfo:%s' % (skip, e))
             stocks = []
 
@@ -173,7 +173,7 @@ def start_quant_analysis(**kwargs):
             qr = ''
             try:
                 qr = kwargs['quant_stock'](i.stock_number, i.stock_name, **kwargs)
-            except Exception, e:
+            except Exception as e:
                 logging.error('Error when quant %s ma strategy: %s' % (i.stock_number, e))
             if isinstance(qr, QR):
                 quant_res.append(qr)
@@ -197,13 +197,13 @@ def request_and_handle_data(url):
     try:
         r = requests.get(url, headers=headers, timeout=timeout)
         r.encoding = 'utf-8'
-    except Exception, e:
+    except Exception as e:
         logging.error('Request url %s failed: %s' % (url, e))
         raise e
 
     try:
         data = json.loads(r.text.replace('var js=', '').replace('rank', '\"rank\"').replace('pages', '\"pages\"'))
-    except Exception, e:
+    except Exception as e:
         logging.error('Handle data failed:' + str(e))
         raise e
 

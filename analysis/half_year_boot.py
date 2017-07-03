@@ -91,7 +91,7 @@ def setup_argparse():
     if args.qr_date:
         try:
             qr_date = datetime.datetime.strptime(args.qr_date, '%Y-%m-%d')
-        except Exception, e:
+        except Exception as e:
             print 'Wrong date form'
             raise e
     else:

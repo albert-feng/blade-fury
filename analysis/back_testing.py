@@ -52,7 +52,7 @@ def back_testing():
             if i[test_pattern[t]['test']] is None and i[test_pattern[t]['price']] is None:
                 try:
                     test_by_day(i, t)
-                except Exception, e:
+                except Exception as e:
                     logging.error('Error occur when back testing %s: %s' % (i.stock_number, e))
 
 

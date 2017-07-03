@@ -36,13 +36,13 @@ def request_and_handle_data(url):
     try:
         r = requests.get(url, headers=headers, timeout=timeout)
         r.encoding = 'utf-8'
-    except Exception, e:
+    except Exception as e:
         logging.error('Request url %s failed: %s' % (url, e))
         raise e
 
     try:
         data = json.loads(r.text.replace('var js=', '').replace('rank', '\"rank\"').replace('pages', '\"pages\"'))
-    except Exception, e:
+    except Exception as e:
         logging.error('Handle data failed:' + str(e))
         raise e
 

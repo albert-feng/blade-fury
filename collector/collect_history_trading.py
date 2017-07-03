@@ -79,7 +79,7 @@ def collect_his_trading(stock_number, stock_name):
 
                 if turnover_amount_msg.isdigit() and int(turnover_amount_msg) == 0:
                     return
-            except Exception, e:
+            except Exception as e:
                 if '--' not in str(e):
                     logging.error('Collect %s %s trading data failed:%s' % (stock_number, str(date), e))
                 continue
@@ -112,14 +112,14 @@ def begin_collect_his():
     while skip < stock_count:
         try:
             stocks = StockInfo.objects().skip(skip).limit(query_step)
-        except Exception, e:
+        except Exception as e:
             logging.error('Error when query skip %s  StockInfo:%s' % (skip, e))
             stocks = []
 
         for i in stocks:
             try:
                 collect_his_trading(i.stock_number, i.stock_name)
-            except Exception, e:
+            except Exception as e:
                 logging.error('Collect %s his data failed:%s' % (i.stock_number, e))
             finally:
                 time.sleep(random.random())

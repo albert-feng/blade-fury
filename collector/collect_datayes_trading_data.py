@@ -17,7 +17,7 @@ def send_requests(url):
     headers = datayes_headers
     try:
         req = requests.get(url, headers=headers, timeout=60)
-    except Exception, e:
+    except Exception as e:
         logging.error('Error when request %s:%s' % (url, e))
         raise e
 
@@ -65,7 +65,7 @@ def collect_datayes_data(date):
         try:
             if not check_duplicate(sdt):
                 sdt.save()
-        except Exception, e:
+        except Exception as e:
             logging.error('Error when query or saving %s data:%s' % (sdt.stock_number, e))
 
 
@@ -90,7 +90,7 @@ def setup_argparse():
     try:
         start_date = datetime.datetime.strptime(start_date, '%Y-%m-%d')
         end_date = datetime.datetime.strptime(end_date, '%Y-%m-%d')
-    except Exception, e:
+    except Exception as e:
         logging.error('Wrong date form:' + str(e))
         raise e
 
