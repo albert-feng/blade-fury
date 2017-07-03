@@ -92,9 +92,11 @@ def check_year_ma(stock_number, qr_date):
     :param qr_date:
     :return:
     """
-    sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
-                      Q(date__lte=qr_date)).order_by('-date')[:year_num+5]
+    cursor = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date))
+    if not cursor:
+        return False
 
+    sdt = cursor.order_by('-date')[:year_num+5]
     trading_data = format_trading_data(sdt)
     if not trading_data:
         return False

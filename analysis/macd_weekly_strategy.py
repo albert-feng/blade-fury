@@ -76,7 +76,8 @@ def setup_argparse():
             print 'Wrong date form'
             raise e
     else:
-        qr_date = datetime.date.today()
+        today = datetime.date.today()
+        qr_date = datetime.datetime(year=today.year, month=today.month, day=today.day)
 
     return int(args.short_ema), int(args.long_ema), int(args.dif_ema), qr_date
 
