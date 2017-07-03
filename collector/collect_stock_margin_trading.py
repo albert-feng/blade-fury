@@ -13,26 +13,7 @@ from mongoengine import Q
 from config import rzrq_api
 from models import StockMarginTrading as SMT
 from logger import setup_logging
-
-timeout = 30
-
-
-def send_request(req_url):
-    headers = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Encoding': 'gzip, deflate, sdch',
-        'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.73 Safari/537.36',
-    }
-    r = requests.get(req_url, headers=headers, timeout=timeout)
-    r.encoding = 'utf-8'
-
-    html = r.text
-    if not html:
-        logging.warning('No data when request this url:' + req_url)
-    return html
+from collector.collect_data_util import send_request
 
 
 def collect_margin_trading(req_url):

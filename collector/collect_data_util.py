@@ -25,7 +25,7 @@ default_headers = {
     }
 
 
-def send_request(url, headers):
+def send_request(url, headers={}):
     if headers:
         default_headers.update(headers)
 

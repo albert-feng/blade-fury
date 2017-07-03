@@ -17,9 +17,9 @@ from bs4 import BeautifulSoup
 from models import StockInfo
 from config import core_concept, company_survey, exchange_market, stock_value
 from logger import setup_logging
+from collector.collect_data_util import send_request
 
 
-timeout = 30  # 发送http请求时的超时时间
 query_step = 100  # 每次查询数据库的步长，以防出现cursor超时的错误
 concept_separator = [u'，', u' ']
 
@@ -34,22 +34,6 @@ def estimate_market(stock_number):
     if not market:
         raise Exception('Wrong stock number %s' % stock_number)
     return market
-
-
-def send_request(url):
-    headers = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Encoding': 'gzip, deflate, sdch',
-        'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4',
-        'Connection': 'keep-alive',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36',
-    }
-    r = requests.get(url, headers=headers, timeout=timeout)
-    r.encoding = 'utf-8'
-    html = r.text
-    if not html:
-        logging.warning('No data when request this url:' + url)
-    return html
 
 
 def collect_company_survey(stock_info):

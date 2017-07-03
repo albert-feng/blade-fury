@@ -15,28 +15,10 @@ import requests
 from models import StockInfo, StockNotice
 from config import company_notice, single_notice
 from logger import setup_logging
+from collector.collect_data_util import send_request
 
 
-timeout = 30  # 发送http请求的超时时间
 query_step = 30  # 一次从数据库中取出的数据量
-
-
-def send_request(url):
-    headers = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Encoding': 'gzip, deflate, sdch',
-        'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.6,zh-TW;q=0.4',
-        'Cache-Control': 'no-cache',
-        'Connection': 'keep-alive',
-        # 'Host': 'data.eastmoney.com',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.93 Safari/537.36',
-    }
-    r = requests.get(url, headers=headers, timeout=timeout)
-    #r.encoding = 'utf-8'
-    html = r.text
-    if not html:
-        logging.warning('No data when request this url:' + url)
-    return html
 
 
 def is_exists(notice_code):
