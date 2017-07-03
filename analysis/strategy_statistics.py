@@ -10,9 +10,11 @@ from mongoengine import Q
 from models import QuantResult as QR
 
 
-back_test_attr = {'one_back_test': ['one_price', 'one_yield_expectation'],
-                  'three_back_test': ['three_price', 'three_yield_expectation'],
-                  'five_back_test': ['five_price', 'five_yield_expectation']}
+back_test_attr = {'one_back_test': ['one_price', 'one_yield'],
+                  'three_back_test': ['three_price', 'three_yield'],
+                  'five_back_test': ['five_price', 'five_yield'],
+                  'ten_back_test': ['ten_price', 'ten_yield']
+                  }
 
 
 def strategy_statistics(strategy_name, strategy_count, stock_model=''):
@@ -53,15 +55,15 @@ def back_test_success(strategy_name, date, stock_model=''):
         succ_sample = [q for q in qualified_sample if q[k] is True]
         res_by_date[k] = str(round(float(len(succ_sample))/float(len(qualified_sample)), 4) * 100) + '%'
 
-        yield_expectation = 0.0
+        yield_exp = 0.0
         if 'long' in strategy_name:
             for i in qualified_sample:
-                yield_expectation += (i[v[0]] - i.init_price)/i.init_price
+                yield_exp += (i[v[0]] - i.init_price)/i.init_price
         elif 'short' in strategy_name:
             for i in qualified_sample:
-                yield_expectation += (i.init_price - i[v[0]])/i.init_price
+                yield_exp += (i.init_price - i[v[0]])/i.init_price
 
-        res_by_date[v[1]] = str(round(yield_expectation/len(qualified_sample), 4) * 100) + '%'
+        res_by_date[v[1]] = str(round(yield_exp/len(qualified_sample), 4) * 100) + '%'
         res_by_date['count'] = cursor.count()
     return res_by_date
 

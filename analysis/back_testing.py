@@ -13,6 +13,7 @@ test_pattern = {
                     1: {'test': 'one_back_test', 'price': 'one_price'},
                     3: {'test': 'three_back_test', 'price': 'three_price'},
                     5: {'test': 'five_back_test', 'price': 'five_price'},
+                    10: {'test': 'ten_back_test', 'price': 'ten_price'},
                 }
 
 
