@@ -47,7 +47,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     trading_data = format_trading_data(swt)
     if extra_data:
-        trading_data.insert(0, extra_data)
+        trading_data.append(extra_data)
     df = calculate_macd(DataFrame(trading_data), short_ema, long_ema, dif_ema)
     today_macd = df.iloc[-1]
     yestoday_macd = df.iloc[-2]

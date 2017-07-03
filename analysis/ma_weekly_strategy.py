@@ -51,7 +51,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     trading_data = format_trading_data(swt)
     if extra_data:
-        trading_data.insert(0, extra_data)
+        trading_data.append(extra_data)
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
     today_ma = df.iloc[-1]
     yestoday_ma = df.iloc[-2]
