@@ -15,9 +15,6 @@ from analysis.technical_analysis_util import calculate_ma, format_trading_data, 
 from analysis.technical_analysis_util import start_quant_analysis, check_year_ma
 
 
-year_num = 250
-
-
 def quant_stock(stock_number, stock_name, **kwargs):
     short_ma = kwargs['short_ma']
     long_ma = kwargs['long_ma']

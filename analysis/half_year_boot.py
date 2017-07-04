@@ -12,6 +12,7 @@ from logger import setup_logging
 from models import QuantResult as QR, StockDailyTrading as SDT
 from analysis.technical_analysis_util import calculate_ma, format_trading_data, check_duplicate_strategy
 from analysis.technical_analysis_util import start_quant_analysis, collect_stock_daily_trading, display_quant
+from analysis.technical_analysis_util import check_year_ma
 
 
 half_num = 250
@@ -23,6 +24,9 @@ def quant_stock(stock_number, stock_name, **kwargs):
     short_ma = kwargs['short_ma']
     long_ma = kwargs['long_ma']
     qr_date = kwargs['qr_date']
+    if not check_year_ma(stock_number, qr_date):
+        return
+
     real_time = kwargs.get('real_time', False)
     if short_ma <= long_ma:
         strategy_direction = 'long'
@@ -30,8 +34,6 @@ def quant_stock(stock_number, stock_name, **kwargs):
     else:
         strategy_direction = 'short'
         quant_count = short_ma + 5
-    if quant_count < half_num:
-        quant_count += half_num
     strategy_name = 'halfboot_%s_%s_%s' % (strategy_direction, short_ma, long_ma)
 
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
@@ -54,17 +56,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
 
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
-    df['year_ma'] = df['close_price'].rolling(window=half_num, center=False).mean()
-    df['price_half_diff'] = df['close_price'] - df['year_ma']
     today_ma = df.iloc[-1]
     yestoday_ma = df.iloc[-2]
-
-    if today_ma['close_price'] < today_ma['year_ma']:
-        # 过滤当日价格低于半年线的
-        return
-    inspect_period = df['price_half_diff'].iloc[inspect_start: inspect_end]
-    if inspect_period.max() < 0:
-        return
 
     if today_ma['diff_ma'] > 0 > yestoday_ma['diff_ma']:
         qr = QR(

@@ -12,18 +12,22 @@ from logger import setup_logging
 from models import QuantResult as QR, StockDailyTrading as SDT
 from analysis.technical_analysis_util import calculate_macd, format_trading_data, check_duplicate_strategy
 from analysis.technical_analysis_util import start_quant_analysis, collect_stock_daily_trading, display_quant
+from analysis.technical_analysis_util import check_year_ma
 
 
 step = 100  # 一次从数据库取出打股票数量
+ema_volume = 150
 year_num = 250
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
+    if not check_year_ma(stock_number, kwargs['qr_date']):
+        return
+
     real_time = kwargs.get('real_time', False)
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
-                      Q(date__lte=kwargs['qr_date'])).order_by('-date')[:year_num+10]
-    if len(sdt) < year_num:
-        return ''
+                      Q(date__lte=kwargs['qr_date'])).order_by('-date')[:ema_volume]
+
     if float(sdt[0].increase_rate.replace('%', '')) > 9:
         return ''
 
@@ -38,12 +42,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
             sdt.insert(0, today_trading.get(stock_number))
     trading_data = format_trading_data(sdt)
     df = calculate_macd(DataFrame(trading_data), kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
-    df['year_ma'] = df['close_price'].rolling(window=year_num, center=False).mean()
     today_macd = df.iloc[-1]
     yestoday_macd = df.iloc[-2]
-
-    if today_macd['close_price'] < today_macd['year_ma']:
-        return ''
 
     strategy_direction = ''
     if yestoday_macd['macd'] < 0 < today_macd['macd']:
