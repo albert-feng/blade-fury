@@ -22,9 +22,10 @@ def fetch_stock_price(stock_number, date):
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(date=date))
 
     if sdt:
-        return sdt.first().today_closing_price
+        return sdt.first()
     else:
         return 0
+
 
 def is_new_stock(stock_number, end_date):
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(date__lt=end_date-datetime.timedelta(days=new_stock_period)))
@@ -33,6 +34,7 @@ def is_new_stock(stock_number, end_date):
     else:
         return False
 
+
 def start_calculate(start_date, end_date, reverse=False):
     if not isinstance(start_date, datetime.datetime) or not isinstance(end_date, datetime.datetime):
         return
@@ -40,14 +42,20 @@ def start_calculate(start_date, end_date, reverse=False):
     stock_info = StockInfo.objects()
     price_volatility = list()
     for i in stock_info:
-        start_price = fetch_stock_price(i.stock_number, start_date)
-        end_price = fetch_stock_price(i.stock_number, end_date)
-
         if is_new_stock(i.stock_number, end_date):
             continue
 
-        if not start_price or not end_price:
+        start_sdt = fetch_stock_price(i.stock_number, start_date)
+        end_sdt = fetch_stock_price(i.stock_number, end_date)
+        if not start_sdt or not end_sdt:
             continue
+
+        start_price = start_sdt.today_closing_price
+        end_price = end_sdt.today_closing_price
+        if start_sdt.total_stock != end_sdt.total_stock:
+            if not start_sdt.total_stock or not end_sdt.total_stock:
+                continue
+            start_price = start_price * start_sdt.total_stock / end_sdt.total_stock
 
         price_diff = end_price - start_price
         if reverse:
