@@ -15,6 +15,7 @@ from models import StockInfo, StockDailyTrading as SDT
 
 
 display_count = 100
+new_stock_period = 365
 
 
 def fetch_stock_price(stock_number, date):
@@ -25,6 +26,12 @@ def fetch_stock_price(stock_number, date):
     else:
         return 0
 
+def is_new_stock(stock_number, end_date):
+    sdt = SDT.objects(Q(stock_number=stock_number) & Q(date__lt=end_date-datetime.timedelta(days=new_stock_period)))
+    if sdt.count() < new_stock_period:
+        return True
+    else:
+        return False
 
 def start_calculate(start_date, end_date, reverse=False):
     if not isinstance(start_date, datetime.datetime) or not isinstance(end_date, datetime.datetime):
@@ -35,6 +42,9 @@ def start_calculate(start_date, end_date, reverse=False):
     for i in stock_info:
         start_price = fetch_stock_price(i.stock_number, start_date)
         end_price = fetch_stock_price(i.stock_number, end_date)
+
+        if is_new_stock(i.stock_number, end_date):
+            continue
 
         if not start_price or not end_price:
             continue
