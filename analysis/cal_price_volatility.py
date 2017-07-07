@@ -57,6 +57,7 @@ def start_calculate(start_date, end_date, reverse=False):
                 continue
             start_price = start_price * start_sdt.total_stock / end_sdt.total_stock
 
+        start_price = round(start_price, 2)
         price_diff = end_price - start_price
         if reverse:
             if price_diff < 0:
