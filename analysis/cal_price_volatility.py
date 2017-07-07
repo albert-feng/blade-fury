@@ -75,17 +75,17 @@ def start_calculate(start_date, end_date, reverse=False):
         })
 
     if not price_volatility:
-        print 'No Output'
+        print('No Output')
         return
 
     price_volatility = sorted(price_volatility, key=lambda x: x['increase_rate'], reverse=reverse)
     count = len(price_volatility)
 
-    print '------------------%s--------------------' % count
+    print('------------------%s--------------------' % count)
     df = DataFrame(price_volatility[:display_count]).set_index(['stock_number'])\
         .reindex(columns=['stock_name', 'start_price', 'end_price', 'increase_rate'])
     pd.set_option('display.max_rows', display_count + 10)
-    print df
+    print(df)
     pd.reset_option('display.max_rows')
 
 
@@ -100,7 +100,7 @@ def setup_argparse():
         start_date = datetime.datetime.strptime(args.start_date, '%Y-%m-%d')
         end_date = datetime.datetime.strptime(args.end_date, '%Y-%m-%d')
     except Exception as e:
-        print 'Wrong date form'
+        print('Wrong date form')
         raise e
 
     return start_date, end_date, args.reverse
