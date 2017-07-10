@@ -76,7 +76,7 @@ def setup_argparse():
         try:
             qr_date = datetime.datetime.strptime(args.qr_date, '%Y-%m-%d')
         except Exception as e:
-            print 'Wrong date form'
+            print('Wrong date form')
             raise e
     else:
         today = datetime.date.today()

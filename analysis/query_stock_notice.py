@@ -19,12 +19,12 @@ def query_stock_notice(date, keyword=u'购买理财产品'):
 
     stocks = list(set([(i.stock_number, i.stock_name) for i in sn]))
     stocks.sort()
-    print len(stocks)
+    print(len(stocks))
     for k, v in trading_market.iteritems():
         filtered_stocks = [s for s in stocks if s[0].startswith(k)]
-        print '---------%s---%s---------' % (v, len(filtered_stocks))
+        print('---------%s---%s---------' % (v, len(filtered_stocks)))
         for i in filtered_stocks:
-            print i[0], i[1]
+            print(i[0], i[1])
 
 
 def setup_argparse():

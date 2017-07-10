@@ -102,7 +102,7 @@ def collect_stock_data(stock_number, start_date, end_date):
 
 
 def setup_argparse():
-    parser = argparse.ArgumentParser(description=u'根据长短均线的金叉来选股')
+    parser = argparse.ArgumentParser(description=u'采集周线数据')
     parser.add_argument(u'-s', action=u'store', dest='start_date', required=True, help=u'起始时间')
     parser.add_argument(u'-e', action=u'store', dest='end_date', required=True, help=u'结束时间')
 
@@ -111,7 +111,7 @@ def setup_argparse():
         start_date = datetime.strptime(args.start_date, '%Y-%m-%d')
         end_date = datetime.strptime(args.end_date, '%Y-%m-%d')
     except Exception as e:
-        print 'Wrong date form'
+        print('Wrong date form')
         raise e
 
     return start_date, end_date

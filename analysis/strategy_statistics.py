@@ -20,7 +20,7 @@ back_test_attr = {'one_back_test': ['one_price', 'one_yield'],
 def strategy_statistics(strategy_name, strategy_count, stock_model=''):
     all_qr = QR.objects(strategy_name=strategy_name)
     if not all_qr:
-        print 'Wrong Strategy Name!'
+        print('Wrong Strategy Name!')
         return
 
     trading_date = QR.objects().distinct('date')
@@ -33,8 +33,8 @@ def strategy_statistics(strategy_name, strategy_count, stock_model=''):
     frame = DataFrame(bt_result)
     pd.set_option('display.width', 200)
     pd.set_option('display.max_rows', strategy_count+100)
-    print frame.reindex(['count', 'one_back_test', 'one_yield', 'three_back_test', 'three_yield',
-                         'five_back_test', 'five_yield', 'ten_back_test', 'ten_yield']).T
+    print(frame.reindex(['count', 'one_back_test', 'one_yield', 'three_back_test', 'three_yield',
+                         'five_back_test', 'five_yield', 'ten_back_test', 'ten_yield']).T)
     pd.set_option('display.width', None)
     pd.set_option('display.max_rows', None)
 

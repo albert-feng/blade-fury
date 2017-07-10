@@ -58,14 +58,14 @@ def main(market_plate=u'创业板', filter_ruihua=True):
     plate_stocks = sorted(plate_stocks, key=lambda stock: float(stock.get('increase_rate').replace('%', '')),
                           reverse=True)
 
-    print market_plate
-    print len(plate_stocks)
+    print(market_plate)
+    print(len(plate_stocks))
     if len(plate_stocks):
-        print '---------------------------------------------------'
+        print('---------------------------------------------------')
         frame = DataFrame(plate_stocks).set_index('stock_number').reindex(columns=['stock_name', 'today_closing_price',
                                                                                    'increase_rate'])
         pd.set_option('display.max_rows', len(plate_stocks))
-        print frame
+        print(frame)
         pd.reset_option('display.max_rows')
 
 

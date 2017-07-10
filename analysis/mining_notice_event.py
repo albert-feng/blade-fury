@@ -89,7 +89,7 @@ def start_mining_notice():
     notice_path = '/root/healing-ward/notice_mining/%s.txt' % datetime.date.today()
     notice_data =  df.to_string()
     if exists(notice_path):
-        print notice_data
+        print(notice_data)
     else:
         with codecs.open(notice_path, 'w+', 'utf-8') as fd:
             fd.write(notice_data)

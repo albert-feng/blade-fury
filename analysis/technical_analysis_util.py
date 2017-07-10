@@ -138,14 +138,14 @@ def check_duplicate_strategy(qr):
 
 def start_quant_analysis(**kwargs):
     if not kwargs.get('qr_date'):
-        print 'no qr_date'
+        print('no qr_date')
         return
     if not kwargs.get('quant_stock'):
-        print 'not quant_stock funtion'
+        print('not quant_stock funtion')
         return
 
     if not SDT.objects(date=kwargs['qr_date']) and not kwargs.get('real_time'):
-        print 'Not a Trading Date'
+        print('Not a Trading Date')
         return
 
     try:
@@ -258,5 +258,5 @@ def display_quant(real_time_res):
                   for i in real_time_res]
     df = DataFrame(quant_data).set_index('stock_number').sort_index().reindex(columns=['stock_name', 'price'])
     pd.set_option('display.max_rows', len(real_time_res) + 10)
-    print df
+    print(df)
     pd.reset_option('display.max_rows')
