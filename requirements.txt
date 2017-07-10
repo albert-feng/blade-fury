@@ -36,7 +36,7 @@ pathlib2
 pep8
 pexpect
 pickleshare
-Pillow
+#Pillow
 psutil
 ptyprocess
 pyasn1
