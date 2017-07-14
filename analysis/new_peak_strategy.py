@@ -9,7 +9,7 @@ from mongoengine import Q
 
 from logger import setup_logging
 from models import QuantResult as QR, StockDailyTrading as SDT
-from analysis.technical_analysis_util import collect_stock_daily_trading, start_quant_analysis
+from analysis.technical_analysis_util import collect_stock_daily_trading, start_quant_analysis, format_trading_data
 from analysis.technical_analysis_util import check_year_ma, check_duplicate_strategy, display_quant
 
 
@@ -38,7 +38,12 @@ def quant_stock(stock_number, stock_name, **kwargs):
             if not today_trading.get(stock_number):
                 return
 
-            price_list.insert(0, today_trading.get(stock_number).today_closing_price)
+            sdt = list(sdt)
+            sdt.insert(0, today_trading.get(stock_number))
+
+    trading_data = format_trading_data(sdt)
+    if not trading_data:
+        return
 
     if max(price_list) == price_list[0]:
         qr = QR(
