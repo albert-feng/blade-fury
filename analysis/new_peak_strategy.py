@@ -6,12 +6,12 @@ import logging
 import argparse
 
 from mongoengine import Q
+from pandas import DataFrame
 
 from logger import setup_logging
 from models import QuantResult as QR, StockDailyTrading as SDT
 from analysis.technical_analysis_util import collect_stock_daily_trading, start_quant_analysis, format_trading_data
 from analysis.technical_analysis_util import check_year_ma, check_duplicate_strategy, display_quant
-
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
@@ -29,8 +29,6 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if len(sdt) < length:
         return
 
-    price_list = sdt.distinct('today_closing_price')
-
     if real_time:
         today_sdt = SDT.objects(date=kwargs['qr_date'])
         if kwargs['qr_date'] == datetime.date.today() and not today_sdt:
@@ -45,11 +43,14 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if not trading_data:
         return
 
-    if max(price_list) == price_list[0]:
+    df = DataFrame(trading_data)
+    today_data = df.iloc[-1]
+
+    if df['today_closing_price'].max() >= today_data['today_closing_price']:
         qr = QR(
-            stock_number=stock_number, stock_name=stock_name, date=qr_date,
+            stock_number=stock_number, stock_name=stock_name, date=today_data.date,
             strategy_direction=strategy_direction, strategy_name=strategy_name,
-            init_price=price_list[0]
+            init_price=today_data['today_closing_price']
         )
         if real_time:
             return qr
@@ -57,8 +58,6 @@ def quant_stock(stock_number, stock_name, **kwargs):
             qr.save()
             return qr
     return
-
-
 
 
 def setup_argparse():
@@ -79,6 +78,7 @@ def setup_argparse():
         qr_date = datetime.datetime(year=today.year, month=today.month, day=today.day)
 
     return int(args.length), qr_date, args.real_time
+
 
 if __name__ == '__main__':
     setup_logging(__file__, logging.WARNING)
