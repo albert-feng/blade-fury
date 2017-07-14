@@ -46,11 +46,11 @@ def quant_stock(stock_number, stock_name, **kwargs):
     df = DataFrame(trading_data)
     today_data = df.iloc[-1]
 
-    if df['today_closing_price'].max() >= today_data['today_closing_price']:
+    if df['close_price'].max() <= today_data['close_price']:
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=today_data.date,
             strategy_direction=strategy_direction, strategy_name=strategy_name,
-            init_price=today_data['today_closing_price']
+            init_price=today_data['close_price']
         )
         if real_time:
             return qr
