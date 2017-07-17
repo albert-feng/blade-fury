@@ -15,11 +15,6 @@ from analysis.technical_analysis_util import start_quant_analysis, collect_stock
 from analysis.technical_analysis_util import check_year_ma
 
 
-half_num = 250
-inspect_start = -30
-inspect_end = -1
-
-
 def quant_stock(stock_number, stock_name, **kwargs):
     short_ma = kwargs['short_ma']
     long_ma = kwargs['long_ma']
