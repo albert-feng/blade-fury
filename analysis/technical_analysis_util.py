@@ -23,7 +23,8 @@ def format_trading_data(stock_trading_data):
     trading_data = []
 
     if isinstance(stock_trading_data[0], SDT):
-        standard_total_stock = stock_trading_data[1].total_stock if stock_trading_data[1].total_stock else stock_trading_data[2].total_stock
+        standard_total_stock = stock_trading_data[1].total_stock if stock_trading_data[1].total_stock\
+                               else stock_trading_data[2].total_stock
         if not standard_total_stock:
             return trading_data
 
@@ -33,7 +34,7 @@ def format_trading_data(stock_trading_data):
                 high_price = i.today_highest_price
                 low_price = i.today_lowest_price
             else:
-                if standard_total_stock == i.total_stock:
+                if standard_total_stock/i.total_stock < 2:
                     close_price = i.today_closing_price
                     high_price = i.today_highest_price
                     low_price = i.today_lowest_price
