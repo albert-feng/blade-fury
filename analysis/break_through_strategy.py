@@ -4,11 +4,8 @@
 import datetime
 import logging
 import argparse
-import json
 
-import requests
 from mongoengine import Q
-import pandas as pd
 from pandas import DataFrame
 
 from logger import setup_logging
@@ -57,21 +54,19 @@ def quant_stock(stock_number, stock_name, **kwargs):
     today = df.iloc[-1]
     yestoday = df.iloc[-2]
 
-    break_through = 1.8
-    if yestoday['close_price'] < yestoday['short_ma'] and yestoday['close_price'] < yestoday['long_ma']\
-       and today['close_price'] > today['short_ma'] and today['close_price'] > today['long_ma']:
-        if today['turnover_amount']/float(yestoday['turnover_amount']) > break_through:
-            qr = QR(
-                stock_number=stock_number, stock_name=stock_name, date=today.name,
-                strategy_direction=strategy_direction, strategy_name=strategy_name,
-                init_price=today['close_price']
-            )
+    if yestoday['close_price'] < yestoday['long_ma'] and today['close_price'] > today['short_ma']\
+       and today['close_price'] > today['long_ma']:
+        qr = QR(
+            stock_number=stock_number, stock_name=stock_name, date=today.name,
+            strategy_direction=strategy_direction, strategy_name=strategy_name,
+            init_price=today['close_price']
+        )
 
-            if real_time:
-                return qr
-            if not check_duplicate_strategy(qr):
-                qr.save()
-                return qr
+        if real_time:
+            return qr
+        if not check_duplicate_strategy(qr):
+            qr.save()
+            return qr
     return ''
 
 
