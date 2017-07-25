@@ -19,7 +19,7 @@ retry = 5
 year_num = 250
 
 
-def format_trading_data(stock_trading_data):
+def format_trading_data(stock_trading_data, use_ad_price=False):
     trading_data = []
 
     if isinstance(stock_trading_data[0], SDT):
@@ -48,9 +48,13 @@ def format_trading_data(stock_trading_data):
 
     elif isinstance(stock_trading_data[0], SWT):
         for i in stock_trading_data:
+            if use_ad_price:
+                close_price = i.ad_close_price
+            else:
+                close_price = i.weekly_close_price
             trading_data.append({
                 'date': i.last_trade_date,
-                'close_price': i.weekly_close_price,
+                'close_price': close_price,
             })
 
     if trading_data:
