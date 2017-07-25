@@ -10,9 +10,9 @@ from mongoengine import Q
 from pandas import DataFrame
 
 from logger import setup_logging
-from models import QuantResult as QR, StockDailyTrading as SDT, StockWeeklyTrading as SWT
+from models import QuantResult as QR, StockWeeklyTrading as SWT
 from analysis.technical_analysis_util import calculate_ma, format_trading_data, check_duplicate_strategy
-from analysis.technical_analysis_util import start_quant_analysis, check_year_ma
+from analysis.technical_analysis_util import start_quant_analysis, check_year_ma, setup_realtime_swt
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
@@ -35,23 +35,12 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if not swt:
         return
 
-    extra_data = dict()
     use_ad_price = True
     if swt[0].last_trade_date < qr_date:
         use_ad_price = False
-        # 当没有当周数据时，用日线数据补
-        sdt = SDT.objects(Q(stock_number=stock_number) & Q(date=qr_date))
-        if not sdt:
-            return
-
-        qr_date_trading = sdt[0]
-        extra_data['close_price'] = qr_date_trading.today_closing_price
-        extra_data['date'] = qr_date_trading.date
-        extra_swt = SWT()
-        extra_swt.weekly_close_price = qr_date_trading.today_closing_price
-        extra_swt.last_trade_date = qr_date_trading.date
-        swt = list(swt)
-        swt.insert(0, extra_swt)
+        swt = setup_realtime_swt(swt, stock_number)
+    if not swt:
+        return
 
     trading_data = format_trading_data(swt, use_ad_price)
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)

@@ -160,6 +160,9 @@ def start_quant_analysis(**kwargs):
                 # 过滤瑞华的客户
                 continue
 
+            if not SDT.objects(Q(date=kwargs['qr_date']) & Q(stock_number=i.stock_number)):
+                continue
+
             qr = ''
             try:
                 qr = kwargs['quant_stock'](i.stock_number, i.stock_name, **kwargs)
@@ -250,3 +253,18 @@ def display_quant(real_time_res):
     pd.set_option('display.max_rows', len(real_time_res) + 10)
     print(df)
     pd.reset_option('display.max_rows')
+
+
+def setup_realtime_swt(swt, stock_number):
+    # 当没有当周数据时，用日线数据补
+    sdt = SDT.objects(Q(stock_number=stock_number) & Q(date=qr_date))
+    if not sdt:
+        return
+
+    qr_date_trading = sdt[0]
+    extra_swt = SWT()
+    extra_swt.weekly_close_price = qr_date_trading.today_closing_price
+    extra_swt.last_trade_date = qr_date_trading.date
+    swt = list(swt)
+    swt.insert(0, extra_swt)
+    return swt

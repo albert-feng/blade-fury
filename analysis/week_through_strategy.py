@@ -15,9 +15,9 @@ from mongoengine import Q
 from pandas import DataFrame
 
 from logger import setup_logging
-from models import QuantResult as QR, StockDailyTrading as SDT, StockWeeklyTrading as SWT
+from models import QuantResult as QR, StockWeeklyTrading as SWT
 from analysis.technical_analysis_util import calculate_ma, format_trading_data, check_duplicate_strategy
-from analysis.technical_analysis_util import start_quant_analysis, check_year_ma
+from analysis.technical_analysis_util import start_quant_analysis, check_year_ma, setup_realtime_swt
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
@@ -40,30 +40,29 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if not swt:
         return
 
-    extra_data = dict()
+    use_ad_price = True
     if swt[0].last_trade_date < qr_date:
-        # 当没有当周数据时，用日线数据补
-        sdt = SDT.objects(Q(stock_number=stock_number) & Q(date=qr_date))
-        if not sdt:
-            return
+        use_ad_price = False
+        swt = setup_realtime_swt(swt, stock_number)
+    if not swt:
+        return
 
-        qr_date_trading = sdt[0]
-        extra_data['close_price'] = qr_date_trading.today_closing_price
-        extra_data['date'] = qr_date_trading.date
-
-    trading_data = format_trading_data(swt)
-    if extra_data:
-        trading_data.append(extra_data)
+    trading_data = format_trading_data(swt, use_ad_price)
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
     this_week = df.iloc[-1]
     last_week = df.iloc[-2]
 
     if last_week['close_price'] < last_week['long_ma'] and this_week['close_price'] > this_week['short_ma']\
        and this_week['close_price'] > this_week['long_ma']:
+        if use_ad_price:
+            init_price = swt[0].weekly_close_price
+        else:
+            init_price = this_week['close_price']
+
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=this_week.name,
             strategy_direction=strategy_direction, strategy_name=strategy_name,
-            init_price=this_week['close_price']
+            init_price=init_price
         )
         if not check_duplicate_strategy(qr):
             qr.save()

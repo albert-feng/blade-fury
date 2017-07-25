@@ -10,7 +10,7 @@ from mongoengine import Q
 from pandas import DataFrame
 
 from analysis.technical_analysis_util import check_year_ma, calculate_macd, check_duplicate_strategy
-from analysis.technical_analysis_util import format_trading_data, start_quant_analysis
+from analysis.technical_analysis_util import format_trading_data, start_quant_analysis, setup_realtime_swt
 from models import StockWeeklyTrading as SWT, StockDailyTrading as SDT
 from models import QuantResult as QR
 from logger import setup_logging
@@ -34,28 +34,27 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if not swt:
         return
 
-    extra_data = dict()
+    use_ad_price = True
     if swt[0].last_trade_date < qr_date:
-        # 当没有当周数据时，用日线数据补
-        sdt = SDT.objects(Q(stock_number=stock_number) & Q(date=qr_date))
-        if not sdt:
-            return
+        use_ad_price = False
+        swt = setup_realtime_swt(swt, stock_number)
+    if not swt:
+        return
 
-        qr_date_trading = sdt[0]
-        extra_data['close_price'] = qr_date_trading.today_closing_price
-        extra_data['date'] = qr_date_trading.date
-
-    trading_data = format_trading_data(swt)
-    if extra_data:
-        trading_data.append(extra_data)
+    trading_data = format_trading_data(swt, use_ad_price)
     df = calculate_macd(DataFrame(trading_data), short_ema, long_ema, dif_ema)
-    today_macd = df.iloc[-1]
-    yestoday_macd = df.iloc[-2]
+    this_week = df.iloc[-1]
+    last_week = df.iloc[-2]
 
-    if yestoday_macd['macd'] < 0 < today_macd['macd']:
+    if last_week['macd'] < 0 < this_week['macd']:
+        if use_ad_price:
+            init_price = swt[0].weekly_close_price
+        else:
+            init_price = this_week['close_price']
+
         qr = QR(
-            stock_number=stock_number, stock_name=stock_name, date=today_macd.name,
-            strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today_macd['close_price']
+            stock_number=stock_number, stock_name=stock_name, date=this_week.name,
+            strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=init_price
         )
         if not check_duplicate_strategy(qr):
             qr.save()
