@@ -11,7 +11,7 @@ from pandas import DataFrame
 from logger import setup_logging
 from models import QuantResult as QR, StockDailyTrading as SDT
 from analysis.technical_analysis_util import collect_stock_daily_trading, start_quant_analysis, format_trading_data
-from analysis.technical_analysis_util import check_year_ma, check_duplicate_strategy, display_quant
+from analysis.technical_analysis_util import check_year_ma, check_duplicate_strategy, display_quant, setup_realtime_sdt
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
@@ -30,15 +30,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
 
     if real_time:
-        today_sdt = SDT.objects(date=kwargs['qr_date'])
-        if kwargs['qr_date'] == datetime.date.today() and not today_sdt:
-            today_trading = kwargs.get('today_trading', {})
-            if not today_trading.get(stock_number):
-                return
-
-            sdt = list(sdt)
-            sdt.insert(0, today_trading.get(stock_number))
-
+        sdt = setup_realtime_sdt(stock_number, sdt, kwargs)
     trading_data = format_trading_data(sdt)
     if not trading_data:
         return

@@ -12,7 +12,7 @@ from logger import setup_logging
 from models import QuantResult as QR, StockDailyTrading as SDT
 from analysis.technical_analysis_util import calculate_macd, format_trading_data, check_duplicate_strategy
 from analysis.technical_analysis_util import start_quant_analysis, collect_stock_daily_trading, display_quant
-from analysis.technical_analysis_util import check_year_ma
+from analysis.technical_analysis_util import check_year_ma, setup_realtime_sdt
 
 
 step = 100  # 一次从数据库取出打股票数量
@@ -32,14 +32,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return ''
 
     if real_time:
-        today_sdt = SDT.objects(date=kwargs['qr_date'])
-        if kwargs['qr_date'] == datetime.date.today() and not today_sdt:
-            today_trading = kwargs.get('today_trading', {})
-            if not today_trading.get(stock_number):
-                return ''
-
-            sdt = list(sdt)
-            sdt.insert(0, today_trading.get(stock_number))
+        sdt = setup_realtime_sdt(stock_number, sdt, kwargs)
     trading_data = format_trading_data(sdt)
     df = calculate_macd(DataFrame(trading_data), kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
     today_macd = df.iloc[-1]

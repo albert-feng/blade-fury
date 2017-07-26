@@ -268,3 +268,14 @@ def setup_realtime_swt(swt, stock_number):
     swt = list(swt)
     swt.insert(0, extra_swt)
     return swt
+
+def setup_realtime_sdt(stock_number, sdt, kwargs):
+    today_sdt = SDT.objects(date=kwargs['qr_date'])
+    if kwargs['qr_date'] == datetime.date.today() and not today_sdt:
+        today_trading = kwargs.get('today_trading', {})
+        if not today_trading.get(stock_number):
+            return
+
+        sdt = list(sdt)
+        sdt.insert(0, today_trading.get(stock_number))
+    return sdt
