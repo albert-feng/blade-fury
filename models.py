@@ -231,6 +231,7 @@ if __name__ == '__main__':
     StockInfo.ensure_indexes()
     StockNotice.ensure_indexes()
     StockDailyTrading.ensure_indexes()
+    StockWeeklyTrading.ensure_indexes()
     QuantResult.ensure_indexes()
     BuffettIndex.ensure_indexes()
     IndexDailyTrading.ensure_indexes()

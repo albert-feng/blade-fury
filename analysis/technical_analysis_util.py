@@ -255,7 +255,7 @@ def display_quant(real_time_res):
     pd.reset_option('display.max_rows')
 
 
-def setup_realtime_swt(swt, stock_number):
+def setup_realtime_swt(swt, stock_number, qr_date):
     # 当没有当周数据时，用日线数据补
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(date=qr_date))
     if not sdt:
@@ -268,6 +268,7 @@ def setup_realtime_swt(swt, stock_number):
     swt = list(swt)
     swt.insert(0, extra_swt)
     return swt
+
 
 def setup_realtime_sdt(stock_number, sdt, kwargs):
     today_sdt = SDT.objects(date=kwargs['qr_date'])

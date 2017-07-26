@@ -43,7 +43,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
     use_ad_price = True
     if swt[0].last_trade_date < qr_date:
         use_ad_price = False
-        swt = setup_realtime_swt(swt, stock_number)
+        swt = setup_realtime_swt(swt, stock_number, qr_date)
     if not swt:
         return
 
