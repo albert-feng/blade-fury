@@ -12,14 +12,14 @@ from logger import setup_logging
 from models import QuantResult as QR, StockDailyTrading as SDT
 from analysis.technical_analysis_util import calculate_ma, format_trading_data, check_duplicate_strategy
 from analysis.technical_analysis_util import start_quant_analysis, collect_stock_daily_trading, display_quant
-from analysis.technical_analysis_util import check_year_ma
+from analysis.technical_analysis_util import pre_sdt_check
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
     short_ma = kwargs['short_ma']
     long_ma = kwargs['long_ma']
     qr_date = kwargs['qr_date']
-    if not check_year_ma(stock_number, qr_date):
+    if not pre_sdt_check(stock_number, qr_date):
         return
 
     real_time = kwargs.get('real_time', False)

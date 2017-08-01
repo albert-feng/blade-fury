@@ -88,18 +88,20 @@ def calculate_ma(df, short_ma, long_ma):
         raise Exception('df type is wrong')
 
 
-def check_year_ma(stock_number, qr_date):
+def pre_sdt_check(stock_number, qr_date):
     """
-    去掉年线以下的
+    依据量价进行预先筛选
     :param stock_number:
     :param qr_date:
     :return:
     """
-    cursor = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date))
+    rate_value = 0
+    cursor = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date))\
+             .order_by('-date')
     if not cursor:
         return False
 
-    sdt = cursor.order_by('-date')[:year_num+5]
+    sdt = cursor[:year_num+5]
     trading_data = format_trading_data(sdt)
     if not trading_data:
         return False
@@ -107,9 +109,21 @@ def check_year_ma(stock_number, qr_date):
     df['year_ma'] = df['close_price'].rolling(window=year_num, center=False).mean()
     today_ma = df.iloc[-1]
     if today_ma['close_price'] > today_ma['year_ma']:
+        rate_value += 1
+
+    max_trade_amount = 15000
+    avg_trade_amount = 10000
+    amount_sdt = cursor[:5]
+
+    if amount_sdt.average('turnover_amount') >= avg_trade_amount or\
+       max([i.turnover_amount for i in amount_sdt]) >= max_trade_amount:
+        rate_value += 1
+
+    if rate_value == 2:
         return True
     else:
         return False
+
 
 
 def check_duplicate_strategy(qr):

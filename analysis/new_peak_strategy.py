@@ -11,14 +11,14 @@ from pandas import DataFrame
 from logger import setup_logging
 from models import QuantResult as QR, StockDailyTrading as SDT
 from analysis.technical_analysis_util import collect_stock_daily_trading, start_quant_analysis, format_trading_data
-from analysis.technical_analysis_util import check_year_ma, check_duplicate_strategy, display_quant, setup_realtime_sdt
+from analysis.technical_analysis_util import pre_sdt_check, check_duplicate_strategy, display_quant, setup_realtime_sdt
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
     length = kwargs['length']
     qr_date = kwargs['qr_date']
     real_time = kwargs.get('real_time', False)
-    if not check_year_ma(stock_number, qr_date):
+    if not pre_sdt_check(stock_number, qr_date):
         return
 
     strategy_name = 'new_peak_%s' % length

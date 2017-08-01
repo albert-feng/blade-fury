@@ -17,14 +17,14 @@ from pandas import DataFrame
 from logger import setup_logging
 from models import QuantResult as QR, StockWeeklyTrading as SWT
 from analysis.technical_analysis_util import calculate_ma, format_trading_data, check_duplicate_strategy
-from analysis.technical_analysis_util import start_quant_analysis, check_year_ma, setup_realtime_swt
+from analysis.technical_analysis_util import start_quant_analysis, pre_sdt_check, setup_realtime_swt
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
     short_ma = kwargs['short_ma']
     long_ma = kwargs['long_ma']
     qr_date = kwargs['qr_date']
-    if not check_year_ma(stock_number, qr_date):
+    if not pre_sdt_check(stock_number, qr_date):
         return
 
     if short_ma < long_ma:
