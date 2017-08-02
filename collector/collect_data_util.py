@@ -62,7 +62,8 @@ def check_duplicate(trading_data):
         else:
             return False
     elif isinstance(trading_data, SWT):
-        cursor = SWT.objects(Q(stock_number=trading_data.stock_number) & Q(last_trade_date=trading_data.last_trade_date))
+        cursor = SWT.objects(Q(stock_number=trading_data.stock_number) &
+                             Q(first_trade_date=trading_data.first_trade_date))
         if cursor:
             return True
         else:

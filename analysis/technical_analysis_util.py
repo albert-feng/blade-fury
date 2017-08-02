@@ -118,12 +118,13 @@ def pre_sdt_check(stock_number, qr_date):
     if amount_sdt.average('turnover_amount') >= avg_trade_amount or\
        max([i.turnover_amount for i in amount_sdt]) >= max_trade_amount:
         rate_value += 1
+    else:
+        rate_value -= 1
 
-    if rate_value == 2:
+    if rate_value:
         return True
     else:
         return False
-
 
 
 def check_duplicate_strategy(qr):
