@@ -110,12 +110,13 @@ def pre_sdt_check(stock_number, qr_date):
     today_ma = df.iloc[-1]
     if today_ma['close_price'] > today_ma['year_ma']:
         rate_value += 1
-
     max_trade_amount = 15000
     avg_trade_amount = 10000
-    amount_sdt = cursor[:5]
+    amount_sdt = sdt[:5]
+    amount_li = [i.turnover_amount for i in amount_sdt]
+    amount_avg = sum(amount_li) / len(amount_li)
 
-    if amount_sdt.average('turnover_amount') >= avg_trade_amount or\
+    if amount_avg >= avg_trade_amount or\
        max([i.turnover_amount for i in amount_sdt]) >= max_trade_amount:
         rate_value += 1
     else:
