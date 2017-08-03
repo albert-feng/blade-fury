@@ -141,7 +141,7 @@ def cal_year_ma(cursor):
     df = DataFrame(trading_data)
     df['year_ma'] = df['close_price'].rolling(window=year_num, center=False).mean()
     today_ma = df.iloc[-1]
-    return today_ma['year_ma']
+    return round(today_ma['year_ma'], 4)
 
 
 def cal_turnover_ma(cursor, count):
