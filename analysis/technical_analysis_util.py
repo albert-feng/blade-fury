@@ -117,15 +117,13 @@ def pre_sdt_check(stock_number, qr_date):
     if today_closing_price >= year_ma:
         rate_value += 1
 
-    max_trade_amount = 15000
-    avg_trade_amount = 10000
+    max_trade_amount = 50000
+    avg_trade_amount = 20000
     amount_sdt = cursor[:5]
 
     if cal_turnover_ma(cursor, 5) >= avg_trade_amount or\
        max([i.turnover_amount for i in amount_sdt]) >= max_trade_amount:
         rate_value += 1
-    else:
-        rate_value -= 1
 
     if rate_value:
         return True
