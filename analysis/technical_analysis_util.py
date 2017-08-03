@@ -97,26 +97,31 @@ def pre_sdt_check(stock_number, qr_date):
     """
     rate_value = 0
     cursor = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date))\
-             .order_by('-date')
+        .order_by('-date')
     if not cursor:
         return False
 
-    sdt = cursor[:year_num+5]
-    trading_data = format_trading_data(sdt)
-    if not trading_data:
-        return False
-    df = DataFrame(trading_data)
-    df['year_ma'] = df['close_price'].rolling(window=year_num, center=False).mean()
-    today_ma = df.iloc[-1]
-    if today_ma['close_price'] > today_ma['year_ma']:
+    today_sdt = cursor[0]
+    today_closing_price = today_sdt.today_closing_price
+
+    if today_sdt.year_ma:
+        year_ma = today_sdt.year_ma
+    else:
+        year_ma = cal_year_ma(cursor)
+        try:
+            today_sdt.year_ma = year_ma
+            today_sdt.save()
+        except Exception:
+            pass
+
+    if today_closing_price >= year_ma:
         rate_value += 1
+
     max_trade_amount = 15000
     avg_trade_amount = 10000
-    amount_sdt = sdt[:5]
-    amount_li = [i.turnover_amount for i in amount_sdt]
-    amount_avg = sum(amount_li) / len(amount_li)
+    amount_sdt = cursor[:5]
 
-    if amount_avg >= avg_trade_amount or\
+    if cal_turnover_ma(cursor, 5) >= avg_trade_amount or\
        max([i.turnover_amount for i in amount_sdt]) >= max_trade_amount:
         rate_value += 1
     else:
@@ -126,6 +131,24 @@ def pre_sdt_check(stock_number, qr_date):
         return True
     else:
         return False
+
+
+def cal_year_ma(cursor):
+    sdt = cursor[:year_num + 5]
+    trading_data = format_trading_data(sdt)
+    if not trading_data:
+        return False
+    df = DataFrame(trading_data)
+    df['year_ma'] = df['close_price'].rolling(window=year_num, center=False).mean()
+    today_ma = df.iloc[-1]
+    return today_ma['year_ma']
+
+
+def cal_turnover_ma(cursor, count):
+    amount_sdt = cursor[:count]
+    amount_li = [i.turnover_amount for i in amount_sdt]
+    amount_avg = sum(amount_li) / len(amount_li)
+    return amount_avg
 
 
 def check_duplicate_strategy(qr):

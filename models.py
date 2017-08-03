@@ -59,6 +59,7 @@ class StockDailyTrading(Document):
     circulation_stock = IntField()  # 股票的当日流通股
     date = DateTimeField(default=datetime.date.today())  # 收录股票交易数据的日期
     timestamp = IntField(default=int(time.time()))  # 收录数据时的时间戳
+    year_ma = FloatField(default=0)  # 年线价格 单位 rmb
     meta = {
         'indexes': ['date', 'stock_number', 'today_closing_price', ('stock_number', '-date'), ('stock_number', 'date')],
         'index_background': True,
