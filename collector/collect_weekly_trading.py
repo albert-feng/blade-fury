@@ -71,6 +71,7 @@ def collect_stock_data(stock_number, start_date, end_date):
         swt = SWT()
         swt.stock_number = i.get('ticker')
         swt.stock_name = i.get('secShortName')
+        swt.trade_days = int(i.get('numDays'))
         try:
             swt.first_trade_date = datetime.strptime(i.get('firstTradeDate'), '%Y-%m-%d %H:%M:%S')
             swt.last_trade_date = datetime.strptime(i.get('lastTradeDate'), '%Y-%m-%d %H:%M:%S')
@@ -78,11 +79,10 @@ def collect_stock_data(stock_number, start_date, end_date):
         except Exception as e:
             logging.error('Format time failed:' + str(e))
             continue
-        if swt.last_trade_date != swt.end_date:
-            # 只保存完成周的数据
+        if swt.trade_days:
+            # 只保存完成有交易的周的数据
             continue
 
-        swt.trade_days = int(i.get('numDays'))
         swt.pre_close_price = float(i.get('preClosePrice'))
         swt.weekly_open_price = float(i.get('openPrice'))
         swt.weekly_close_price = float(i.get('closePrice'))
