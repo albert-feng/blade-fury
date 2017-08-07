@@ -117,8 +117,8 @@ def pre_sdt_check(stock_number, qr_date):
     if today_closing_price >= year_ma:
         rate_value += 1
 
-    max_trade_amount = 50000
-    avg_trade_amount = 20000
+    max_trade_amount = 30000
+    avg_trade_amount = 15000
     amount_avg_num = 5
     amount_sdt = cursor[:amount_avg_num]
 
@@ -202,6 +202,7 @@ def start_quant_analysis(**kwargs):
                 continue
 
             qr = ''
+            kwargs['industry_involved'] = i.industry_involved
             try:
                 qr = kwargs['quant_stock'](i.stock_number, i.stock_name, **kwargs)
             except Exception as e:

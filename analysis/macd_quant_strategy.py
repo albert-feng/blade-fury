@@ -49,7 +49,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
                                               kwargs['dif_ema'])
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=today_macd.name,
-            strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today_macd['close_price']
+            strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today_macd['close_price'],
+            industry_involved=kwargs.get('industry_involved')
         )
         if real_time and strategy_direction == 'long':
             return qr

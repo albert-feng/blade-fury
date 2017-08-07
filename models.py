@@ -164,6 +164,7 @@ class QuantResult(Document):
     date = DateTimeField(default=datetime.date.today())  # 根据相应策略选出股票的日期
     strategy_direction = StringField(choices=['long', 'short'], default='long')  # 策略的方向性，可以是做多和做空
     strategy_name = StringField()  # 策略的名称
+    industry_involved = StringField(max_length=100)  # 公司所属行业
     init_price = FloatField()  # 选出股票时这个票的收盘价
     one_back_test = BooleanField()  # 一个交易日之后的回测结果
     one_price = FloatField()  # 一个交易日之后回测时的价格

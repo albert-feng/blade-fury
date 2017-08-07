@@ -42,7 +42,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=today_data.date,
             strategy_direction=strategy_direction, strategy_name=strategy_name,
-            init_price=today_data['close_price']
+            init_price=today_data['close_price'], industry_involved=kwargs.get('industry_involved')
         )
         if real_time:
             return qr

@@ -56,7 +56,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=today_ma.name,
             strategy_direction=strategy_direction, strategy_name=strategy_name,
-            init_price=init_price
+            init_price=init_price, industry_involved=kwargs.get('industry_involved')
         )
         if not check_duplicate_strategy(qr):
             qr.save()
