@@ -92,8 +92,9 @@ class StockWeeklyTrading(Document):
     turnover_amount = IntField()  # 成交额 单位 /万
     turnover_volume = IntField()  # 成交量 单位 /手
     meta = {
-        'indexes': ['stock_number', 'last_trade_date', 'trade_days', ('stock_number', 'last_trade_date'),
-                   ('stock_number', '-last_trade_date')],
+        'indexes': ['stock_number', 'last_trade_date', ('stock_number', 'last_trade_date'),
+                    ('stock_number', '-last_trade_date'), ('stock_number', 'first_trade_date'),
+                    ('stock_number', '-first_trade_date')],
         'index_background': True,
     }
 
