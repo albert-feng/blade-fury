@@ -44,5 +44,5 @@ market_index = 'http://hqdigi2.eastmoney.com/EM_Quote2010NumericApplication/Inde
 datayes_day_trading = 'https://api.wmcloud.com/data/v1/api/market/getMktEqud.json?tradeDate={}'
 datayes_week_trading = 'https://api.wmcloud.com/data/v1/api/market/getMktEquwJL.json?field=&secID={}&startDate={}&' \
                        'finishDate={}'
-datayes_headers = {'Authorization': 'Bearer 82afa4c4a1bfecc6cbd95a3eb8548ee0dea2fccc10f2521e76f194cb13001f49'}
+datayes_headers = {'Authorization': 'Bearer 49624017e208b4ecea0e7742756eacd6716f648b1d5eaf73df241765a1c2af2f'}
 stock_exchange = {u'上海': u'XSHG', u'深圳': u'XSHE'}

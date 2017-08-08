@@ -3,7 +3,7 @@
 
 
 import logging
-from datetime import datetime
+import datetime
 import json
 import argparse
 
@@ -46,7 +46,7 @@ def start_collect_data(start_date, end_date):
 
 
 def collect_stock_data(stock_number, start_date, end_date):
-    if not isinstance(start_date, datetime) or not isinstance(end_date, datetime):
+    if not isinstance(start_date, datetime.date) or not isinstance(end_date, datetime.date):
         return
 
     sec_id = ''
@@ -73,14 +73,11 @@ def collect_stock_data(stock_number, start_date, end_date):
         swt.stock_name = i.get('secShortName')
         swt.trade_days = int(i.get('numDays'))
         try:
-            swt.first_trade_date = datetime.strptime(i.get('firstTradeDate'), '%Y-%m-%d %H:%M:%S')
-            swt.last_trade_date = datetime.strptime(i.get('lastTradeDate'), '%Y-%m-%d %H:%M:%S')
-            swt.end_date = datetime.strptime(i.get('endDate'), '%Y-%m-%d %H:%M:%S')
+            swt.first_trade_date = datetime.datetime.strptime(i.get('firstTradeDate'), '%Y-%m-%d %H:%M:%S')
+            swt.last_trade_date = datetime.datetime.strptime(i.get('lastTradeDate'), '%Y-%m-%d %H:%M:%S')
+            swt.end_date = datetime.datetime.strptime(i.get('endDate'), '%Y-%m-%d %H:%M:%S')
         except Exception as e:
             logging.error('Format time failed:' + str(e))
-            continue
-        if swt.trade_days:
-            # 只保存完成有交易的周的数据
             continue
 
         swt.pre_close_price = float(i.get('preClosePrice'))
@@ -103,16 +100,20 @@ def collect_stock_data(stock_number, start_date, end_date):
 
 def setup_argparse():
     parser = argparse.ArgumentParser(description=u'采集周线数据')
-    parser.add_argument(u'-s', action=u'store', dest='start_date', required=True, help=u'起始时间')
-    parser.add_argument(u'-e', action=u'store', dest='end_date', required=True, help=u'结束时间')
+    parser.add_argument(u'-s', action=u'store', dest='start_date', required=False, help=u'起始时间')
+    parser.add_argument(u'-e', action=u'store', dest='end_date', required=False, help=u'结束时间')
 
     args = parser.parse_args()
-    try:
-        start_date = datetime.strptime(args.start_date, '%Y-%m-%d')
-        end_date = datetime.strptime(args.end_date, '%Y-%m-%d')
-    except Exception as e:
-        print('Wrong date form')
-        raise e
+    if args.start_date and args.end_date:
+        try:
+            start_date = datetime.datetime.strptime(args.start_date, '%Y-%m-%d').date()
+            end_date = datetime.datetime.strptime(args.end_date, '%Y-%m-%d').date()
+        except Exception as e:
+            print('Wrong date form')
+            raise e
+    else:
+        end_date = datetime.date.today()
+        start_date = end_date - datetime.timedelta(days=30)
 
     return start_date, end_date
 
