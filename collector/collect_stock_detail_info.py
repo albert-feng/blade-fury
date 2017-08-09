@@ -11,7 +11,6 @@ import datetime
 import logging
 import json
 
-import requests
 from bs4 import BeautifulSoup
 
 from models import StockInfo
@@ -21,7 +20,6 @@ from collector.collect_data_util import send_request
 
 
 query_step = 100  # 每次查询数据库的步长，以防出现cursor超时的错误
-concept_separator = [u'，', u' ']
 
 
 def estimate_market(stock_number):
@@ -73,10 +71,11 @@ def collect_company_survey(stock_info):
         try:
             res = send_request(stock_value_url)
             data = json.loads(res.replace('callback(', '').replace(')', ''))['Value']
-            circulated_value = int(data[45])
-            total_value = int(data[46])
-            stock_info.circulated_value = circulated_value
-            stock_info.total_value = total_value
+            if data:
+                circulated_value = int(data[45])
+                total_value = int(data[46])
+                stock_info.circulated_value = circulated_value
+                stock_info.total_value = total_value
         except Exception as e:
             logging.error('Error when get %s value:%s' % (stock_info.stock_number, e))
 
