@@ -47,8 +47,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if strategy_direction:
         strategy_name = 'macd_%s_%s_%s_%s' % (strategy_direction, kwargs['short_ema'], kwargs['long_ema'],
                                               kwargs['dif_ema'])
-        increase_rate = str(round((today['close_price'] - yestoday['close_price']) /
-                                  yestoday['close_price'], 4) * 100) + '%'
+        increase_rate = round((today['close_price'] - yestoday['close_price']) / yestoday['close_price'], 4) * 100
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=today.name,
             strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today['close_price'],

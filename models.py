@@ -167,7 +167,7 @@ class QuantResult(Document):
     strategy_name = StringField()  # 策略的名称
     industry_involved = StringField(max_length=100)  # 公司所属行业
     init_price = FloatField()  # 选出股票时这个票的收盘价
-    increase_rate = StringField()  # 股票今日涨幅 单位 %
+    increase_rate = FloatField()  # 股票今日涨幅 单位 %
     one_back_test = BooleanField()  # 一个交易日之后的回测结果
     one_price = FloatField()  # 一个交易日之后回测时的价格
     three_back_test = BooleanField()  # 三个交易日之后的回测结果

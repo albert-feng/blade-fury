@@ -53,8 +53,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         else:
             init_price = this_week['close_price']
 
-        increase_rate = str(round((this_week['close_price'] - last_week['close_price']) /
-                                  last_week['close_price'], 4) * 100) + '%'
+        increase_rate = round((this_week['close_price'] - last_week['close_price']) / last_week['close_price'], 4) * 100
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=this_week.name,
             strategy_direction=strategy_direction, strategy_name=strategy_name,

@@ -55,8 +55,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
     yestoday = df.iloc[-2]
 
     if today['diff_ma'] > 0 > yestoday['diff_ma']:
-        increase_rate = str(round((today['close_price'] - yestoday['close_price']) /
-                                  yestoday['close_price'], 4) * 100) + '%'
+        increase_rate = round((today['close_price'] - yestoday['close_price']) / yestoday['close_price'], 4) * 100
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=today.name,
             strategy_direction=strategy_direction, strategy_name=strategy_name,
