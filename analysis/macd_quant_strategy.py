@@ -35,22 +35,24 @@ def quant_stock(stock_number, stock_name, **kwargs):
         sdt = setup_realtime_sdt(stock_number, sdt, kwargs)
     trading_data = format_trading_data(sdt)
     df = calculate_macd(DataFrame(trading_data), kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
-    today_macd = df.iloc[-1]
-    yestoday_macd = df.iloc[-2]
+    today = df.iloc[-1]
+    yestoday = df.iloc[-2]
 
     strategy_direction = ''
-    if yestoday_macd['macd'] < 0 < today_macd['macd']:
+    if yestoday['macd'] < 0 < today['macd']:
         strategy_direction = 'long'
-    elif yestoday_macd['macd'] > 0 > today_macd['macd']:
+    elif yestoday['macd'] > 0 > today['macd']:
         strategy_direction = 'short'
 
     if strategy_direction:
         strategy_name = 'macd_%s_%s_%s_%s' % (strategy_direction, kwargs['short_ema'], kwargs['long_ema'],
                                               kwargs['dif_ema'])
+        increase_rate = str(round((today['close_price'] - yestoday['close_price']) /
+                                  yestoday['close_price'], 4) * 100) + '%'
         qr = QR(
-            stock_number=stock_number, stock_name=stock_name, date=today_macd.name,
-            strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today_macd['close_price'],
-            industry_involved=kwargs.get('industry_involved')
+            stock_number=stock_number, stock_name=stock_name, date=today.name,
+            strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=today['close_price'],
+            industry_involved=kwargs.get('industry_involved'), increase_rate=increase_rate
         )
         if real_time and strategy_direction == 'long':
             return qr

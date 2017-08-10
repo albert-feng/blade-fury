@@ -52,10 +52,12 @@ def quant_stock(stock_number, stock_name, **kwargs):
         else:
             init_price = this_week['close_price']
 
+        increase_rate = str(round((this_week['close_price'] - last_week['close_price']) /
+                                  last_week['close_price'], 4) * 100) + '%'
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=this_week.name,
             strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=init_price,
-            industry_involved=kwargs.get('industry_involved')
+            industry_involved=kwargs.get('industry_involved'), increase_rate=increase_rate
         )
         if not check_duplicate_strategy(qr):
             qr.save()

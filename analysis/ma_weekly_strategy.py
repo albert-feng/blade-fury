@@ -44,19 +44,22 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     trading_data = format_trading_data(swt, use_ad_price)
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
-    today_ma = df.iloc[-1]
-    yestoday_ma = df.iloc[-2]
+    this_week = df.iloc[-1]
+    last_week = df.iloc[-2]
 
-    if today_ma['diff_ma'] > 0 > yestoday_ma['diff_ma']:
+    if this_week['diff_ma'] > 0 > last_week['diff_ma']:
         if use_ad_price:
             init_price = swt[0].weekly_close_price
         else:
-            init_price = today_ma['close_price']
+            init_price = this_week['close_price']
 
+        increase_rate = str(round((this_week['close_price'] - last_week['close_price']) /
+                                  last_week['close_price'], 4) * 100) + '%'
         qr = QR(
-            stock_number=stock_number, stock_name=stock_name, date=today_ma.name,
+            stock_number=stock_number, stock_name=stock_name, date=this_week.name,
             strategy_direction=strategy_direction, strategy_name=strategy_name,
-            init_price=init_price, industry_involved=kwargs.get('industry_involved')
+            init_price=init_price, industry_involved=kwargs.get('industry_involved'),
+            increase_rate=increase_rate
         )
         if not check_duplicate_strategy(qr):
             qr.save()

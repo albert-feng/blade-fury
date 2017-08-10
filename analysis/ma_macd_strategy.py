@@ -35,8 +35,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
     trading_data = format_trading_data(sdt)
     df = calculate_macd(DataFrame(trading_data), kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
     df = calculate_ma(df, kwargs['short_ma'], kwargs['long_ma'])
-    today_analysis = df.iloc[-1]
-    yestoday_analysis = df.iloc[-2]
+    today = df.iloc[-1]
+    yestoday = df.iloc[-2]
 
     if short_ma <= long_ma:
         strategy_direction = 'long'
@@ -44,21 +44,25 @@ def quant_stock(stock_number, stock_name, **kwargs):
         strategy_direction = 'short'
     strategy_name = 'ma_macd_%s_%s_%s' % (strategy_direction, short_ma, long_ma)
 
-    if today_analysis['diff_ma'] > 0 > yestoday_analysis['diff_ma']:
+    if today['diff_ma'] > 0 > yestoday['diff_ma']:
+        increase_rate = str(round((today['close_price'] - yestoday['close_price']) /
+                                  yestoday['close_price'], 4) * 100) + '%'
         qr = ''
         if strategy_direction == 'long':
-            if today_analysis['macd'] > 0 > today_analysis['dif'] and today_analysis['dea'] < 0:
+            if today['macd'] > 0 > today['dif'] and today['dea'] < 0:
                 qr = QR(
-                    stock_number=stock_number, stock_name=stock_name, date=today_analysis.name,
+                    stock_number=stock_number, stock_name=stock_name, date=today.name,
                     strategy_direction=strategy_direction, strategy_name=strategy_name,
-                    init_price=today_analysis['close_price']
+                    init_price=today['close_price'], industry_involved=kwargs.get('industry_involved'),
+                    increase_rate=increase_rate
                 )
         elif strategy_direction == 'short':
-            if today_analysis['macd'] < 0 < today_analysis['dif'] and today_analysis['dea'] > 0:
+            if today['macd'] < 0 < today['dif'] and today['dea'] > 0:
                 qr = QR(
-                    stock_number=stock_number, stock_name=stock_name, date=today_analysis.name,
+                    stock_number=stock_number, stock_name=stock_name, date=today.name,
                     strategy_direction=strategy_direction, strategy_name=strategy_name,
-                    init_price=today_analysis['close_price'], industry_involved=kwargs.get('industry_involved')
+                    init_price=today['close_price'], industry_involved=kwargs.get('industry_involved'),
+                    increase_rate=increase_rate
                 )
 
         if isinstance(qr, QR):

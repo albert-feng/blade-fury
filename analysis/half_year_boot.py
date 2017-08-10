@@ -51,14 +51,17 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
 
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
-    today_ma = df.iloc[-1]
-    yestoday_ma = df.iloc[-2]
+    today = df.iloc[-1]
+    yestoday = df.iloc[-2]
 
-    if today_ma['diff_ma'] > 0 > yestoday_ma['diff_ma']:
+    if today['diff_ma'] > 0 > yestoday['diff_ma']:
+        increase_rate = str(round((today['close_price'] - yestoday['close_price']) /
+                                  yestoday['close_price'], 4) * 100) + '%'
         qr = QR(
-            stock_number=stock_number, stock_name=stock_name, date=today_ma.name,
+            stock_number=stock_number, stock_name=stock_name, date=today.name,
             strategy_direction=strategy_direction, strategy_name=strategy_name,
-            init_price=today_ma['close_price'], industry_involved=kwargs.get('industry_involved')
+            init_price=today['close_price'], industry_involved=kwargs.get('industry_involved'),
+            increase_rate=increase_rate
         )
         if real_time:
             return qr
