@@ -7,6 +7,8 @@ import datetime
 import json
 import argparse
 
+from mongoengine import Q
+
 from models import StockWeeklyTrading as SWT
 from models import StockInfo
 from config import stock_exchange, datayes_week_trading
@@ -68,18 +70,31 @@ def collect_stock_data(stock_number, start_date, end_date):
         if i.get('numDays', 0) == 0:
             continue
 
-        swt = SWT()
-        swt.stock_number = i.get('ticker')
-        swt.stock_name = i.get('secShortName')
-        swt.trade_days = int(i.get('numDays'))
+        stock_number = i.get('ticker')
         try:
-            swt.first_trade_date = datetime.datetime.strptime(i.get('firstTradeDate'), '%Y-%m-%d %H:%M:%S')
-            swt.last_trade_date = datetime.datetime.strptime(i.get('lastTradeDate'), '%Y-%m-%d %H:%M:%S')
-            swt.end_date = datetime.datetime.strptime(i.get('endDate'), '%Y-%m-%d %H:%M:%S')
+            first_trade_date = datetime.datetime.strptime(i.get('firstTradeDate'), '%Y-%m-%d %H:%M:%S')
+            last_trade_date = datetime.datetime.strptime(i.get('lastTradeDate'), '%Y-%m-%d %H:%M:%S')
+            end_date = datetime.datetime.strptime(i.get('endDate'), '%Y-%m-%d %H:%M:%S')
         except Exception as e:
             logging.error('Format time failed:' + str(e))
             continue
 
+        former_swt = SWT.objects(Q(stock_number=stock_number) & Q(first_trade_date=first_trade_date))
+        new_object = True
+        if former_swt:
+            swt = former_swt.next()
+            if swt.last_trade_date >= last_trade_date:
+                continue
+            new_object = False
+        else:
+            swt = SWT()
+            swt.stock_number = stock_number
+            swt.stock_name = i.get('secShortName')
+
+        swt.trade_days = int(i.get('numDays'))
+        swt.first_trade_date = first_trade_date
+        swt.last_trade_date = last_trade_date
+        swt.end_date = end_date
         swt.pre_close_price = float(i.get('preClosePrice'))
         swt.weekly_open_price = float(i.get('openPrice'))
         swt.weekly_close_price = float(i.get('closePrice'))
@@ -94,7 +109,10 @@ def collect_stock_data(stock_number, start_date, end_date):
         swt.turnover_amount = int(i.get('turnoverValue')) / 10000
         swt.turnover_volume = int(i.get('turnoverVol')) / 100
 
-        if not check_duplicate(swt):
+        if new_object:
+            if not check_duplicate(swt):
+                swt.save()
+        else:
             swt.save()
 
 
