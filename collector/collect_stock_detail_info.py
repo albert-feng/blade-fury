@@ -39,6 +39,7 @@ def collect_company_survey(stock_info):
 
     company_survey_url = company_survey.format(query_id)
     retry = 5
+    survey_table = ''
 
     while retry:
         try:
