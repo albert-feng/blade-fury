@@ -38,9 +38,18 @@ def collect_company_survey(stock_info):
     query_id = estimate_market(stock_info.stock_number)+stock_info.stock_number
 
     company_survey_url = company_survey.format(query_id)
-    survey_html = send_request(company_survey_url)
-    survey_soup = BeautifulSoup(survey_html, 'lxml')
-    survey_table = survey_soup.find('table', id='Table0').find_all('td')
+    retry = 5
+
+    while retry:
+        try:
+            survey_html = send_request(company_survey_url)
+            survey_soup = BeautifulSoup(survey_html, 'lxml')
+            survey_table = survey_soup.find('table', id='Table0').find_all('td')
+            break
+        except Exception:
+            retry -= 1
+            time.sleep(1)
+
     if not survey_soup or not survey_table:
         return
 
