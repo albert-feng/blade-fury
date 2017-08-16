@@ -40,6 +40,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     if real_time:
         sdt = setup_realtime_sdt(stock_number, sdt, kwargs)
+        if not sdt:
+            return
     trading_data = format_trading_data(sdt)
     if not trading_data:
         return

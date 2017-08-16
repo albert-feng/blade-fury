@@ -33,6 +33,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     if real_time:
         sdt = setup_realtime_sdt(stock_number, sdt, kwargs)
+        if not sdt:
+            return
     trading_data = format_trading_data(sdt)
     df = calculate_macd(DataFrame(trading_data), kwargs['short_ema'], kwargs['long_ema'], kwargs['dif_ema'])
     today = df.iloc[-1]

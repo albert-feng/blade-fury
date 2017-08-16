@@ -198,7 +198,8 @@ def start_quant_analysis(**kwargs):
                 # 过滤瑞华的客户
                 continue
 
-            if not SDT.objects(Q(date=kwargs['qr_date']) & Q(stock_number=i.stock_number)):
+            if not kwargs.get('real_time') and\
+               not SDT.objects(Q(date=kwargs['qr_date']) & Q(stock_number=i.stock_number)):
                 continue
 
             qr = ''
@@ -260,6 +261,8 @@ def collect_stock_daily_trading():
     today_trading = {}
     for i in stock_data:
         stock = i.split(',')
+        if stock[4] == '-':
+            continue
         stock_number = stock[1]
         stock_name = stock[2]
         sdt = SDT(stock_number=stock_number, stock_name=stock_name)
@@ -298,7 +301,7 @@ def setup_realtime_swt(swt, stock_number, qr_date):
     # 当没有当周数据时，用日线数据补
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(date=qr_date))
     if not sdt:
-        return
+        return list()
 
     qr_date_trading = sdt[0]
     extra_swt = SWT()
@@ -314,7 +317,7 @@ def setup_realtime_sdt(stock_number, sdt, kwargs):
     if kwargs['qr_date'] == datetime.date.today() and not today_sdt:
         today_trading = kwargs.get('today_trading', {})
         if not today_trading.get(stock_number):
-            return
+            return list()
 
         sdt = list(sdt)
         sdt.insert(0, today_trading.get(stock_number))

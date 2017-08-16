@@ -39,6 +39,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     if real_time:
         sdt = setup_realtime_sdt(stock_number, sdt, kwargs)
+        if not sdt:
+            return
     if sdt[0].today_closing_price < sdt[0].today_opening_price:
         return
 
