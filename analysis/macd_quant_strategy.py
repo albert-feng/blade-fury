@@ -21,7 +21,8 @@ year_num = 250
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
-    if not pre_sdt_check(stock_number, kwargs['qr_date']):
+    week_long = kwargs.get('week_long', False)
+    if not pre_sdt_check(stock_number, **kwargs):
         return
 
     real_time = kwargs.get('real_time', False)
@@ -49,6 +50,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if strategy_direction:
         strategy_name = 'macd_%s_%s_%s_%s' % (strategy_direction, kwargs['short_ema'], kwargs['long_ema'],
                                               kwargs['dif_ema'])
+        if week_long:
+            strategy_name = 'weeklong_' + strategy_name
         increase_rate = round((today['close_price'] - yestoday['close_price']) / yestoday['close_price'], 4) * 100
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=today.name,
@@ -70,6 +73,7 @@ def setup_argparse():
     parser.add_argument(u'-d', action=u'store', dest='dif_ema', required=True, help=u'dif指数加权均线数')
     parser.add_argument(u'-t', action=u'store', dest='qr_date', required=False, help=u'计算策略的日期')
     parser.add_argument(u'-r', action=u'store_true', dest='real_time', required=False, help=u'是否实时计算')
+    parser.add_argument(u'-w', action=u'store_true', dest='week_long', required=False, help=u'是否处于周线多头')
 
     args = parser.parse_args()
     if args.qr_date:
@@ -81,17 +85,18 @@ def setup_argparse():
     else:
         qr_date = datetime.date.today()
 
-    return int(args.short_ema), int(args.long_ema), int(args.dif_ema), qr_date, args.real_time
+    return int(args.short_ema), int(args.long_ema), int(args.dif_ema), qr_date, args.real_time, args.week_long
 
 
 if __name__ == '__main__':
     setup_logging(__file__, logging.WARNING)
-    short_ema, long_ema, dif_ema, qr_date, real_time = setup_argparse()
+    short_ema, long_ema, dif_ema, qr_date, real_time, week_long = setup_argparse()
     today_trading = {}
     if real_time:
         today_trading = collect_stock_daily_trading()
 
     real_time_res = start_quant_analysis(short_ema=short_ema, long_ema=long_ema, dif_ema=dif_ema, qr_date=qr_date,
-                                         quant_stock=quant_stock, real_time=real_time, today_trading=today_trading)
+                                         quant_stock=quant_stock, real_time=real_time, today_trading=today_trading,
+                                         week_long=week_long)
     if real_time_res and real_time:
         display_quant(real_time_res)

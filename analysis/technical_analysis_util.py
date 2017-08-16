@@ -88,13 +88,20 @@ def calculate_ma(df, short_ma, long_ma):
         raise Exception('df type is wrong')
 
 
-def pre_sdt_check(stock_number, qr_date):
+def pre_sdt_check(stock_number, **kwargs):
     """
     依据量价进行预先筛选
     :param stock_number:
     :param qr_date:
     :return:
     """
+    qr_date = kwargs.get('qr_date')
+    if kwargs.get('week_long', False):
+        short_ma = 5
+        long_ma = 10
+        if not is_week_long(stock_number, qr_date, short_ma, long_ma):
+            return False
+
     rate_value = 0
     cursor = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date))\
         .order_by('-date')
@@ -127,6 +134,27 @@ def pre_sdt_check(stock_number, qr_date):
         rate_value += 1
 
     if rate_value:
+        return True
+    else:
+        return False
+
+
+def is_week_long(stock_number, qr_date, short_ma, long_ma):
+    if short_ma < long_ma:
+        quant_count = long_ma + 5
+    else:
+        quant_count = short_ma + 5
+
+    swt = SWT.objects(Q(stock_number=stock_number) &
+                      Q(last_trade_date__lte=qr_date)).order_by('-last_trade_date')[:quant_count]
+    if not swt:
+        return False
+
+    use_ad_price = True
+    trading_data = format_trading_data(swt, use_ad_price)
+    df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
+    this_week = df.iloc[-1]
+    if this_week['diff_ma'] > 0:
         return True
     else:
         return False
