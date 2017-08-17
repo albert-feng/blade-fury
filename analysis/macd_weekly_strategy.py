@@ -21,7 +21,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
     long_ema = kwargs['long_ema']
     dif_ema = kwargs['dif_ema']
     qr_date = kwargs['qr_date']
-    if not pre_sdt_check(stock_number, qr_date):
+    if not pre_sdt_check(stock_number, **kwargs):
         return
 
     strategy_direction = 'long'

@@ -24,7 +24,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
     short_ma = kwargs['short_ma']
     long_ma = kwargs['long_ma']
     qr_date = kwargs['qr_date']
-    if not pre_sdt_check(stock_number, qr_date):
+    if not pre_sdt_check(stock_number, **kwargs):
         return
 
     if short_ma < long_ma:
