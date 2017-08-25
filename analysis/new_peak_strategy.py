@@ -18,7 +18,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
     length = kwargs['length']
     qr_date = kwargs['qr_date']
     real_time = kwargs.get('real_time', False)
-    if not pre_sdt_check(stock_number, qr_date):
+    if not pre_sdt_check(stock_number, **kwargs):
         return
 
     strategy_name = 'new_peak_%s' % length
