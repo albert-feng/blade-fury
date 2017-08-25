@@ -51,6 +51,7 @@ def collect_stock_data(stock_number, start_date, end_date):
     if not isinstance(start_date, datetime.date) or not isinstance(end_date, datetime.date):
         return
 
+    end_date += datetime.timedelta(days=7)
     sec_id = ''
     if stock_number.startswith('60'):
         sec_id = stock_number + '.' + stock_exchange.get(u'上海')
