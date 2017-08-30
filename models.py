@@ -202,33 +202,19 @@ class StockReport(Document):
     }
 
 
-class StockNews(Document):
+class ShareHolder(Document):
     """
-    存放股票新闻数据
+    存放前10大股东信息
     """
-
     stock_number = StringField(required=True, max_length=10)  # 股票编号
     stock_name = StringField(required=True, max_length=20)  # 股票名称
+    is_total = BooleanField()  # 标识是否全体股东统计 True: 全部股份 False: 流通股
     date = DateTimeField(required=True)  # 研究报告发布的日期
-    title = StringField()  # 公告标题
-    content_url = StringField()  # 公告URL
-    meta = {
-        'indexes': ['date', 'stock_number', ('stock_number', '-date')],
-        'index_background': True,
-    }
-
-
-class BuffettIndex(Document):
-    """
-    用来计算每天的总市值/上一年度GDP的值
-    """
-    date = DateTimeField(required=True)  # 计算巴菲特指标的日期
-    total_value = FloatField(required=True)  # 存储当天的a股总市值，单位：万亿
-    buffett_index = StringField(required=True)  # 存储当天计算的巴菲特指标
-    meta = {
-        'indexes': ['date'],
-        'index_background': True,
-    }
+    share_holder_name = StringField()  # 股东名称
+    share_amount = IntField()  # 股东持股数
+    share_percent = FloatField()  # 持股比例
+    share_change = StringField()  # 变化
+    share_type = StringField()  # 股份类型：A股，H股
 
 
 if __name__ == '__main__':
@@ -237,6 +223,5 @@ if __name__ == '__main__':
     StockDailyTrading.ensure_indexes()
     StockWeeklyTrading.ensure_indexes()
     QuantResult.ensure_indexes()
-    BuffettIndex.ensure_indexes()
     IndexDailyTrading.ensure_indexes()
     StockReport.ensure_indexes()
