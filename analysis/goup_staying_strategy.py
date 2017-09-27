@@ -37,7 +37,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=qr_date,
             strategy_direction='long', strategy_name=strategy_name,
-            init_price=sdt[0].closing_price, industry_involved=kwargs.get('industry_involved'),
+            init_price=sdt[0].today_closing_price, industry_involved=kwargs.get('industry_involved'),
             increase_rate=sdt[0].increase_rate
         )
         if not check_duplicate_strategy(qr):
