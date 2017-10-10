@@ -350,3 +350,13 @@ def setup_realtime_sdt(stock_number, sdt, kwargs):
         sdt = list(sdt)
         sdt.insert(0, today_trading.get(stock_number))
     return sdt
+
+
+def is_ad_price(stock_number, qr_date, swt):
+    use_ad_price = True
+    if swt[0].last_trade_date < qr_date:
+        use_ad_price = False
+        swt = setup_realtime_swt(swt, stock_number, qr_date)
+    if not swt[0].ad_close_price:
+        use_ad_price = False
+    return use_ad_price, swt

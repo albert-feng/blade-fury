@@ -17,7 +17,7 @@ from pandas import DataFrame
 from logger import setup_logging
 from models import QuantResult as QR, StockWeeklyTrading as SWT
 from analysis.technical_analysis_util import calculate_ma, format_trading_data, check_duplicate_strategy
-from analysis.technical_analysis_util import start_quant_analysis, pre_sdt_check, setup_realtime_swt
+from analysis.technical_analysis_util import start_quant_analysis, pre_sdt_check, is_ad_price
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
@@ -37,13 +37,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     swt = SWT.objects(Q(stock_number=stock_number) &
                       Q(last_trade_date__lte=qr_date)).order_by('-last_trade_date')[:quant_count]
-    if not swt:
-        return
 
-    use_ad_price = True
-    if swt[0].last_trade_date < qr_date:
-        use_ad_price = False
-        swt = setup_realtime_swt(swt, stock_number, qr_date)
+    use_ad_price, swt = is_ad_price(stock_number, qr_date, swt)
     if not swt:
         return
 

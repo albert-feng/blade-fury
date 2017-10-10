@@ -10,7 +10,7 @@ from mongoengine import Q
 from pandas import DataFrame
 
 from analysis.technical_analysis_util import pre_sdt_check, calculate_macd, check_duplicate_strategy
-from analysis.technical_analysis_util import format_trading_data, start_quant_analysis, setup_realtime_swt
+from analysis.technical_analysis_util import format_trading_data, start_quant_analysis, is_ad_price
 from models import StockWeeklyTrading as SWT, StockDailyTrading as SDT
 from models import QuantResult as QR
 from logger import setup_logging
@@ -31,13 +31,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     swt = SWT.objects(Q(stock_number=stock_number) &
                       Q(last_trade_date__lte=qr_date)).order_by('-last_trade_date')[:quant_count]
-    if not swt:
-        return
 
-    use_ad_price = True
-    if swt[0].last_trade_date < qr_date:
-        use_ad_price = False
-        swt = setup_realtime_swt(swt, stock_number, qr_date)
+    use_ad_price, swt = is_ad_price(stock_number, qr_date, swt)
     if not swt:
         return
 

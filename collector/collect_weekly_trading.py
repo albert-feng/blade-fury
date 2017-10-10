@@ -52,30 +52,22 @@ def collect_stock_data(stock_number, start_date, end_date):
         return
 
     end_date += datetime.timedelta(days=7)
-    sec_id = ''
-    if stock_number.startswith('60'):
-        sec_id = stock_number + '.' + stock_exchange.get(u'上海')
-    elif stock_number.startswith('00') or stock_number.startswith('30'):
-        sec_id = stock_number + '.' + stock_exchange.get(u'深圳')
-
-    if not sec_id:
-        return
-
-    url = datayes_week_trading.format(sec_id, start_date.strftime('%Y%m%d'), end_date.strftime('%Y%m%d'))
+    url = datayes_week_trading.format(stock_number, start_date.strftime('%Y%m%d'), end_date.strftime('%Y%m%d'))
     res_data = json.loads(send_request(url, datayes_headers))
     if res_data.get('retCode', 0) != 1:
         return
 
     trading_data = res_data.get('data', [])
     for i in trading_data:
-        if i.get('numDays', 0) == 0:
+        trade_days = int(i.get('tradeDays'))
+        if trade_days == 0:
             continue
 
         stock_number = i.get('ticker')
         try:
-            first_trade_date = datetime.datetime.strptime(i.get('firstTradeDate'), '%Y-%m-%d %H:%M:%S')
-            last_trade_date = datetime.datetime.strptime(i.get('lastTradeDate'), '%Y-%m-%d %H:%M:%S')
-            end_date = datetime.datetime.strptime(i.get('endDate'), '%Y-%m-%d %H:%M:%S')
+            first_trade_date = datetime.datetime.strptime(i.get('weekBeginDate'), '%Y-%m-%d')
+            end_date = datetime.datetime.strptime(i.get('endDate'), '%Y-%m-%d')
+            last_trade_date = datetime.datetime.strptime(i.get('endDate'), '%Y-%m-%d')
         except Exception as e:
             logging.error('Format time failed:' + str(e))
             continue
@@ -84,15 +76,13 @@ def collect_stock_data(stock_number, start_date, end_date):
         new_object = True
         if former_swt:
             swt = former_swt.next()
-            if swt.last_trade_date >= last_trade_date:
-                continue
             new_object = False
         else:
             swt = SWT()
             swt.stock_number = stock_number
             swt.stock_name = i.get('secShortName')
 
-        swt.trade_days = int(i.get('numDays'))
+        swt.trade_days = trade_days
         swt.first_trade_date = first_trade_date
         swt.last_trade_date = last_trade_date
         swt.end_date = end_date
@@ -101,12 +91,7 @@ def collect_stock_data(stock_number, start_date, end_date):
         swt.weekly_close_price = float(i.get('closePrice'))
         swt.weekly_highest_price = float(i.get('highestPrice'))
         swt.weekly_lowest_price = float(i.get('lowestPrice'))
-        swt.ad_open_price = float(i.get('adOpenPrice'))
-        swt.ad_close_price = float(i.get('adClosePrice'))
-        swt.ad_highest_price = float(i.get('adHighestPrice'))
-        swt.ad_lowest_price = float(i.get('adLowestPrice'))
-        swt.range_percent = str(i.get('rangePct')) + '%'
-        swt.increase_rate = str(i.get('adChgPct')) + '%'
+        swt.increase_rate = str(round(i.get('chgPct') * 100, 2)) + '%'
         swt.turnover_amount = int(i.get('turnoverValue')) / 10000
         swt.turnover_volume = int(i.get('turnoverVol')) / 100
 
