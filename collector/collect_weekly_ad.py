@@ -11,7 +11,7 @@ from mongoengine import Q
 
 from models import StockWeeklyTrading as SWT
 from models import StockInfo
-from config import datayes_week_trading
+from config import datayes_week_ad
 from config import datayes_headers
 from collector.collect_data_util import send_request
 from logger import setup_logging
@@ -52,7 +52,7 @@ def collect_stock_data(stock_number, start_date, end_date):
         return
 
     end_date += datetime.timedelta(days=7)
-    url = datayes_week_trading.format(stock_number, start_date.strftime('%Y%m%d'), end_date.strftime('%Y%m%d'))
+    url = datayes_week_ad.format(stock_number, start_date.strftime('%Y%m%d'), end_date.strftime('%Y%m%d'))
     res_data = json.loads(send_request(url, datayes_headers))
     if res_data.get('retCode', 0) != 1:
         return
@@ -66,39 +66,17 @@ def collect_stock_data(stock_number, start_date, end_date):
         stock_number = i.get('ticker')
         try:
             first_trade_date = datetime.datetime.strptime(i.get('weekBeginDate'), '%Y-%m-%d')
-            end_date = datetime.datetime.strptime(i.get('endDate'), '%Y-%m-%d')
-            last_trade_date = datetime.datetime.strptime(i.get('endDate'), '%Y-%m-%d')
         except Exception as e:
             logging.error('Format time failed:' + str(e))
             continue
 
         former_swt = SWT.objects(Q(stock_number=stock_number) & Q(first_trade_date=first_trade_date))
-        new_object = True
         if former_swt:
             swt = former_swt.next()
-            new_object = False
-        else:
-            swt = SWT()
-            swt.stock_number = stock_number
-            swt.stock_name = i.get('secShortName')
-
-        swt.trade_days = trade_days
-        swt.first_trade_date = first_trade_date
-        swt.last_trade_date = last_trade_date
-        swt.end_date = end_date
-        swt.pre_close_price = float(i.get('preClosePrice'))
-        swt.weekly_open_price = float(i.get('openPrice'))
-        swt.weekly_close_price = float(i.get('closePrice'))
-        swt.weekly_highest_price = float(i.get('highestPrice'))
-        swt.weekly_lowest_price = float(i.get('lowestPrice'))
-        swt.increase_rate = str(round(i.get('chgPct') * 100, 2)) + '%'
-        swt.turnover_amount = int(i.get('turnoverValue')) / 10000
-        swt.turnover_volume = int(i.get('turnoverVol')) / 100
-
-        if new_object:
-            if not check_duplicate(swt):
-                swt.save()
-        else:
+            swt.ad_open_price = float(i.get('openPrice'))
+            swt.ad_close_price = float(i.get('closePrice'))
+            swt.ad_highest_price = float(i.get('highestPrice'))
+            swt.ad_lowest_price = float(i.get('lowestPrice'))
             swt.save()
 
 
@@ -117,7 +95,7 @@ def setup_argparse():
             raise e
     else:
         end_date = datetime.date.today()
-        start_date = end_date - datetime.timedelta(days=30)
+        start_date = end_date - datetime.timedelta(days=45)
 
     return start_date, end_date
 
