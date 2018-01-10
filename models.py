@@ -28,8 +28,8 @@ class StockInfo(Document):
     business_scope = StringField()  # 公司经营范围
     company_introduce = StringField()  # 公司简介
     area = StringField(max_length=20)  # 公司所在区域
-    total_value = IntField()  # 公司总市值
-    circulated_value = IntField()  # 公司流通市值
+    total_value = IntField(default=0)  # 公司总市值
+    circulated_value = IntField(default=0)  # 公司流通市值
     meta = {
         'indexes': ['stock_number'],
         'index_background': True,
