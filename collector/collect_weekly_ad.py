@@ -66,18 +66,41 @@ def collect_stock_data(stock_number, start_date, end_date):
         stock_number = i.get('ticker')
         try:
             first_trade_date = datetime.datetime.strptime(i.get('weekBeginDate'), '%Y-%m-%d')
+            end_date = datetime.datetime.strptime(i.get('endDate'), '%Y-%m-%d')
+            last_trade_date = datetime.datetime.strptime(i.get('endDate'), '%Y-%m-%d')
         except Exception as e:
             logging.error('Format time failed:' + str(e))
             continue
 
         former_swt = SWT.objects(Q(stock_number=stock_number) & Q(first_trade_date=first_trade_date))
-        if former_swt:
-            swt = former_swt.next()
+        if len(former_swt):
+            swt = former_swt[0]
+            swt.trade_days = trade_days
+            swt.first_trade_date = first_trade_date
+            swt.last_trade_date = last_trade_date
+            swt.end_date = end_date
             swt.ad_open_price = float(i.get('openPrice'))
             swt.ad_close_price = float(i.get('closePrice'))
             swt.ad_highest_price = float(i.get('highestPrice'))
             swt.ad_lowest_price = float(i.get('lowestPrice'))
-            swt.save()
+        else:
+            swt = SWT()
+            swt.stock_number = stock_number
+            swt.stock_name = i.get('secShortName')
+            swt.trade_days = trade_days
+            swt.first_trade_date = first_trade_date
+            swt.last_trade_date = last_trade_date
+            swt.end_date = end_date
+            swt.pre_close_price = float(i.get('preClosePrice'))
+            swt.ad_open_price = float(i.get('openPrice'))
+            swt.ad_close_price = float(i.get('closePrice'))
+            swt.ad_highest_price = float(i.get('highestPrice'))
+            swt.ad_lowest_price = float(i.get('lowestPrice'))
+            swt.increase_rate = str(round(i.get('chgPct') * 100, 2)) + '%'
+            swt.turnover_amount = int(i.get('turnoverValue')) / 10000
+            swt.turnover_volume = int(i.get('turnoverVol')) / 100
+
+        swt.save()
 
 
 def setup_argparse():
