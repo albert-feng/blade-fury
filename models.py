@@ -30,6 +30,23 @@ class StockInfo(Document):
     area = StringField(max_length=20)  # 公司所在区域
     total_value = IntField(default=0)  # 公司总市值
     circulated_value = IntField(default=0)  # 公司流通市值
+    industry = StringField()  # 所属行业，一下信息来自tushare
+    pe = FloatField()  # 市盈率
+    liquid_assets = IntField()  # 流动资产
+    fixed_assets = IntField()  # 固定资产
+    reserved = IntField()  # 资本公积
+    reserved_per_share = FloatField()  # 每股资本公积
+    esp = FloatField()  # 每股收益
+    bvps = FloatField()  # 每股净资产
+    pb = FloatField()  # 市净率
+    time_to_market = DateTimeField()  # 上市时间
+    undp = IntField()  # 未分配利润
+    perundp = FloatField()  # 每股未分配利润
+    rev = FloatField()  # 收入同比（%）
+    profit = FloatField()  # 利润同比（%）
+    gpr = FloatField()  # 毛利率（%）
+    npr = FloatField()  # 净利率（%）
+    holders = IntField()  # 股东人数
     meta = {
         'indexes': ['stock_number'],
         'index_background': True,

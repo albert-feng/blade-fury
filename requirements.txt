@@ -57,4 +57,5 @@ traitlets
 urllib3
 Werkzeug
 zope.interface
+tushare==1.1.1
 #TA-Lib
