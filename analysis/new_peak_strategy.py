@@ -26,8 +26,6 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
                       Q(date__lte=qr_date)).order_by('-date')[:length]
-    if len(sdt) < length:
-        return
 
     if real_time:
         sdt = setup_realtime_sdt(stock_number, sdt, kwargs)
