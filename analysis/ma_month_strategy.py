@@ -21,6 +21,7 @@ from analysis.technical_analysis_util import start_quant_analysis, pre_sdt_check
 def get_month_trading(stock_number, start_date, end_date):
     month_trading_data = ts.get_k_data(stock_number, ktype='M', autype='qfq', start=start_date, end=end_date)
     df = month_trading_data.set_index(['date'])
+    df['close_price'] = df['close']
     return df
 
 
@@ -31,9 +32,31 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if not pre_sdt_check(stock_number, **kwargs):
         return
 
+    if short_ma < long_ma:
+        strategy_direction = 'long'
+    else:
+        strategy_direction = 'short'
+    strategy_name = 'mamonth_%s_%s_%s' % (strategy_direction, short_ma, long_ma)
+
     end_date = qr_date.strftime('%Y-%m-%d')
     start_date = (qr_date - datetime.timedelta(days=max(short_ma, long_ma)*31)).strftime('%Y-%m-%d')
     df = calculate_ma(get_month_trading(stock_number, start_date, end_date), short_ma, long_ma)
+    this_month = df.iloc[-1]
+    last_month = df.iloc[-2]
+
+    if this_month['diff_ma'] > 0 > last_month['diff_ma']:
+        init_price = this_month['close_price']
+        increase_rate = round((this_month['close_price'] - last_month['close_price']) / last_month['close_price'], 4) * 100
+        qr = QR(
+            stock_number=stock_number, stock_name=stock_name, date=this_month.name,
+            strategy_direction=strategy_direction, strategy_name=strategy_name,
+            init_price=init_price, industry_involved=kwargs.get('industry_involved'),
+            increase_rate=increase_rate
+        )
+        if not check_duplicate_strategy(qr):
+            qr.save()
+            return qr
+    return
 
 
 def setup_argparse():
