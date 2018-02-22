@@ -17,7 +17,6 @@ enum34
 eventlet
 Fabric
 Flask
-Glances
 greenlet
 html5lib
 idna
