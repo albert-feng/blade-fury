@@ -3,7 +3,6 @@
 
 __author__ = 'fengweigang'
 
-
 import tushare as ts
 import datetime
 import logging
@@ -33,7 +32,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         strategy_direction = 'long'
     else:
         strategy_direction = 'short'
-    strategy_name = 'month_ma_%s_%s_%s' % (strategy_direction, short_ma, long_ma)
+    strategy_name = 'month_through_%s_%s_%s' % (strategy_direction, short_ma, long_ma)
 
     end_date = qr_date.strftime('%Y-%m-%d')
     start_date = (qr_date - datetime.timedelta(days=max(short_ma, long_ma)*31)).strftime('%Y-%m-%d')
@@ -41,7 +40,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
     this_month = df.iloc[-1]
     last_month = df.iloc[-2]
 
-    if this_month['diff_ma'] > 0 > last_month['diff_ma']:
+    if last_month['close_price'] < last_month['long_ma'] and this_month['close_price'] > this_month['short_ma'] \
+            and this_month['close_price'] > this_month['long_ma']:
         init_price = this_month['close_price']
         increase_rate = round((this_month['close_price'] - last_month['close_price']) / last_month['close_price'], 4) * 100
         qr = QR(

@@ -28,7 +28,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
     else:
         strategy_direction = 'short'
         quant_count = short_ma + 5
-    strategy_name = 'maweek_%s_%s_%s' % (strategy_direction, short_ma, long_ma)
+    strategy_name = 'week_ma_%s_%s_%s' % (strategy_direction, short_ma, long_ma)
 
     swt = SWT.objects(Q(stock_number=stock_number) &
                       Q(last_trade_date__lte=qr_date)).order_by('-last_trade_date')[:quant_count]
