@@ -5,6 +5,7 @@ import logging
 import datetime
 import json
 
+import tushare as ts
 import requests
 import pandas as pd
 from pandas import DataFrame
@@ -360,3 +361,10 @@ def is_ad_price(stock_number, qr_date, swt):
     if not swt[0].ad_close_price:
         use_ad_price = False
     return use_ad_price, swt
+
+
+def get_month_trading(stock_number, start_date=None, end_date=None):
+    month_trading_data = ts.get_k_data(stock_number, ktype='M', autype='qfq', start=start_date, end=end_date)
+    df = month_trading_data.set_index(['date'])
+    df['close_price'] = df['close']
+    return df

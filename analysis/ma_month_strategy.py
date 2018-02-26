@@ -3,8 +3,6 @@
 
 __author__ = 'fengweigang'
 
-
-import tushare as ts
 import datetime
 import logging
 import argparse
@@ -12,14 +10,7 @@ import argparse
 from logger import setup_logging
 from models import QuantResult as QR
 from analysis.technical_analysis_util import calculate_ma, check_duplicate_strategy
-from analysis.technical_analysis_util import start_quant_analysis, pre_sdt_check
-
-
-def get_month_trading(stock_number, start_date, end_date):
-    month_trading_data = ts.get_k_data(stock_number, ktype='M', autype='qfq', start=start_date, end=end_date)
-    df = month_trading_data.set_index(['date'])
-    df['close_price'] = df['close']
-    return df
+from analysis.technical_analysis_util import start_quant_analysis, pre_sdt_check, get_month_trading
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
