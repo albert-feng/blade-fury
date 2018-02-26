@@ -29,6 +29,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
     start_date = (qr_date - datetime.timedelta(days=short_ema * long_ema * 31)).strftime('%Y-%m-%d')
 
     trading_data = get_month_trading(stock_number, start_date, end_date)
+    trading_data = trading_data.iloc[-150:]
 
     if len(trading_data) < max(short_ema, long_ema):
         return
