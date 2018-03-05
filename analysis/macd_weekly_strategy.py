@@ -29,8 +29,9 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     strategy_name = 'week_macd_%s_%s_%s_%s' % (strategy_direction, short_ema, long_ema, dif_ema)
 
+    last_trade_date = qr_date + datetime.timedelta(days=7)
     swt = SWT.objects(Q(stock_number=stock_number) &
-                      Q(last_trade_date__lte=qr_date)).order_by('-last_trade_date')[:quant_count]
+                      Q(last_trade_date__lte=last_trade_date)).order_by('-last_trade_date')[:quant_count]
 
     use_ad_price, swt = is_ad_price(stock_number, qr_date, swt)
     if not swt:
