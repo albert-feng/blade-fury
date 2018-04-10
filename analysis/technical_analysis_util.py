@@ -125,8 +125,8 @@ def pre_sdt_check(stock_number, **kwargs):
     if today_closing_price >= year_ma:
         rate_value += 1
 
-    max_trade_amount = 10000
-    avg_trade_amount = 4000
+    max_trade_amount = 2000
+    avg_trade_amount = 1000
     amount_avg_num = 5
     amount_sdt = cursor[:amount_avg_num]
 
