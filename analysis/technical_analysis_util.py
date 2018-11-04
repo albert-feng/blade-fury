@@ -364,7 +364,15 @@ def is_ad_price(stock_number, qr_date, swt):
 
 
 def get_month_trading(stock_number, start_date=None, end_date=None):
-    month_trading_data = ts.get_k_data(stock_number, ktype='M', autype='qfq', start=start_date, end=end_date)
+    return get_trading_from_tushare(stock_number, start_date=start_date, end_date=end_date, ktype="M")
+
+
+def get_week_trading(stock_number, start_date=None, end_date=None):
+    return get_trading_from_tushare(stock_number, start_date=start_date, end_date=end_date, ktype='W')
+
+
+def get_trading_from_tushare(stock_number, start_date=None, end_date=None, ktype='D', autype='qfq'):
+    month_trading_data = ts.get_k_data(stock_number, ktype=ktype, autype=autype, start=start_date, end=end_date)
     df = month_trading_data.set_index(['date'])
     df['close_price'] = df['close']
     return df

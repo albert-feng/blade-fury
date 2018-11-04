@@ -17,7 +17,7 @@ from pandas import DataFrame
 from logger import setup_logging
 from models import QuantResult as QR, StockWeeklyTrading as SWT
 from analysis.technical_analysis_util import calculate_ma, format_trading_data, check_duplicate_strategy
-from analysis.technical_analysis_util import start_quant_analysis, pre_sdt_check, is_ad_price
+from analysis.technical_analysis_util import start_quant_analysis, pre_sdt_check, is_ad_price, get_week_trading
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
@@ -43,8 +43,11 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if not swt:
         return
 
-    trading_data = format_trading_data(swt, use_ad_price)
-    df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
+    # trading_data = format_trading_data(swt, use_ad_price)
+    end_date = qr_date.strftime('%Y-%m-%d')
+    start_date = (qr_date - datetime.timedelta(days=max(short_ma, long_ma) * 7)).strftime('%Y-%m-%d')
+    trading_data = get_week_trading(stock_number, start_date, end_date)
+    df = calculate_ma(trading_data, short_ma, long_ma)
     this_week = df.iloc[-1]
     last_week = df.iloc[-2]
 
