@@ -43,11 +43,11 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if not swt:
         return
 
-    # trading_data = format_trading_data(swt, use_ad_price)
-    end_date = qr_date.strftime('%Y-%m-%d')
-    start_date = (qr_date - datetime.timedelta(days=max(short_ma, long_ma) * 7)).strftime('%Y-%m-%d')
-    trading_data = get_week_trading(stock_number, start_date, end_date)
-    df = calculate_ma(trading_data, short_ma, long_ma)
+    trading_data = format_trading_data(swt, use_ad_price)
+    # end_date = qr_date.strftime('%Y-%m-%d')
+    # start_date = (qr_date - datetime.timedelta(days=max(short_ma, long_ma) * 7)).strftime('%Y-%m-%d')
+    # trading_data = get_week_trading(stock_number, start_date, end_date)
+    df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
     this_week = df.iloc[-1]
     last_week = df.iloc[-2]
 
