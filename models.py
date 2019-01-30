@@ -59,7 +59,7 @@ class StockDailyTrading(Document):
     """
 
     stock_number = StringField(required=True, max_length=10)  # 股票编号
-    stock_name = StringField(required=True, max_length=20)  # 股票名称
+    stock_name = StringField(max_length=20)  # 股票名称
     yesterday_closed_price = FloatField()  # 昨日收盘价 单位 rmb
     today_opening_price = FloatField()  # 今日开盘价 单位 rmb
     today_closing_price = FloatField()  # 今日收盘价 单位 rmb

@@ -47,3 +47,5 @@ datayes_week_ad = 'https://api.wmcloud.com/data/v1/api/market/getMktEquwAdjAf.js
 
 datayes_headers = {'Authorization': 'Bearer 49624017e208b4ecea0e7742756eacd6716f648b1d5eaf73df241765a1c2af2f'}
 stock_exchange = {u'上海': u'XSHG', u'深圳': u'XSHE'}
+
+tushare_token = '6c0171c5179b008eedf3a32391be1ce08627e10684aa6215bc8edc28'
