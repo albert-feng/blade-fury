@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 """
@@ -29,6 +29,7 @@ def collect_stock_daily_trading(date):
             sdt = existSdt[0]
         else:
             sdt = SDT(stock_number=stock_number)
+            sdt.date = date
 
         sdt.yesterday_closed_price = stock.pre_close
         sdt.today_opening_price = stock.open

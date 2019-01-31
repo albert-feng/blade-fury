@@ -40,7 +40,7 @@ psutil
 ptyprocess
 pyasn1
 pycparser
-pycrypto
+#pycrypto
 #pyinotify
 pymongo
 pyparsing
