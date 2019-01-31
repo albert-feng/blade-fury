@@ -1,93 +1,58 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import logging
 import datetime
 import time
 import random
+import argparse
 
-import requests
-from bs4 import BeautifulSoup
 from mongoengine import Q
 
+from collector import tushare_util
 from logger import setup_logging
-from config import history_trading
 from models import StockInfo, StockDailyTrading as SDT
-from collector.collect_data_util import send_request
 
 
 timeout = 30
 query_step = 100
 
 
-def check_exists(stock_number, date):
-    cursor = SDT.objects(Q(stock_number=stock_number) & Q(date=date))
-    if cursor:
-        return True
-    else:
-        return False
+def collect_his_trading(stock_number, stock_name, start_date, end_date):
+    ts_code = tushare_util.gen_ts_code(stock_number)
 
+    his_data = tushare_util.get_pro_client().query('daily', ts_code=ts_code, start_date=start_date.strftime('%Y%m%d'),
+                                                   end_date=end_date.strftime('%Y%m%d'))
+    for i in range(0, len(his_data)):
+        trade_data = his_data.iloc[i]
+        try:
+            date = datetime.datetime.strptime(trade_data.trade_date, '%Y%m%d')
+        except Exception as e:
+            continue
 
-def collect_his_trading(stock_number, stock_name):
-    if stock_number.startswith('6'):
-        req_url = history_trading.format(stock_number+'01')
-    else:
-        req_url = history_trading.format(stock_number+'02')
-    his_html = send_request(req_url)
+        existSdt = SDT.objects(Q(stock_number=stock_number) & Q(date=date))
+        if existSdt and len(existSdt) > 0:
+            sdt = existSdt[0]
+        else:
+            sdt = SDT(stock_number=stock_number)
+            sdt.date = date
 
-    his_soup = BeautifulSoup(his_html, 'lxml')
-    his_table = his_soup.find('table', id='tablefont')
+        sdt.stock_name = stock_name
+        sdt.yesterday_closed_price = trade_data.pre_close
+        sdt.today_opening_price = trade_data.open
+        sdt.today_closing_price = trade_data.close
+        sdt.today_highest_price = trade_data.high
+        sdt.today_lowest_price = trade_data.low
+        sdt.turnover_amount = trade_data.amount
+        sdt.turnover_volume = trade_data.vol
+        sdt.increase_amount = trade_data.change
+        sdt.increase_rate = str(trade_data.pct_chg) + '%'
+        try:
+            sdt.save()
+        except Exception as e:
+            continue
 
-    if his_table:
-        his_data = his_table.find_all('tr')[1:]
-        for i in his_data:
-            date = datetime.datetime.strptime(i.find('p', class_='date').text.strip(), '%Y-%m-%d')
-            try:
-                today_opening_price = float(i.find_all('td')[1].text.replace('&nbsp', '').strip())
-                today_highest_price = float(i.find_all('td')[2].text.replace('&nbsp', '').strip())
-                today_lowest_price = float(i.find_all('td')[3].text.replace('&nbsp', '').strip())
-                today_closing_price = float(i.find_all('td')[4].text.replace('&nbsp', '').strip())
-                increase_rate = i.find_all('td')[5].text.replace('&nbsp', '').strip() + '%'
-                increase_amount = float(i.find_all('td')[6].text.replace('&nbsp', '').strip())
-                turnover_rate = i.find_all('td')[7].text.replace('&nbsp', '').strip() + '%'
-                total_stock = int(i.find_all('td')[10].text.replace('&nbsp', '').replace(',', '').strip())
-                circulation_stock = int(i.find_all('td')[12].text.replace('&nbsp', '').replace(',', '').strip())
-
-                turnover_amount_msg = i.find_all('td')[9].text.replace('&nbsp', '').strip()
-                turnover_amount = 0
-                if u'万' in turnover_amount_msg:
-                    turnover_amount = int(float(turnover_amount_msg.replace(u'万', '')))
-                elif u'亿' in turnover_amount_msg:
-                    turnover_amount = int(float(turnover_amount_msg.replace(u'亿', '')) * 10000)
-
-                if turnover_amount_msg.isdigit() and int(turnover_amount_msg) == 0:
-                    return
-            except Exception as e:
-                if '--' not in str(e):
-                    logging.error('Collect %s %s trading data failed:%s' % (stock_number, str(date), e))
-                continue
-
-            if float(increase_rate.replace('%', '')) == 0.0 and float(turnover_rate.replace('%', '')) == 0.0:
-                # 去掉停牌期间的行情数据
-                continue
-
-            if check_exists(stock_number, date):
-                sdt = SDT.objects(Q(stock_number=stock_number) & Q(date=date)).next()
-                if not sdt.total_stock or not sdt.circulation_stock or not sdt.turnover_amount:
-                    sdt.total_stock = total_stock
-                    sdt.circulation_stock = circulation_stock
-                    sdt.turnover_amount = turnover_amount
-                    sdt.save()
-            else:  # 添加股本相关数据
-                sdt = SDT(stock_number=stock_number, stock_name=stock_name, date=date,
-                          today_opening_price=today_opening_price, today_highest_price=today_highest_price,
-                          today_lowest_price=today_lowest_price, today_closing_price=today_closing_price,
-                          increase_rate=increase_rate, increase_amount=increase_amount, turnover_rate=turnover_rate,
-                          total_stock=total_stock, circulation_stock=circulation_stock, turnover_amount=turnover_amount)
-                sdt.save()
-
-
-def begin_collect_his():
+def begin_collect_his(start_date, end_date):
     stock_info = StockInfo.objects()
     stock_count = stock_info.count()
     skip = 0
@@ -101,7 +66,7 @@ def begin_collect_his():
 
         for i in stocks:
             try:
-                collect_his_trading(i.stock_number, i.stock_name)
+                collect_his_trading(i.stock_number, i.stock_name, start_date, end_date)
             except Exception as e:
                 logging.error('Collect %s his data failed:%s' % (i.stock_number, e))
             finally:
@@ -109,8 +74,24 @@ def begin_collect_his():
         skip += query_step
 
 
+def setup_argparse():
+    parser = argparse.ArgumentParser(description=u'用tushare pro api采集日线行情数据')
+    parser.add_argument(u'-s', action=u'store', dest='start_date', required=True, help=u'开始采集日期')
+    parser.add_argument(u'-e', action=u'store', dest='end_date', required=True, help=u'结束采集日期')
+
+    args = parser.parse_args()
+    try:
+        start_date = datetime.datetime.strptime(args.start_date, '%Y%m%d')
+        end_date = datetime.datetime.strptime(args.end_date, '%Y%m%d')
+    except Exception as e:
+        print('Wrong date form')
+        raise e
+
+    return start_date, end_date
+
 if __name__ == '__main__':
+    start_date, end_date = setup_argparse()
     setup_logging(__file__, logging.WARNING)
     logging.info('Start collect history trading data')
-    begin_collect_his()
+    begin_collect_his(start_date, end_date)
     logging.info('Collect history trading data success')
