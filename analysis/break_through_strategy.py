@@ -29,24 +29,14 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if week_long:
         strategy_name = 'weeklong_' + strategy_name
 
-    sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
+    sdt = SDT.objects(Q(stock_number=stock_number) &
                       Q(date__lte=kwargs['qr_date'])).order_by('-date')[:kwargs['long_ma']+10]
 
-    if not sdt:
+    if sdt is None or len(sdt) == 0:
         return
-    if not real_time:
-        if sdt[0].today_closing_price <= sdt[0].today_average_price:
-            return
-
-    if real_time:
-        sdt = setup_realtime_sdt(stock_number, sdt, kwargs)
-        if not sdt:
-            return
-    if sdt[0].today_closing_price < sdt[0].today_opening_price:
-        return
-
     trading_data = format_trading_data(sdt)
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
+    print(df)
     today = df.iloc[-1]
     yestoday = df.iloc[-2]
 

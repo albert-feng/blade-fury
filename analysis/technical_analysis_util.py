@@ -24,28 +24,12 @@ def format_trading_data(stock_trading_data, use_ad_price=False):
     trading_data = []
 
     if isinstance(stock_trading_data[0], SDT):
-        standard_total_stock = stock_trading_data[1].total_stock if stock_trading_data[1].total_stock\
-                               else stock_trading_data[2].total_stock
-        if not standard_total_stock:
-            return trading_data
-
         for i in stock_trading_data:
-            if not i.total_stock:
-                close_price = i.today_closing_price
-                high_price = i.today_highest_price
-                low_price = i.today_lowest_price
-            else:
-                if standard_total_stock/i.total_stock < 2:
-                    close_price = i.today_closing_price
-                    high_price = i.today_highest_price
-                    low_price = i.today_lowest_price
-                else:
-                    close_price = i.today_closing_price * i.total_stock / standard_total_stock
-                    high_price = i.today_highest_price * i.total_stock / standard_total_stock
-                    low_price = i.today_lowest_price * i.total_stock / standard_total_stock
+            close_price = i.today_closing_price
+            high_price = i.today_highest_price
+            low_price = i.today_lowest_price
             trading_data.append({'date': i.date, 'close_price': close_price, 'high_price': high_price,
-                                 'low_price': low_price, 'quantity_relative_ratio': i.quantity_relative_ratio,
-                                 'turnover_amount': i.turnover_amount})
+                                 'low_price': low_price})
 
     elif isinstance(stock_trading_data[0], SWT):
         for i in stock_trading_data:
