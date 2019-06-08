@@ -52,6 +52,7 @@ def collect_his_trading(stock_number, stock_name, start_date, end_date):
         except Exception as e:
             continue
 
+
 def begin_collect_his(start_date, end_date):
     stock_info = StockInfo.objects()
     stock_count = stock_info.count()
@@ -88,6 +89,7 @@ def setup_argparse():
         raise e
 
     return start_date, end_date
+
 
 if __name__ == '__main__':
     start_date, end_date = setup_argparse()
