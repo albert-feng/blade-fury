@@ -21,7 +21,7 @@ company_news = 'http://guba.eastmoney.com/list,{},1,f.html'
 guba_domain = 'guba.eastmoney.com'
 
 eastmoney_data = 'http://data.eastmoney.com'
-stock_value = 'http://nuff.eastmoney.com/EM_Finance2015TradeInterface/JS.ashx?id={}'
+# stock_value = 'http://nuff.eastmoney.com/EM_Finance2015TradeInterface/JS.ashx?id={}'
 rzrq_sh = 'http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=FD&sty=MTND&mkt=1&st=C&sr=1&p=1&ps=2000'
 rzrq_sz = 'http://datainterface.eastmoney.com/EM_DataCenter/JS.aspx?type=FD&sty=MTND&mkt=2&st=C&sr=1&p=1&ps=2000'
 rzrq_api = [rzrq_sh, rzrq_sz]

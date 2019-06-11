@@ -14,7 +14,7 @@ import json
 from bs4 import BeautifulSoup
 
 from models import StockInfo
-from config import f9_core_content, f9_survey, exchange_market, stock_value
+from config import f9_core_content, f9_survey, exchange_market
 from logger import setup_logging
 from collector.collect_data_util import send_request
 
@@ -44,7 +44,7 @@ def collect_company_survey(stock_info):
     while retry:
         try:
             survey_html = send_request(company_survey_url)
-            survey_soup = BeautifulSoup(survey_html)
+            survey_soup = BeautifulSoup(survey_html, 'lxml')
             survey_table = survey_soup.find('table', id='tablefont').find_all('td')
             break
         except Exception as e:
