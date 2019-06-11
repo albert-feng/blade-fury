@@ -38,7 +38,6 @@ def collect_company_survey(stock_info):
     query_id = stock_info.stock_number + estimate_market(stock_info.stock_number)
 
     company_survey_url = f9_survey.format(query_id)
-    print(company_survey_url)
     retry = 5
     survey_table = ''
 
