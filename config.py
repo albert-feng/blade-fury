@@ -53,5 +53,5 @@ stock_exchange = {u'上海': u'XSHG', u'深圳': u'XSHE'}
 tushare_token = '6c0171c5179b008eedf3a32391be1ce08627e10684aa6215bc8edc28'
 ts_code_pattern = [
     {'code_postfix': '.SH', 'pattern': ['60']},
-    {'code_postfix': '.SZ', 'pattern': ['00', 30]}
+    {'code_postfix': '.SZ', 'pattern': ['00', '30']}
 ]
