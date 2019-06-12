@@ -50,6 +50,7 @@ def collect_his_trading(stock_number, stock_name, start_date, end_date):
         try:
             sdt.save()
         except Exception as e:
+            logging.error("save SDT error: %s" % str(e))
             continue
 
 
