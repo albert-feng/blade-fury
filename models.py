@@ -78,7 +78,7 @@ class StockDailyTrading(Document):
     timestamp = IntField(default=int(time.time()))  # 收录数据时的时间戳
     year_ma = FloatField(default=0)  # 年线价格 单位 rmb
     meta = {
-        'indexes': ['date', 'stock_number', 'today_closing_price', ('stock_number', '-date'), ('stock_number', 'date')],
+        'indexes': ['date', 'stock_number', ('stock_number', '-date'), ('stock_number', 'date')],
         'index_background': True,
     }
 
