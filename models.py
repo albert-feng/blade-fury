@@ -199,6 +199,26 @@ class QuantResult(Document):
     }
 
 
+class TradeSimulation(Document):
+    """
+    进行回测时进行的模拟交易，日线级别以上
+    """
+
+    stock_number = StringField(required=True, max_length=10)  # 股票编号
+    stock_name = StringField(required=True, max_length=20)  # 股票名称
+    open_position_date = DateTimeField(required=True)  # 开仓时间
+    open_position_price = FloatField(required=True)  # 开仓价格
+    close_position_date = DateTimeField()  # 平仓时间
+    close_position_price = FloatField()  # 平仓价格
+    position_amount = IntField(required=True)  # 开仓数量 /手
+    position_value = IntField(required=True)  # 开仓金额 /元
+    position_direction = StringField(choices=['long', 'short'])  # 仓位方向
+    meta = {
+        'indexes': ['stock_number', 'open_position_date'],
+        'index_background': True,
+    }
+
+
 class StockReport(Document):
     """
     存放研究报告数据

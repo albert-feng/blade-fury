@@ -83,8 +83,8 @@ def setup_argparse():
 
     args = parser.parse_args()
     try:
-        start_date = datetime.datetime.strptime(args.start_date, '%Y%m%d')
-        end_date = datetime.datetime.strptime(args.end_date, '%Y%m%d')
+        start_date = datetime.datetime.strptime(args.start_date, '%Y-%m-%d')
+        end_date = datetime.datetime.strptime(args.end_date, '%Y-%m-%d')
     except Exception as e:
         print('Wrong date form')
         raise e

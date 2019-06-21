@@ -17,3 +17,4 @@ def gen_ts_code(stock_number):
             if stock_number.startswith(n):
                 return stock_number + i.get('code_postfix')
 
+
