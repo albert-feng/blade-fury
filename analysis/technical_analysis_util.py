@@ -178,6 +178,14 @@ def check_duplicate_strategy(qr):
 
 
 def start_quant_analysis(**kwargs):
+    """
+
+    :param kwargs:{
+        qr_date: 运行策略时间
+    }
+    :return:
+    """
+
     if not kwargs.get('qr_date'):
         print('no qr_date')
         return
