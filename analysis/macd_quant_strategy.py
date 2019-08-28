@@ -15,9 +15,7 @@ from analysis.technical_analysis_util import start_quant_analysis, collect_stock
 from analysis.technical_analysis_util import pre_sdt_check, setup_realtime_sdt
 
 
-step = 100  # 一次从数据库取出打股票数量
 ema_volume = 150
-year_num = 250
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
