@@ -60,10 +60,10 @@ def quant_stock(stock_number, stock_name, **kwargs):
             return
 
         if df.iloc[-short_point:].macd.sum() > 0:
-            print(stock_number)
-            pd.set_option('display.max_columns', 500)
-            pd.set_option('display.width', 1000)
-            print(df.iloc[-short_point:])
+            # print(stock_number)
+            # pd.set_option('display.max_columns', 500)
+            # pd.set_option('display.width', 1000)
+            # print(df.iloc[-short_point:])
 
             qr = QR(
                 stock_number=stock_number, stock_name=stock_name, date=qr_date,
