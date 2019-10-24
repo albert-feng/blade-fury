@@ -69,11 +69,12 @@ def collect_company_survey(stock_info):
     concept_data = send_request(core_concept_url)
     try:
         concept_json = json.loads(concept_data)
-        market_plate = concept_json.get('HXTC').get('hxtc')[0].get('ydnr')
+        if concept_json.get('HXTC').get('hxtc'):
+            market_plate = concept_json.get('HXTC').get('hxtc')[0].get('ydnr')
+            stock_info.market_plate = market_plate
     except Exception as e:
         logging.error('parse concept data error, e = ' + str(e))
         pass
-    stock_info.market_plate = market_plate
 
     stock_info.update_time = datetime.datetime.now()
     stock_info.save()
