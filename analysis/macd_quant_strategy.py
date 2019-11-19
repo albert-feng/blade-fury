@@ -15,7 +15,7 @@ from analysis.technical_analysis_util import start_quant_analysis, collect_stock
 from analysis.technical_analysis_util import pre_sdt_check, setup_realtime_sdt
 
 
-ema_volume = 150
+ema_volume = 250
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
