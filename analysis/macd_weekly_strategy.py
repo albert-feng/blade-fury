@@ -25,7 +25,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
 
     strategy_direction = 'long'
-    quant_count = 150
+    quant_count = 250
 
     strategy_name = 'week_macd_%s_%s_%s_%s' % (strategy_direction, short_ema, long_ema, dif_ema)
 
