@@ -28,7 +28,7 @@ rzrq_api = [rzrq_sh, rzrq_sz]
 
 history_trading = 'http://soft-f9.eastmoney.com/soft/gp9.php?code={}'
 
-exchange_market = [{'market': 'sh', 'pattern': ['60'], 'cd': 'XSHG', 'code': '01'},
+exchange_market = [{'market': 'sh', 'pattern': ['6'], 'cd': 'XSHG', 'code': '01'},
                    {'market': 'sz', 'pattern': ['00', '30'], 'cd': 'XSHE', 'code':'02'}]
 f9_survey = 'http://f9.eastmoney.com/soft/gp3.php?color=b&code={}'
 f9_core_content = 'http://f9.eastmoney.com/hxtc/GetCoreContent?stockcode={}'
@@ -47,11 +47,11 @@ datayes_day_trading = 'https://api.wmcloud.com/data/v1/api/market/getMktEqud.jso
 datayes_week_trading = 'https://api.wmcloud.com/data/v1/api/market/getMktEquw.json?ticker={}&beginDate={}&endDate={}&isOpen=1'
 datayes_week_ad = 'https://api.wmcloud.com/data/v1/api/market/getMktEquwAdjAf.json?ticker={}&beginDate={}&endDate={}&isOpen=1'
 
-datayes_headers = {'Authorization': 'Bearer 49624017e208b4ecea0e7742756eacd6716f648b1d5eaf73df241765a1c2af2f'}
+datayes_headers = {'Authorization': 'Bearer 996149e6618da9316706120d1fff64c47265ed0e99e88c4897990d898918da92'}
 stock_exchange = {u'上海': u'XSHG', u'深圳': u'XSHE'}
 
 tushare_token = '6c0171c5179b008eedf3a32391be1ce08627e10684aa6215bc8edc28'
 ts_code_pattern = [
-    {'code_postfix': '.SH', 'pattern': ['60']},
+    {'code_postfix': '.SH', 'pattern': ['6']},
     {'code_postfix': '.SZ', 'pattern': ['00', '30']}
 ]
