@@ -56,8 +56,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
                 short_point = i
                 break
 
-        if short_point < period:
-            return
+        # if short_point < period:
+        #     return
 
         if df.iloc[-short_point:].macd.sum() > 0:
             # print(stock_number)
@@ -76,8 +76,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
 
 def setup_argparse():
-    parser = argparse.ArgumentParser(description=u'根据长短均线的金叉来选股')
-    parser.add_argument(u'-t', action=u'store', dest='qr_date', required=False, help=u'计算策略的日期')
+    parser = argparse.ArgumentParser(description=u'根据周线背离来选股')
+    parser.add_argument(u'-t', action=u'store', dest='qr_date', required=False, help=u'计算周线背离策略的日期')
 
     args = parser.parse_args()
     if args.qr_date:
