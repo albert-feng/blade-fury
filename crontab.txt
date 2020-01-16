@@ -32,56 +32,56 @@ PYTHONPATH=/root/blade-fury
 0 0 * * * /usr/sbin/logrotate -f /root/work/logrotate_mongodb > /dev/null 2>&1
 
 # collect stock data
-0 14 * * * /usr/local/bin/python3 /root/blade-fury/collector/collect_stock_basic_info.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
-30 3,21 * * * /usr/local/bin/python3 /root/blade-fury/collector/collect_stock_detail_info.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
-0 17 * * * /usr/local/bin/python3 /root/blade-fury/collector/collect_daily_trading_data.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
-0 16 * * * /usr/local/bin/python3 /root/blade-fury/collector/collect_stock_fundamentals.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+0 14 * * * /usr/bin/python3 /root/blade-fury/collector/collect_stock_basic_info.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+30 3,21 * * * /usr/bin/python3 /root/blade-fury/collector/collect_stock_detail_info.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+0 17 * * * /usr/bin/python3 /root/blade-fury/collector/collect_daily_trading_data.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+0 16 * * * /usr/bin/python3 /root/blade-fury/collector/collect_stock_fundamentals.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
 10 18 * * * /usr/bin/python2 /root/blade-fury/collector/collect_weekly_trading.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
 20 18 * * * /usr/bin/python2 /root/blade-fury/collector/collect_weekly_ad.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
-#30 6,15 * * * /usr/bin/python2.7 /root/blade-fury/collector/collect_history_trading.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
-5 15 * * * /usr/local/bin/python3 /root/blade-fury/collector/collect_stock_margin_trading.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
-0 16 * * * /usr/local/bin/python3 /root/blade-fury/collector/collect_index_trading.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
-25 10,20 * * * /usr/local/bin/python3 /root/blade-fury/collector/collect_stock_notice.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
-0 1 * * * /usr/local/bin/python3 /root/blade-fury/collector/collect_stock_report.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+#30 6,15 * * * /usr/bin/python2 /root/blade-fury/collector/collect_history_trading.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+5 15 * * * /usr/bin/python3 /root/blade-fury/collector/collect_stock_margin_trading.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+0 16 * * * /usr/bin/python3 /root/blade-fury/collector/collect_index_trading.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+25 10,20 * * * /usr/bin/python3 /root/blade-fury/collector/collect_stock_notice.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+0 1 * * * /usr/bin/python3 /root/blade-fury/collector/collect_stock_report.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
 
 # collect datayes trading data
 #0 20 * * * /usr/bin/python2.7 /root/blade-fury/collector/collect_datayes_trading_data.py -s 2004-02-01 -e 2000-01-04 >> /data/log/blade-fury.log 2>&1 &
 
 # quant result
-15 18 * * * /usr/local/bin/python3 /root/blade-fury/analysis/ma_quant_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-17 18 * * * /usr/local/bin/python3 /root/blade-fury/analysis/ma_quant_strategy.py -s 5 -l 20 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-21 18 * * * /usr/local/bin/python3 /root/blade-fury/analysis/ma_macd_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-23 18 * * * /usr/local/bin/python3 /root/blade-fury/analysis/ma_macd_strategy.py -s 5 -l 20 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-25 18 * * * /usr/local/bin/python3 /root/blade-fury/analysis/macd_quant_strategy.py -s 12 -l 26 -d 9 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-25 18 * * * /usr/local/bin/python3 /root/blade-fury/analysis/macd_dif_strategy.py -s 12 -l 26 -d 9 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-37 18 * * * /usr/local/bin/python3 /root/blade-fury/analysis/break_through_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-39 18 * * * /usr/local/bin/python3 /root/blade-fury/analysis/break_through_strategy.py -s 5 -l 20 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-45 18 * * * /usr/local/bin/python3 /root/blade-fury/analysis/new_peak_strategy.py -l 20 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-50 18 * * * /usr/local/bin/python3 /root/blade-fury/analysis/new_peak_strategy.py -l 120 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-0 19 * * * /usr/local/bin/python3 /root/blade-fury/analysis/goup_staying_strategy.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
-5 19 * * * /usr/local/bin/python3 /root/blade-fury/analysis/month_through_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-10 19 * * * /usr/local/bin/python3 /root/blade-fury/analysis/ma_month_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-12 19 * * * /usr/local/bin/python3 /root/blade-fury/analysis/macd_month_strategy.py -s 12 -l 26 -d 9 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-13 20 * * * /usr/local/bin/python3 /root/blade-fury/analysis/ma_weekly_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-14 20 * * * /usr/local/bin/python3 /root/blade-fury/analysis/macd_weekly_strategy.py -s 12 -l 26 -d 9 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-15 20 * * * /usr/local/bin/python3 /root/blade-fury/analysis/week_through_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-20 20 * * * /usr/local/bin/python3 /root/blade-fury/analysis/depart_quant_strategy.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
-25 20 * * * /usr/local/bin/python3 /root/blade-fury/analysis/depart_week_strategy.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+15 18 * * * /usr/bin/python3 /root/blade-fury/analysis/ma_quant_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+17 18 * * * /usr/bin/python3 /root/blade-fury/analysis/ma_quant_strategy.py -s 5 -l 20 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+21 18 * * * /usr/bin/python3 /root/blade-fury/analysis/ma_macd_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+23 18 * * * /usr/bin/python3 /root/blade-fury/analysis/ma_macd_strategy.py -s 5 -l 20 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+25 18 * * * /usr/bin/python3 /root/blade-fury/analysis/macd_quant_strategy.py -s 12 -l 26 -d 9 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+25 18 * * * /usr/bin/python3 /root/blade-fury/analysis/macd_dif_strategy.py -s 12 -l 26 -d 9 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+37 18 * * * /usr/bin/python3 /root/blade-fury/analysis/break_through_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+39 18 * * * /usr/bin/python3 /root/blade-fury/analysis/break_through_strategy.py -s 5 -l 20 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+45 18 * * * /usr/bin/python3 /root/blade-fury/analysis/new_peak_strategy.py -l 20 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+50 18 * * * /usr/bin/python3 /root/blade-fury/analysis/new_peak_strategy.py -l 120 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+0 19 * * * /usr/bin/python3 /root/blade-fury/analysis/goup_staying_strategy.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+5 19 * * * /usr/bin/python3 /root/blade-fury/analysis/month_through_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+10 19 * * * /usr/bin/python3 /root/blade-fury/analysis/ma_month_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+12 19 * * * /usr/bin/python3 /root/blade-fury/analysis/macd_month_strategy.py -s 12 -l 26 -d 9 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+13 20 * * * /usr/bin/python3 /root/blade-fury/analysis/ma_weekly_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+14 20 * * * /usr/bin/python3 /root/blade-fury/analysis/macd_weekly_strategy.py -s 12 -l 26 -d 9 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+15 20 * * * /usr/bin/python3 /root/blade-fury/analysis/week_through_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+20 20 * * * /usr/bin/python3 /root/blade-fury/analysis/depart_quant_strategy.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+25 20 * * * /usr/bin/python3 /root/blade-fury/analysis/depart_week_strategy.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
 
 # generate statement
-0 21 * * * /usr/local/bin/python3 /root/healing-ward/generate_statement.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+0 21 * * * /usr/bin/python3 /root/healing-ward/generate_statement.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
 
 # remove useless statemnet
-30 0 5 * * /usr/local/bin/python3 /root/healing-ward/clean_statement.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+30 0 5 * * /usr/bin/python3 /root/healing-ward/clean_statement.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
 
 # back testing
-#0 22 * * * /usr/bin/python2.7 /root/blade-fury/analysis/back_testing.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+#0 22 * * * /usr/bin/python2 /root/blade-fury/analysis/back_testing.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
 
 # ensure collection index
-0 23 * * * /usr/local/bin/python3 /root/blade-fury/models.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+0 23 * * * /usr/bin/python3 /root/blade-fury/models.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
 
 # mining stock notice
-20 17 * * * /usr/local/bin/python3 /root/blade-fury/analysis/mining_notice_event.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+20 17 * * * /usr/bin/python3 /root/blade-fury/analysis/mining_notice_event.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
 
 # run script
-#35 10 * * * /usr/bin/python2.7 /root/run_ma_strategy.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+#35 10 * * * /usr/bin/python2 /root/run_ma_strategy.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
