@@ -10,9 +10,9 @@ import logging
 from mongoengine import Q
 from pandas import DataFrame
 
-from analysis.technical_analysis_util import pre_sdt_check, calculate_macd, check_duplicate_strategy, get_week_trading
+from analysis.technical_analysis_util import pre_sdt_check, calculate_macd, check_duplicate_strategy
 from analysis.technical_analysis_util import format_trading_data, start_quant_analysis, is_ad_price
-from models import StockWeeklyTrading as SWT, StockDailyTrading as SDT
+from models import StockWeeklyTrading as SWT
 from models import QuantResult as QR
 from logger import setup_logging
 
@@ -26,27 +26,23 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
 
     strategy_direction = 'long'
-    strategy_name = 'week_boot_long_%s_%s_%s' % (short_ema, long_ema, dif_ema)
+    strategy_name = 'dif_week_long_%s_%s_%s' % (short_ema, long_ema, dif_ema)
+    quant_count = 250
 
-    end_date = qr_date.strftime('%Y-%m-%d')
-    start_date = (qr_date - datetime.timedelta(days=max(short_ema, long_ema)*7)).strftime('%Y-%m-%d')
-    trading_data = get_week_trading(stock_number, start_date, end_date)
-    if len(trading_data):
+    last_trade_date = qr_date + datetime.timedelta(days=7)
+    swt = SWT.objects(Q(stock_number=stock_number) &
+                      Q(last_trade_date__lte=last_trade_date)).order_by('-last_trade_date')[:quant_count]
+
+    use_ad_price, swt = is_ad_price(stock_number, qr_date, swt)
+    if not swt:
         return
+    trading_data = format_trading_data(swt, use_ad_price)
 
     df = calculate_macd(DataFrame(trading_data), short_ema, long_ema, dif_ema)
     this_week = df.iloc[-1]
     last_week = df.iloc[-2]
 
-    recent_period = df.iloc[-20:]
-    recent_dif = recent_period['dif']
-    # print('dif max:%s' % recent_dif.max())
-    if recent_dif.max() > 0:
-        return
-
-    # print("%s last:%s, this:%s" % (stock_number, last_week['dif'], this_week['dif']))
     if last_week['dif'] < 0 < this_week['dif']:
-
         init_price = this_week['close_price']
         increase_rate = round((this_week['close_price'] - last_week['close_price']) / last_week['close_price'], 4) * 100
 
