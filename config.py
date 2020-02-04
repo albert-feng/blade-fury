@@ -33,7 +33,7 @@ exchange_market = [{'market': 'sh', 'pattern': ['6'], 'cd': 'XSHG', 'code': '01'
 f9_survey = 'http://f9.eastmoney.com/soft/gp3.php?color=b&code={}'
 f9_core_content = 'http://f9.eastmoney.com/hxtc/GetCoreContent?stockcode={}'
 
-log_path = '/usr/local/var/blade-fury/blade-fury.log'
+log_path = '/data/log/blade-fury/blade-fury.log'
 local_log_path = 'blade-fury.log'
 
 company_report = 'http://datainterface.eastmoney.com/EM_DataCenter/js.aspx?type=SR&sty=GGSR&'\

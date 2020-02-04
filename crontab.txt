@@ -1,27 +1,7 @@
-# Edit this file to introduce tasks to be run by cron.
-# 
-# Each task to run has to be defined through a single line
-# indicating with different fields when the task will be run
-# and what command to run for the task
-# 
-# To define the time you can provide concrete values for
-# minute (m), hour (h), day of month (dom), month (mon),
-# and day of week (dow) or use '*' in these fields (for 'any').# 
-# Notice that tasks will be started based on the cron's system
-# daemon's notion of time and timezones.
-# 
-# Output of the crontab jobs (including errors) is sent through
-# email to the user the crontab file belongs to (unless redirected).
-# 
-# For example, you can run a backup of all your user accounts
-# at 5 a.m every week with:
-# 0 5 * * 1 tar -zcf /var/backups/home.tgz /home/
-# 
-# For more information see the manual pages of crontab(5) and cron(8)
-# 
-# m h  dom mon dow   command
-
 PYTHONPATH=/root/blade-fury
+
+*/1 * * * * /usr/local/qcloud/stargate/admin/start.sh > /dev/null 2>&1 &
+0 0 * * * /usr/local/qcloud/YunJing/YDCrontab.sh > /dev/null 2>&1 &
 
 # remove useless bash
 0 0 * * * /bin/ps ax|grep bash|awk '{print $1}'|xargs kill -9 > /dev/null 2>&1
@@ -30,6 +10,7 @@ PYTHONPATH=/root/blade-fury
 # logrotate
 0 0 * * * /usr/sbin/logrotate -f /root/work/logrotate_blade_fury > /dev/null 2>&1
 0 0 * * * /usr/sbin/logrotate -f /root/work/logrotate_mongodb > /dev/null 2>&1
+
 
 # collect stock data
 0 14 * * * /usr/bin/python3 /root/blade-fury/collector/collect_stock_basic_info.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
@@ -44,13 +25,15 @@ PYTHONPATH=/root/blade-fury
 25 10,20 * * * /usr/bin/python3 /root/blade-fury/collector/collect_stock_notice.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
 0 1 * * * /usr/bin/python3 /root/blade-fury/collector/collect_stock_report.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
 
+
 # quant result
 15 18 * * * /usr/bin/python3 /root/blade-fury/analysis/ma_quant_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
 17 18 * * * /usr/bin/python3 /root/blade-fury/analysis/ma_quant_strategy.py -s 5 -l 20 >> /data/log/blade-fury/blade-fury.log 2>&1 &
 21 18 * * * /usr/bin/python3 /root/blade-fury/analysis/ma_macd_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
 23 18 * * * /usr/bin/python3 /root/blade-fury/analysis/ma_macd_strategy.py -s 5 -l 20 >> /data/log/blade-fury/blade-fury.log 2>&1 &
 25 18 * * * /usr/bin/python3 /root/blade-fury/analysis/macd_quant_strategy.py -s 12 -l 26 -d 9 >> /data/log/blade-fury/blade-fury.log 2>&1 &
-25 18 * * * /usr/bin/python3 /root/blade-fury/analysis/macd_dif_strategy.py -s 12 -l 26 -d 9 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+28 18 * * * /usr/bin/python3 /root/blade-fury/analysis/dif_macd_strategy.py -s 12 -l 26 -d 9 >> /data/log/blade-fury/blade-fury.log 2>&1 &
+30 18 * * * /usr/bin/python3 /root/blade-fury/analysis/dif_week_strategy.py -s 12 -l 26 -d 9 >> /data/log/blade-fury/blade-fury.log 2>&1 &
 37 18 * * * /usr/bin/python3 /root/blade-fury/analysis/break_through_strategy.py -s 5 -l 10 >> /data/log/blade-fury/blade-fury.log 2>&1 &
 39 18 * * * /usr/bin/python3 /root/blade-fury/analysis/break_through_strategy.py -s 5 -l 20 >> /data/log/blade-fury/blade-fury.log 2>&1 &
 45 18 * * * /usr/bin/python3 /root/blade-fury/analysis/new_peak_strategy.py -l 20 >> /data/log/blade-fury/blade-fury.log 2>&1 &
@@ -82,3 +65,6 @@ PYTHONPATH=/root/blade-fury
 
 # run script
 #35 10 * * * /usr/bin/python2 /root/run_ma_strategy.py >> /data/log/blade-fury/blade-fury.log 2>&1 &
+
+
+
