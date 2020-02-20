@@ -25,7 +25,7 @@ query_step = 100  # 每次查询数据库的步长，以防出现cursor超时的
 def estimate_market(stock_number, attr='code'):
     market = ''
     for i in exchange_market:
-        if stock_number[:2] in i.get('pattern'):
+        if stock_number[0] in i.get('pattern'):
             market = i.get(attr)
             break
 

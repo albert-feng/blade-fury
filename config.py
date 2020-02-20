@@ -29,7 +29,7 @@ rzrq_api = [rzrq_sh, rzrq_sz]
 history_trading = 'http://soft-f9.eastmoney.com/soft/gp9.php?code={}'
 
 exchange_market = [{'market': 'sh', 'pattern': ['6'], 'cd': 'XSHG', 'code': '01'},
-                   {'market': 'sz', 'pattern': ['00', '30'], 'cd': 'XSHE', 'code':'02'}]
+                   {'market': 'sz', 'pattern': ['0', '3'], 'cd': 'XSHE', 'code':'02'}]
 f9_survey = 'http://f9.eastmoney.com/soft/gp3.php?color=b&code={}'
 f9_core_content = 'http://f9.eastmoney.com/hxtc/GetCoreContent?stockcode={}'
 
