@@ -32,6 +32,7 @@ exchange_market = [{'market': 'sh', 'pattern': ['6'], 'cd': 'XSHG', 'code': '01'
                    {'market': 'sz', 'pattern': ['0', '3'], 'cd': 'XSHE', 'code':'02'}]
 f9_survey = 'http://f9.eastmoney.com/soft/gp3.php?color=b&code={}'
 f9_core_content = 'http://f9.eastmoney.com/hxtc/GetCoreContent?stockcode={}'
+f10_core_content = 'http://f10.eastmoney.com/CoreConception/CoreConceptionAjax?code={}'
 
 log_path = '/data/log/blade-fury/blade-fury.log'
 local_log_path = 'blade-fury.log'

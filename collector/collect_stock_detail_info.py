@@ -14,7 +14,7 @@ import json
 from bs4 import BeautifulSoup
 
 from models import StockInfo
-from config import f9_core_content, f9_survey, exchange_market
+from config import f10_core_content, f9_survey, exchange_market
 from logger import setup_logging
 from collector.collect_data_util import send_request
 
@@ -64,13 +64,12 @@ def collect_company_survey(stock_info):
     stock_info.company_introduce = survey_table[7].text.strip()
     stock_info.area = survey_table[25].text.strip()
 
-    core_concept_url = f9_core_content.format(stock_info.stock_number + '.' +
-                                              estimate_market(stock_info.stock_number, 'market'))
+    core_concept_url = f10_core_content.format(estimate_market(stock_info.stock_number, 'market') + stock_info.stock_number)
     concept_data = send_request(core_concept_url)
     try:
         concept_json = json.loads(concept_data)
-        if concept_json.get('HXTC').get('hxtc'):
-            market_plate = concept_json.get('HXTC').get('hxtc')[0].get('ydnr')
+        if concept_json.get('hxtc'):
+            market_plate = concept_json.get('hxtc')[0].get('ydnr', '')
             stock_info.market_plate = market_plate
     except Exception as e:
         logging.error('parse concept data error, e = ' + str(e))
