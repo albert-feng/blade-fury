@@ -26,13 +26,21 @@ def collect_stock_info():
         stock = i.split(',')
         stock_number = stock[1]
         stock_name = stock[2]
-        stock_info = StockInfo(stock_number=stock_number, stock_name=stock_name, update_time=datetime.datetime.now())
+        total_value = 0 if stock[-2] == '-' else stock[-2]
 
-        if not check_duplicate(stock_info):
-            try:
-                stock_info.save()
-            except Exception as e:
-                logging.error('Saving %s data failed: %s' % (stock_info.stock_number, e))
+        cursor = StockInfo.objects(stock_number=stock_number)
+        if cursor:
+            stock_info = cursor[0]
+            stock_info.total_value = int(total_value)
+            stock_info.update_time = datetime.datetime.now()
+        else:
+            stock_info = StockInfo(stock_number=stock_number, stock_name=stock_name,
+                                   update_time=datetime.datetime.now(), total_value=int(total_value))
+
+        try:
+            stock_info.save()
+        except Exception as e:
+            logging.error('Saving %s data failed: %s' % (stock_info.stock_number, e))
 
 
 def check_duplicate(stock_info):
