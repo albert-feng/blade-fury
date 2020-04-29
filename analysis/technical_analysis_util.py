@@ -81,36 +81,20 @@ def pre_sdt_check(stock_number, **kwargs):
     :return:
     """
     qr_date = kwargs.get('qr_date')
-    if kwargs.get('week_long', False):
-        short_ma = 5
-        long_ma = 10
-        if not is_week_long(stock_number, qr_date, short_ma, long_ma):
-            return False
-
     rate_value = 0
     cursor = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date))\
         .order_by('-date')
     if not cursor:
         return False
 
-    today_sdt = cursor[0]
-    today_closing_price = today_sdt.today_closing_price
+    min_total_value = 3000000000
+    stock_info = StockInfo.objects(stock_number=stock_number)
 
-    if today_sdt.year_ma:
-        year_ma = today_sdt.year_ma
-    else:
-        year_ma = cal_year_ma(cursor)
-        try:
-            today_sdt.year_ma = year_ma
-            today_sdt.save()
-        except Exception:
-            pass
+    if stock_info and stock_info[0].total_value and stock_info[0].total_value < min_total_value:
+        return False
 
-    if today_closing_price >= year_ma:
-        rate_value += 1
-
-    max_trade_amount = 2000
-    avg_trade_amount = 1000
+    max_trade_amount = 5000
+    avg_trade_amount = 3000
     amount_avg_num = 5
     amount_sdt = cursor[:amount_avg_num]
 

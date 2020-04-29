@@ -12,7 +12,7 @@ from logger import setup_logging
 from models import QuantResult as QR, StockDailyTrading as SDT
 from analysis.technical_analysis_util import format_trading_data, check_duplicate_strategy, display_quant
 from analysis.technical_analysis_util import calculate_ma, start_quant_analysis, collect_stock_daily_trading
-from analysis.technical_analysis_util import pre_sdt_check, setup_realtime_sdt
+from analysis.technical_analysis_util import pre_sdt_check
 
 
 timeout = 60

@@ -13,7 +13,7 @@ from mongoengine import Q
 from logger import setup_logging
 from models import QuantResult as QR, StockDailyTrading as SDT
 from analysis.technical_analysis_util import check_duplicate_strategy
-from analysis.technical_analysis_util import start_quant_analysis
+from analysis.technical_analysis_util import start_quant_analysis, pre_sdt_check
 
 
 quant_count = 40
@@ -23,6 +23,8 @@ goup_stay = 9.5
 def quant_stock(stock_number, stock_name, **kwargs):
     qr_date = kwargs['qr_date']
     week_long = kwargs.get('week_long', False)
+    if not pre_sdt_check(stock_number, **kwargs):
+        return
 
     strategy_name = 'goup_staying'
     if week_long:

@@ -12,7 +12,7 @@ from pandas import DataFrame
 from logger import setup_logging
 from models import QuantResult as QR, StockWeeklyTrading as SWT
 from analysis.technical_analysis_util import calculate_macd, format_trading_data, calculate_ma, start_quant_analysis, \
-    check_duplicate_strategy, is_ad_price
+    check_duplicate_strategy, is_ad_price, pre_sdt_check
 
 
 period = 3
@@ -26,6 +26,8 @@ dif_ema = 9
 
 def quant_stock(stock_number, stock_name, **kwargs):
     qr_date = kwargs['qr_date']
+    if not pre_sdt_check(stock_number, **kwargs):
+        return
 
     strategy_name = "depart_long_week"
     last_trade_date = qr_date + datetime.timedelta(days=7)

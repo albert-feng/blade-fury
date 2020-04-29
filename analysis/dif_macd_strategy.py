@@ -19,6 +19,7 @@ ema_volume = 250
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
+
     if not pre_sdt_check(stock_number, **kwargs):
         return
 
