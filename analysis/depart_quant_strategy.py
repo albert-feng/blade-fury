@@ -46,8 +46,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
                 short_point = i
                 break
 
-        # if short_point < period:
-        #     return
+        if short_point < period:
+            return
 
         if df.iloc[-short_point:].macd.sum() > 0:
             increase_rate = round((today['close_price'] - yestoday['close_price']) / yestoday['close_price'], 4) * 100
