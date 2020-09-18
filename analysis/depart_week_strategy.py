@@ -58,8 +58,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
                 short_point = i
                 break
 
-        # if short_point < period:
-        #     return
+        if short_point < period:
+            return
 
         if df.iloc[-short_point:].macd.sum() > 0:
             # print(stock_number)
