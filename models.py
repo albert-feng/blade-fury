@@ -47,6 +47,7 @@ class StockInfo(Document):
     gpr = FloatField()  # 毛利率（%）
     npr = FloatField()  # 净利率（%）
     holders = IntField()  # 股东人数
+    list_date = StringField()  # 上市时间
     meta = {
         'indexes': ['stock_number'],
         'index_background': True,

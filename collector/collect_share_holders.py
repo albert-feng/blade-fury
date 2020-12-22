@@ -22,14 +22,14 @@ share_holder_url = {
 def collect_share_holder(stockinfo):
     stock_number = stockinfo.stock_number
     stock_name = stockinfo.stock_name
-    print stock_number
+    print(stock_number)
     if stock_number.startswith('6'):
         req_code = stock_number + '01'
     else:
         req_code = stock_number + '02'
 
     for k, v in share_holder_url.items():
-        print k, v
+        print(k, v)
         req_url = k + req_code
         share_html = send_request(req_url)
         share_soup = BeautifulSoup(share_html, 'lxml')
@@ -37,9 +37,9 @@ def collect_share_holder(stockinfo):
 
         for i in share_table.find_all('tr'):
             items = i.find_all('td')
-            print items
+            print(items)
             if items[0].text.startswith('20'):
-                print i
+                print(i)
 
 
 def start_collect_holder():
