@@ -87,7 +87,7 @@ def pre_sdt_check(stock_number, **kwargs):
     if not cursor:
         return False
 
-    min_total_value = 3000000000
+    min_total_value = 10000000000
     stock_info = StockInfo.objects(stock_number=stock_number)
 
     if stock_info and stock_info[0].total_value and stock_info[0].total_value < min_total_value:
