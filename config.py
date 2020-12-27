@@ -28,8 +28,8 @@ rzrq_api = [rzrq_sh, rzrq_sz]
 
 history_trading = 'http://soft-f9.eastmoney.com/soft/gp9.php?code={}'
 
-exchange_market = [{'market': 'sh', 'pattern': ['6'], 'cd': 'XSHG', 'code': '01'},
-                   {'market': 'sz', 'pattern': ['0', '3'], 'cd': 'XSHE', 'code':'02'}]
+exchange_market = [{'market': 'sh', 'pattern': ['6'], 'cd': 'XSHG', 'code': '01', 'value_code': '1.'},
+                   {'market': 'sz', 'pattern': ['0', '3'], 'cd': 'XSHE', 'code':'02', 'value_code': '0.'}]
 f9_survey = 'http://f9.eastmoney.com/soft/gp3.php?color=b&code={}'
 f9_core_content = 'http://f9.eastmoney.com/hxtc/GetCoreContent?stockcode={}'
 f10_core_content = 'http://f10.eastmoney.com/CoreConception/CoreConceptionAjax?code={}'
@@ -56,3 +56,6 @@ ts_code_pattern = [
     {'code_postfix': '.SH', 'pattern': ['6']},
     {'code_postfix': '.SZ', 'pattern': ['00', '30']}
 ]
+
+stock_value_url = 'http://push2.eastmoney.com/api/qt/slist/get?spt=1&np=3&fltt=2&invt=2&fields=f9,f12,f13,f14,f20,' \
+                  'f23,f37,f45,f49,f134,f135,f129&secid={}'

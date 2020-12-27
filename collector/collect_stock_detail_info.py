@@ -14,7 +14,7 @@ import json
 from bs4 import BeautifulSoup
 
 from models import StockInfo
-from config import f10_core_content, f9_survey, exchange_market
+from config import f10_core_content, f9_survey, exchange_market, stock_value_url
 from logger import setup_logging
 from collector.collect_data_util import send_request
 
@@ -74,6 +74,24 @@ def collect_company_survey(stock_info):
     except Exception as e:
         logging.error('parse concept data error, e = ' + str(e))
         pass
+
+    stock_value_req = send_request(stock_value_url.format(estimate_market(stock_info.stock_number, 'value_code') +
+                                                      stock_info.stock_number))
+    try:
+        stock_value_json = json.loads(stock_value_req)
+        if stock_value_json.get('data') and stock_value_json.get('data').get('diff'):
+            stock_value_datas = stock_value_json.get('data').get('diff')
+            for i in range(len(stock_value_datas)):
+                if stock_value_datas[i].get('f12') and stock_value_datas[i].get('f12') == stock_info.stock_number:
+                    stock_value_info = stock_value_datas[i]
+                    break
+
+            stock_info.pe = stock_value_info.get('f9')
+            stock_info.pb = stock_value_info.get('f23')
+            stock_info.total_value = stock_value_info.get('f20')
+
+    except Exception as e:
+        logging.error('parse stock value fail: e = ' + str(e))
 
     stock_info.update_time = datetime.datetime.now()
     stock_info.save()
