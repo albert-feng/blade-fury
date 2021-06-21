@@ -11,8 +11,7 @@ import pandas as pd
 from pandas import DataFrame
 from models import QuantResult as QR, StockDailyTrading as SDT, StockInfo, StockWeeklyTrading as SWT
 from mongoengine import Q
-from config import eastmoney_stock_api
-
+from config import eastmoney_stock_api, banned_stock
 
 query_step = 100
 timeout = 60
@@ -201,6 +200,9 @@ def start_quant_analysis(**kwargs):
         for i in stocks:
             if i.account_firm and u'瑞华会计师' in i.account_firm:
                 # 过滤瑞华的客户
+                continue
+
+            if i.stock_number in banned_stock:
                 continue
 
             if not kwargs.get('real_time') and\
