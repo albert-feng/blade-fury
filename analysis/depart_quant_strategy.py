@@ -15,7 +15,7 @@ from analysis.technical_analysis_util import calculate_macd, format_trading_data
 
 
 period = 3
-ema_volume = 150
+ema_volume = 500
 short_ma = 5
 long_ma = 10
 short_ema = 12
