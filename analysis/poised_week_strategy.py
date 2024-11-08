@@ -61,7 +61,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         if short_point < period:
             return
 
-        if df.iloc[-short_point:].dif.sum() > 0:
+        if df.iloc[-short_point:].dif.min() > 0:
             # print(stock_number)
             # pd.set_option('display.max_columns', 500)
             # pd.set_option('display.width', 1000)
