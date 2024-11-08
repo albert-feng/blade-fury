@@ -36,6 +36,7 @@ def estimate_market(stock_number, attr='code'):
 
 def collect_company_survey(stock_info):
     query_id = estimate_market(stock_info.stock_number, 'market') + stock_info.stock_number
+    logging.info('start collect stock: ' + stock_info.stock_number)
 
     company_survey_url = stock_basic_info.format(query_id)
     retry = 5
