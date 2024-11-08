@@ -29,10 +29,13 @@ rzrq_api = [rzrq_sh, rzrq_sz]
 history_trading = 'http://soft-f9.eastmoney.com/soft/gp9.php?code={}'
 
 exchange_market = [{'market': 'sh', 'pattern': ['6'], 'cd': 'XSHG', 'code': '01', 'value_code': '1.'},
-                   {'market': 'sz', 'pattern': ['0', '3'], 'cd': 'XSHE', 'code':'02', 'value_code': '0.'}]
+                   {'market': 'sz', 'pattern': ['0', '3'], 'cd': 'XSHE', 'code': '02', 'value_code': '0.'}]
 f9_survey = 'http://f9.eastmoney.com/soft/gp3.php?color=b&code={}'
 f9_core_content = 'http://f9.eastmoney.com/hxtc/GetCoreContent?stockcode={}'
 f10_core_content = 'http://f10.eastmoney.com/CoreConception/CoreConceptionAjax?code={}'
+
+stock_basic_info = 'https://emweb.securities.eastmoney.com/pc_hsf10/pages/index.html?type=web&code={}&color=b#/gsgk'
+f9_info = 'https://f9.eastmoney.com/{}.html'
 
 log_path = '/data/log/blade-fury/blade-fury.log'
 local_log_path = 'blade-fury.log'

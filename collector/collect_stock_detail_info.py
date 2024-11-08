@@ -14,9 +14,9 @@ import json
 from bs4 import BeautifulSoup
 
 from models import StockInfo
-from config import f10_core_content, f9_survey, exchange_market, stock_value_url
+from config import f10_core_content, f9_survey, exchange_market, stock_value_url, stock_basic_info, f9_info
 from logger import setup_logging
-from collector.collect_data_util import send_request
+from collector.collect_data_util import send_request, fetch_page_content
 
 
 query_step = 100  # 每次查询数据库的步长，以防出现cursor超时的错误
@@ -35,17 +35,17 @@ def estimate_market(stock_number, attr='code'):
 
 
 def collect_company_survey(stock_info):
-    query_id = stock_info.stock_number + estimate_market(stock_info.stock_number)
+    query_id = estimate_market(stock_info.stock_number, 'market') + stock_info.stock_number
 
-    company_survey_url = f9_survey.format(query_id)
+    company_survey_url = stock_basic_info.format(query_id)
     retry = 5
     survey_table = ''
 
     while retry:
         try:
-            survey_html = send_request(company_survey_url)
+            survey_html = fetch_page_content(company_survey_url)
             survey_soup = BeautifulSoup(survey_html, 'lxml')
-            survey_table = survey_soup.find('table', id='tablefont').find_all('td')
+            survey_table = survey_soup.find('div', class_='jbzl_table').find_all('tr')
             break
         except Exception as e:
             retry -= 1
@@ -54,47 +54,34 @@ def collect_company_survey(stock_info):
     if not survey_soup or not survey_table:
         return
 
-    stock_info.company_name_cn = survey_table[1].text.strip()
-    stock_info.company_name_en = survey_table[3].text.strip()
-    stock_info.used_name = survey_table[5].text.strip()
-    stock_info.account_firm = survey_table[43].text.strip()
-    stock_info.law_firm = survey_table[45].text.strip()
-    stock_info.industry_involved = survey_table[17].text.strip()
-    stock_info.business_scope = survey_table[47].text.strip()
-    stock_info.company_introduce = survey_table[7].text.strip()
-    stock_info.area = survey_table[25].text.strip()
+    stock_info.company_name_cn = survey_table[0].find('td').text.strip()
+    stock_info.company_name_en = survey_table[1].find('td').text.strip()
+    stock_info.used_name = survey_table[3].find_all('td')[-1].text.strip()
+    stock_info.account_firm = survey_table[17].find_all('td')[-1].text.strip()
+    stock_info.law_firm = survey_table[17].find_all('td')[0].text.strip()
+    stock_info.industry_involved = survey_table[6].find_all('td')[-1].text.strip()
+    stock_info.business_scope = survey_table[19].find('td').text.strip()
+    stock_info.company_introduce = survey_table[18].find('td').text.strip()
+    stock_info.area = survey_table[14].find_all('td')[0].text.strip()
 
-    core_concept_url = f10_core_content.format(estimate_market(stock_info.stock_number, 'market') + stock_info.stock_number)
-    concept_data = send_request(core_concept_url)
+    core_concept_url = f9_info.format(query_id)
+    
     try:
-        concept_json = json.loads(concept_data)
-        if concept_json.get('hxtc'):
-            market_plate = concept_json.get('hxtc')[0].get('ydnr', '')
-            stock_info.market_plate = market_plate
+        f9_stock_info = fetch_page_content(core_concept_url)
+        f9_soup = BeautifulSoup(f9_stock_info, 'lxml')
+        hxtc_info = f9_soup.find('div', id='hxtc_content')
+        
+        market_plate = hxtc_info.find_all('p')[0].text.strip().replace('要点一:  ', '').replace('所属板块', '')
+        stock_info.market_plate = market_plate
     except Exception as e:
         logging.error('parse concept data error, e = ' + str(e))
         pass
 
-    stock_value_req = send_request(stock_value_url.format(estimate_market(stock_info.stock_number, 'value_code') +
-                                                      stock_info.stock_number))
     try:
-        stock_value_json = json.loads(stock_value_req)
-        if stock_value_json.get('data') and stock_value_json.get('data').get('diff'):
-            stock_value_datas = stock_value_json.get('data').get('diff')
-            for i in range(len(stock_value_datas)):
-                if stock_value_datas[i].get('f12') and stock_value_datas[i].get('f12') == stock_info.stock_number:
-                    stock_value_info = stock_value_datas[i]
-                    break
-
-            stock_info.pe = stock_value_info.get('f9')
-            stock_info.pb = stock_value_info.get('f23')
-            stock_info.total_value = stock_value_info.get('f20')
-
+        stock_info.save()
     except Exception as e:
-        logging.error('parse stock value fail: e = ' + str(e))
-
-    stock_info.update_time = datetime.datetime.now()
-    stock_info.save()
+        logging.error('save stock detail data error, e = ' + str(e))
+        pass
 
 
 def start_collect_detail():

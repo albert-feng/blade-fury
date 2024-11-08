@@ -6,6 +6,7 @@ import json
 
 import requests
 from mongoengine import Q
+from playwright.sync_api import sync_playwright
 
 from models import StockDailyTrading as SDT
 from models import StockWeeklyTrading as SWT
@@ -40,6 +41,20 @@ def send_request(url, headers={}):
     if not html:
         logging.warning('No data when request this url:' + url)
     return html
+
+
+def fetch_page_content(url):
+    with sync_playwright() as playwright:
+        # 启动浏览器，headless=True 表示无头模式
+        browser = playwright.chromium.launch(headless=True)
+        page = browser.new_page()
+        page.goto(url)
+        # 等待页面加载完成
+        page.wait_for_load_state('load')
+        # 获取页面内容
+        content = page.content()
+        browser.close()
+        return content
 
 
 def request_and_handle_data(url, headers={}):
