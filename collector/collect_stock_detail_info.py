@@ -47,7 +47,9 @@ def collect_company_survey(stock_info):
         try:
             survey_html = fetch_page_content(company_survey_url)
             survey_soup = BeautifulSoup(survey_html, 'lxml')
-            survey_table = survey_soup.find('div', class_='jbzl_table').find_all('tr')
+            jbzl_info = survey_soup.find('div', class_='jbzl_table')
+            jbzl_info = jbzl_info if jbzl_info else survey_soup.find('div', class_='jbzl')
+            survey_table = jbzl_info.find_all('tr')
             break
         except Exception as e:
             logging.error('request to url: %s fail, e = %s' % (company_survey_url, e))
