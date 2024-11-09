@@ -41,6 +41,7 @@ def collect_company_survey(stock_info):
     company_survey_url = stock_basic_info.format(query_id)
     retry = 5
     survey_table = ''
+    survey_soup = None
 
     while retry:
         try:
@@ -49,6 +50,7 @@ def collect_company_survey(stock_info):
             survey_table = survey_soup.find('div', class_='jbzl_table').find_all('tr')
             break
         except Exception as e:
+            logging.error('request to url: %s fail, e = %s' % (company_survey_url, e))
             retry -= 1
             time.sleep(1)
 
