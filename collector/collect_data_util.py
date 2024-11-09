@@ -3,6 +3,7 @@
 
 import logging
 import json
+import time
 
 import requests
 from mongoengine import Q
@@ -50,7 +51,7 @@ def fetch_page_content(url):
         page = browser.new_page()
         page.goto(url)
         # 等待页面加载完成
-        page.wait_for_load_state('load')
+        page.wait_for_load_state('networkidle')
         # 获取页面内容
         content = page.content()
         browser.close()

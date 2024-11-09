@@ -10,7 +10,7 @@ from collector.collect_stock_detail_info import collect_company_survey
 # 假设的 stock_info 类，用于测试
 class MockStockInfo:
     def __init__(self):
-        self.stock_number = '000002'
+        self.stock_number = '000338'
         self.company_name_cn = ''
         self.company_name_en = ''
         self.used_name = ''

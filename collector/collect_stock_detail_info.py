@@ -48,7 +48,6 @@ def collect_company_survey(stock_info):
             survey_html = fetch_page_content(company_survey_url)
             survey_soup = BeautifulSoup(survey_html, 'lxml')
             jbzl_info = survey_soup.find('div', class_='jbzl_table')
-            jbzl_info = jbzl_info if jbzl_info else survey_soup.find('div', class_='jbzl')
             survey_table = jbzl_info.find_all('tr')
             break
         except Exception as e:
