@@ -30,7 +30,7 @@ def estimate_market(stock_number, attr='code'):
             break
 
     if not market:
-        raise Exception('Wrong stock number %s' % stock_number)
+                raise Exception('Wrong stock number %s' % stock_number)
     return market
 
 

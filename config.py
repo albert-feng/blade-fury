@@ -37,7 +37,7 @@ f10_core_content = 'http://f10.eastmoney.com/CoreConception/CoreConceptionAjax?c
 stock_basic_info = 'https://emweb.securities.eastmoney.com/pc_hsf10/pages/index.html?type=web&code={}&color=b#/gsgk'
 f9_info = 'https://f9.eastmoney.com/{}.html'
 
-log_path = '/data/log/blade-fury/blade-fury.log'
+log_path = '/data/logs/blade-fury/blade-fury.log'
 local_log_path = 'blade-fury.log'
 
 company_report = 'http://datainterface.eastmoney.com/EM_DataCenter/js.aspx?type=SR&sty=GGSR&'\
