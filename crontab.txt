@@ -16,7 +16,6 @@ PYTHONPATH=/root/blade-fury
 0 14 * * * python3 /root/blade-fury/collector/collect_stock_basic_info.py >> /data/logs/blade-fury/blade-fury.log 2>&1 &
 30 3,21 * * * python3 /root/blade-fury/collector/collect_stock_detail_info.py >> /data/logs/blade-fury/blade-fury.log 2>&1 &
 0 17 * * * python3 /root/blade-fury/collector/collect_daily_trading_data.py >> /data/logs/blade-fury/blade-fury.log 2>&1 &
-0 16 * * * python3 /root/blade-fury/collector/collect_stock_fundamentals.py >> /data/logs/blade-fury/blade-fury.log 2>&1 &
 10 18 * * * python3 /root/blade-fury/collector/collect_weekly_trading.py >> /data/logs/blade-fury/blade-fury.log 2>&1 &
 20 18 * * * python3 /root/blade-fury/collector/collect_weekly_ad.py >> /data/logs/blade-fury/blade-fury.log 2>&1 &
 #30 6,15 * * * python3 /root/blade-fury/collector/collect_history_trading.py >> /data/logs/blade-fury/blade-fury.log 2>&1 &

@@ -75,7 +75,7 @@ def collect_stock_data(stock_number, start_date, end_date):
         former_swt = SWT.objects(Q(stock_number=stock_number) & Q(first_trade_date=first_trade_date))
         new_object = True
         if former_swt:
-            swt = former_swt.next()
+            swt = former_swt[0]
             new_object = False
         else:
             swt = SWT()
