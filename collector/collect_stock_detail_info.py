@@ -17,21 +17,22 @@ from models import StockInfo
 from config import f10_core_content, f9_survey, exchange_market, stock_value_url, stock_basic_info, f9_info
 from logger import setup_logging
 from collector.collect_data_util import send_request, fetch_page_content
+from collector.collect_util import estimate_market
 
 
 query_step = 100  # 每次查询数据库的步长，以防出现cursor超时的错误
 
 
-def estimate_market(stock_number, attr='code'):
-    market = ''
-    for i in exchange_market:
-        if stock_number[0] in i.get('pattern'):
-            market = i.get(attr)
-            break
-
-    if not market:
-                raise Exception('Wrong stock number %s' % stock_number)
-    return market
+# def estimate_market(stock_number, attr='code') -> str:
+#     market = ''
+#     for i in exchange_market:
+#         if stock_number[0] in i.get('pattern'):
+#             market = i.get(attr)
+#             break
+#
+#     if not market:
+#                 raise Exception('Wrong stock number %s' % stock_number)
+#     return market
 
 
 def collect_company_survey(stock_info):

@@ -11,13 +11,16 @@ import pandas as pd
 from pandas import DataFrame
 from models import QuantResult as QR, StockDailyTrading as SDT, StockInfo, StockWeeklyTrading as SWT
 from mongoengine import Q
-from config import eastmoney_stock_api, banned_stock
+from config import eastmoney_stock_api, banned_stock, tushare_token
+from collector.collect_util import estimate_market, get_tushare_month_trading
 
 query_step = 100
 timeout = 60
 retry = 5
 year_num = 250
 
+
+pro = ts.pro_api(tushare_token)
 
 def format_trading_data(stock_trading_data, use_ad_price=False):
     trading_data = []
@@ -342,7 +345,7 @@ def is_ad_price(stock_number, qr_date, swt):
 
 
 def get_month_trading(stock_number, start_date=None, end_date=None):
-    return get_trading_from_tushare(stock_number, start_date=start_date, end_date=end_date, ktype="M")
+    return get_tushare_month_trading(stock_number, start_date, end_date)
 
 
 def get_week_trading(stock_number, start_date=None, end_date=None):

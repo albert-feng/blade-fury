@@ -117,6 +117,26 @@ class StockWeeklyTrading(Document):
     }
 
 
+class StockMonthTrading(Document):
+    """
+    存储股票月线数据
+    """
+
+    stock_number = StringField(required=True, max_length=10)
+    first_trade_date = DateTimeField(required=True)
+    last_trade_date = DateTimeField(required=True)
+    month_open_price = FloatField()
+    month_highest_price = FloatField()
+    month_lowest_price = FloatField()
+    month_close_price = FloatField()
+    turnover_volume = IntField()
+    turnover_amount = IntField()
+    meta = {
+        'indexes': ['stock_number', 'last_trade_date', ('stock_number', 'last_trade_date'),
+                    ('stock_number', '-last_trade_date')]
+    }
+
+
 class IndexDailyTrading(Document):
     """
     存储每天的指数交易数据
