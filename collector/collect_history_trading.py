@@ -17,12 +17,13 @@ from models import StockInfo, StockDailyTrading as SDT
 timeout = 30
 query_step = 100
 
+pro = tushare_util.get_pro_client()
+
 
 def collect_his_trading(stock_number, stock_name, start_date, end_date):
     ts_code = tushare_util.gen_ts_code(stock_number)
 
-    his_data = tushare_util.get_pro_client().query('daily', ts_code=ts_code, start_date=start_date.strftime('%Y%m%d'),
-                                                   end_date=end_date.strftime('%Y%m%d'))
+    his_data = pro.daily(ts_code=ts_code, start_date=start_date.strftime('%Y%m%d'), end_date=end_date.strftime('%Y%m%d'))
     for i in range(0, len(his_data)):
         trade_data = his_data.iloc[i]
         try:

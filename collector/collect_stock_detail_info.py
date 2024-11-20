@@ -76,7 +76,8 @@ def collect_company_survey(stock_info):
         f9_soup = BeautifulSoup(f9_stock_info, 'lxml')
         hxtc_info = f9_soup.find('div', id='hxtc_content')
         
-        market_plate = hxtc_info.find_all('p')[0].text.strip().replace('要点一:  ', '').replace('所属板块', '')
+        market_plate = (hxtc_info.find_all('p')[0].text.strip().replace('要点一:  ', '')
+                        .replace('所属板块', ''))
         stock_info.market_plate = market_plate
     except Exception as e:
         logging.error('parse concept data error, e = ' + str(e))
