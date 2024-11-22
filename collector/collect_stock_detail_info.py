@@ -94,7 +94,7 @@ def start_collect_detail():
     try:
         all_stocks = StockInfo.objects()
     except Exception as e:
-        logging.error('Error when query StockInfo:' + str(e))
+        logging.error('Error when query StockInfo:' + str(e)) 
         raise e
 
     stocks_count = len(all_stocks)
