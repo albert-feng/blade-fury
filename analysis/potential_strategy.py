@@ -38,8 +38,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     # 过滤出前一天涨停然后转弱的票
     if (float(sdt[1].increase_rate.replace('%', '').strip()) > goup_stay >
-            float(sdt[0].increase_rate.replace('%', '').strip()) and
-            float(sdt[2].increase_rate.replace('%', '').strip()) < goup_stay):
+            float(sdt[0].increase_rate.replace('%', '').strip())):
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=qr_date,
             strategy_direction='long', strategy_name=strategy_name,
