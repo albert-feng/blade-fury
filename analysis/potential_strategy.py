@@ -18,7 +18,7 @@ from mongoengine import Q
 from logger import setup_logging
 from models import QuantResult as QR, StockDailyTrading as SDT
 from analysis.technical_analysis_util import check_duplicate_strategy
-from analysis.technical_analysis_util import start_quant_analysis, pre_sdt_check
+from analysis.technical_analysis_util import start_quant_analysis, calculate_highest_rate
 
 
 quant_count = 10
@@ -26,19 +26,40 @@ goup_stay = 9.5
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
+    """
+    量化选股函数
+
+    该函数根据给定的股票代码和名称，以及额外的关键字参数，执行一系列条件判断来决定是否将该股票添加到数据库中
+    条件包括股票代码的前缀、历史价格表现、以及是否满足特定的量化策略
+
+    参数:
+    - stock_number (str): 股票代码
+    - stock_name (str): 股票名称
+    - **kwargs: 额外的关键字参数，必须包含 'qr_date'，可选地包含 'industry_involved'
+
+    返回:
+    - QR: 如果股票满足条件，则返回保存在数据库中的QR对象，否则返回None
+    """
+    # 获取查询日期
     qr_date = kwargs['qr_date']
+    # 定义策略名称
     strategy_name = 'potential'
-    if stock_number.startswith('688') or stock_number.startswith('30'):  # 过滤掉可以涨20%的票
+
+    # 过滤掉可以涨20%的票
+    if stock_number.startswith('688') or stock_number.startswith('30'):
         return
 
+    # 查询股票数据
     sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
                       Q(date__lte=qr_date)).order_by('-date')[:quant_count]
+    # 如果查询结果不足quant_count条，直接返回
     if len(sdt) < quant_count:
         return
 
-    # 过滤出前一天涨停然后转弱的票
-    if (float(sdt[1].increase_rate.replace('%', '').strip()) > goup_stay >
-            float(sdt[0].increase_rate.replace('%', '').strip())):
+    # 过滤出前一天涨停然后转弱或者当天烂板的票
+    if (calculate_highest_rate(sdt[-1]) > goup_stay >
+            float(sdt[0].increase_rate.replace('%', '').strip())) or (calculate_highest_rate(sdt[0]) > goup_stay and
+            sdt[0].today_closing_price < sdt[0].today_highest_price):
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=qr_date,
             strategy_direction='long', strategy_name=strategy_name,

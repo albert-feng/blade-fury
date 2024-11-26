@@ -357,3 +357,27 @@ def get_trading_from_tushare(stock_number, start_date=None, end_date=None, ktype
     df = month_trading_data.set_index(['date'])
     df['close_price'] = df['close']
     return df
+
+
+def calculate_highest_rate(sdt: SDT) -> float:
+    """
+    计算给定股票数据对象的最高比率。
+
+    该函数通过比较股票的当日最高价和前日收盘价来计算最高比率。
+    最高比率是衡量股票价格日内波动的一个重要指标。
+
+    参数:
+    sdt (SDT): 一个包含股票数据的SDT对象。SDT对象应至少包含以下属性：
+        - today_highest_price: 当日最高价
+        - yesterday_closed_price: 前日收盘价
+
+    返回:
+    float: 最高比率，以百分比形式返回。
+
+    示例:
+    >>> sdt = SDT(today_highest_price=120, yesterday_closed_price=100)
+    >>> calculate_highest_rate(sdt)
+    20.0
+    """
+    # 计算最高比率的公式：(当日最高价 - 前日收盘价) / 前日收盘价 * 100
+    return (sdt.today_highest_price - sdt.yesterday_closed_price) / sdt.yesterday_closed_price * 100
