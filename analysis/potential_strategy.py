@@ -57,7 +57,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
 
     # 过滤出前一天涨停然后转弱或者当天烂板的票
-    if (calculate_highest_rate(sdt[-1]) > goup_stay >
+    if (calculate_highest_rate(sdt[1]) > goup_stay >
             float(sdt[0].increase_rate.replace('%', '').strip())) or (calculate_highest_rate(sdt[0]) > goup_stay and
             sdt[0].today_closing_price < sdt[0].today_highest_price):
         qr = QR(
