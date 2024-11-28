@@ -82,6 +82,10 @@ def pre_sdt_check(stock_number, **kwargs):
     :param qr_date:
     :return:
     """
+    if stock_number.startswith('8'):
+        # 过滤北交所的票
+        return
+
     qr_date = kwargs.get('qr_date')
     rate_value = 0
     cursor = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date))\
@@ -95,19 +99,7 @@ def pre_sdt_check(stock_number, **kwargs):
     if stock_info and stock_info[0].total_value and stock_info[0].total_value < min_total_value:
         return False
 
-    max_trade_amount = 5000
-    avg_trade_amount = 3000
-    amount_avg_num = 5
-    amount_sdt = cursor[:amount_avg_num]
-
-    if cal_turnover_ma(cursor, amount_avg_num) >= avg_trade_amount or\
-       max([i.turnover_amount for i in amount_sdt]) >= max_trade_amount:
-        rate_value += 1
-
-    if rate_value:
-        return True
-    else:
-        return False
+    return True
 
 
 def is_week_long(stock_number, qr_date, short_ma, long_ma):
