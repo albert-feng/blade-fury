@@ -84,13 +84,13 @@ def calculate_kdj(df, n, k, d):
     if not isinstance(df, DataFrame):
         raise Exception('df type is wrong')
 
-    df['low_n'] = df['low_price'].rolling(window=n, min_periods=1).min()
-    df['high_n'] = df['high_price'].rolling(window=n, min_periods=1).max()
-    df['rsv'] = (df['close_price'] - df['low_n']) / (df['high_n'] - df['low_n']) * 100
+    low_min = df['low_price'].rolling(window=n).min()  # 过去9日的最低价
+    high_max = df['high_price'].rolling(window=n).max()  # 过去9日的最高价
+    rsv = (df['Close'] - low_min) / (high_max - low_min) * 100
 
-    df['K'] = df['rsv'].ewm(alpha=1 / k, adjust=False).mean()
-    df['D'] = df['K'].ewm(alpha=1 / d, adjust=False).mean()
-    df['J'] = 3 * df['K'] - 2 * df['D']
+    df['k'] = rsv.ewm(com=2, adjust=False).mean()  # 使用指数加权平均计算K线
+    df['d'] = df['K'].ewm(com=2, adjust=False).mean()  # 使用指数加权平均计算D线
+    df['j'] = 3 * df['K'] - 2 * df['D']  # J线公式
     return df
 
 

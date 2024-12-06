@@ -19,7 +19,7 @@ from models import QuantResult as QR, StockDailyTrading as SDT
 from analysis.technical_analysis_util import *
 
 
-quant_count = 20
+quant_count = 200
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
