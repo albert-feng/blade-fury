@@ -22,6 +22,7 @@ year_num = 250
 
 pro = ts.pro_api(tushare_token)
 
+
 def format_trading_data(stock_trading_data, use_ad_price=False):
     trading_data = []
 
@@ -35,6 +36,8 @@ def format_trading_data(stock_trading_data, use_ad_price=False):
 
     elif isinstance(stock_trading_data[0], SWT):
         for i in stock_trading_data:
+            high_price = i.weekly_highest_price
+            low_price = i.weekly_lowest_price
             if use_ad_price:
                 close_price = i.ad_close_price
             else:
@@ -42,6 +45,8 @@ def format_trading_data(stock_trading_data, use_ad_price=False):
             trading_data.append({
                 'date': i.last_trade_date,
                 'close_price': close_price,
+                'high_price': high_price,
+                'low_price': low_price
             })
 
     if trading_data:
@@ -75,6 +80,20 @@ def calculate_ma(df, short_ma, long_ma):
         raise Exception('df type is wrong')
 
 
+def calculate_kdj(df, n, k, d):
+    if not isinstance(df, DataFrame):
+        raise Exception('df type is wrong')
+
+    df['low_n'] = df['low_price'].rolling(window=n, min_periods=1).min()
+    df['high_n'] = df['high_price'].rolling(window=n, min_periods=1).max()
+    df['rsv'] = (df['close_price'] - df['low_n']) / (df['high_n'] - df['low_n']) * 100
+
+    df['K'] = df['rsv'].ewm(alpha=1 / k, adjust=False).mean()
+    df['D'] = df['K'].ewm(alpha=1 / d, adjust=False).mean()
+    df['J'] = 3 * df['K'] - 2 * df['D']
+    return df
+
+
 def pre_sdt_check(stock_number, **kwargs):
     """
     依据量价进行预先筛选
@@ -82,7 +101,7 @@ def pre_sdt_check(stock_number, **kwargs):
     :param qr_date:
     :return:
     """
-    if stock_number.startswith('8'):
+    if stock_number.startswith('8') or stock_number.startswith('4') or stock_number.startswith('9'):
         # 过滤北交所的票
         return
 
