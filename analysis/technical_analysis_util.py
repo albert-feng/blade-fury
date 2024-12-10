@@ -88,14 +88,8 @@ def calculate_kdj(df, n, k, d):
     high = df['high_price'].rolling(window=n).max()  # 过去9日的最高价
     rsv = (df['close_price '] - low) / (high - low) * 100
 
-    df['k'] = 50
-    df['d'] = 50
-
-    alpha_k = 1 / k
-    alpha_d = 1 / d
-    for i in range(1, len(df)):
-        df.loc[df.index[i], 'k'] = df.loc[df.index[i - 1], 'k'] * (1 - alpha_k) + df.loc[df.index[i], rsv] * alpha_k
-        df.loc[df.index[i], 'd'] = df.loc[df.index[i - 1], 'd'] * (1 - alpha_d) + df.loc[df.index[i], 'k'] * alpha_d
+    df['k'] = rsv.ewm(com=k-1, adjust=False).mean()
+    df['d'] = df['k'].ewm(com=d-1, adjust=False).mean()
 
     df['j'] = 3 * df['k'] - 2 * df['d']  # J线公式
     return df
