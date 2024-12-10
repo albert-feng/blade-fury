@@ -84,13 +84,20 @@ def calculate_kdj(df, n, k, d):
     if not isinstance(df, DataFrame):
         raise Exception('df type is wrong')
 
-    low_min = df['low_price'].rolling(window=n).min()  # 过去9日的最低价
-    high_max = df['high_price'].rolling(window=n).max()  # 过去9日的最高价
-    rsv = (df['Close'] - low_min) / (high_max - low_min) * 100
+    low = df['low_price'].rolling(window=n).min()  # 过去9日的最低价
+    high = df['high_price'].rolling(window=n).max()  # 过去9日的最高价
+    rsv = (df['close_price '] - low) / (high - low) * 100
 
-    df['k'] = rsv.ewm(com=2, adjust=False).mean()  # 使用指数加权平均计算K线
-    df['d'] = df['K'].ewm(com=2, adjust=False).mean()  # 使用指数加权平均计算D线
-    df['j'] = 3 * df['K'] - 2 * df['D']  # J线公式
+    df['k'] = 50
+    df['d'] = 50
+
+    alpha_k = 1 / k
+    alpha_d = 1 / d
+    for i in range(1, len(df)):
+        df.loc[df.index[i], 'k'] = df.loc[df.index[i - 1], 'k'] * (1 - alpha_k) + df.loc[df.index[i], rsv] * alpha_k
+        df.loc[df.index[i], 'd'] = df.loc[df.index[i - 1], 'd'] * (1 - alpha_d) + df.loc[df.index[i], 'k'] * alpha_d
+
+    df['j'] = 3 * df['k'] - 2 * df['d']  # J线公式
     return df
 
 
