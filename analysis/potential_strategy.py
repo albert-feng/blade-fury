@@ -45,8 +45,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
     # 定义策略名称
     strategy_name = 'potential'
 
-    # 过滤掉可以涨20%的票
-    if (stock_number.startswith('688') or stock_number.startswith('30') or stock_number.startswith('8')
+    # 过滤掉北交所和科创板
+    if (stock_number.startswith('688') or stock_number.startswith('9') or stock_number.startswith('8')
             or stock_number.startswith('4')):
         return
 

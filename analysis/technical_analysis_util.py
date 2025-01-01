@@ -86,7 +86,7 @@ def calculate_kdj(df, n, k, d):
 
     low = df['low_price'].rolling(window=n).min()  # 过去9日的最低价
     high = df['high_price'].rolling(window=n).max()  # 过去9日的最高价
-    rsv = (df['close_price '] - low) / (high - low) * 100
+    rsv = (df['close_price'] - low) / (high - low) * 100
 
     df['k'] = rsv.ewm(com=k-1, adjust=False).mean()
     df['d'] = df['k'].ewm(com=d-1, adjust=False).mean()
