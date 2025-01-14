@@ -69,6 +69,20 @@ def calculate_macd(df, short_ema, long_ema, dif_ema):
 
 
 def calculate_ma(df, short_ma, long_ma):
+    """
+    计算移动平均线
+
+    参数:
+    df (DataFrame): 包含股票数据的DataFrame
+    short_ma (int): 短期移动平均线的周期
+    long_ma (int): 长期移动平均线的周期
+
+    返回:
+    DataFrame: 包含短期和长期移动平均线的DataFrame
+
+    异常:
+    如果输入的df不是DataFrame类型，抛出异常
+    """
     if isinstance(df, DataFrame):
         if df.index.name != 'date':
             df = df.set_index(['date'])
@@ -80,7 +94,22 @@ def calculate_ma(df, short_ma, long_ma):
         raise Exception('df type is wrong')
 
 
-def calculate_kdj(df, n, k, d):
+def calculate_kdj(df, n=9, k=3, d=3):
+    """
+    计算KDJ指标
+
+    参数:
+    df (DataFrame): 包含股票数据的DataFrame
+    n (int): 计算KDJ指标的周期，通常为9
+    k (int): KDJ指标中K线的平滑周期，通常为3
+    d (int): KDJ指标中D线的平滑周期，通常为3
+
+    返回:
+    DataFrame: 包含KDJ指标的DataFrame
+
+    异常:
+    如果输入的df不是DataFrame类型，抛出异常
+    """
     if not isinstance(df, DataFrame):
         raise Exception('df type is wrong')
 
@@ -99,7 +128,7 @@ def pre_sdt_check(stock_number, **kwargs):
     """
     依据量价进行预先筛选
     :param stock_number:
-    :param qr_date:
+    :param qr_date:+
     :return:
     """
     if stock_number.startswith('8') or stock_number.startswith('4') or stock_number.startswith('9'):

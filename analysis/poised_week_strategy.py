@@ -24,7 +24,7 @@ long_ema = 26
 dif_ema = 9
 
 
-def quant_stock(stock_number, stock_name, **kwargs):
+def quant_stock(stock_number, stock_name, **kwargs): 
     qr_date = kwargs['qr_date']
     if not pre_sdt_check(stock_number, **kwargs):
         return
