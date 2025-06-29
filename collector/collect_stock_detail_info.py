@@ -70,12 +70,12 @@ def collect_company_survey(stock_info):
     stock_info.area = survey_table[14].find_all('td')[0].text.strip()
 
     core_concept_url = f9_info.format(query_id)
-    
+
     try:
         f9_stock_info = fetch_page_content(core_concept_url)
         f9_soup = BeautifulSoup(f9_stock_info, 'lxml')
         hxtc_info = f9_soup.find('div', id='hxtc_content')
-        
+
         market_plate = (hxtc_info.find_all('p')[0].text.strip().replace('要点一:  ', '')
                         .replace('所属板块', ''))
         stock_info.market_plate = market_plate

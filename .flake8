@@ -1,0 +1,31 @@
+[flake8]
+# 设置代码行最大长度为120字符
+max-line-length = 120
+
+# 忽略一些常见的不重要警告
+ignore = 
+    # E203: whitespace before ':' (conflicts with black)
+    E203,
+    # W503: line break before binary operator (conflicts with black)
+    W503,
+    # E501: line too long (handled by max-line-length)
+    E501
+
+# 排除检查的目录和文件
+exclude = 
+    .git,
+    __pycache__,
+    .pytest_cache,
+    *.egg-info,
+    build,
+    dist,
+    .venv,
+    venv,
+    env
+
+# 设置每个文件的最大复杂度
+max-complexity = 10
+
+# 统计信息
+statistics = True
+count = True
