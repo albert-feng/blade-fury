@@ -234,10 +234,6 @@ def start_quant_analysis(**kwargs):
         print('not quant_stock funtion')
         return
 
-    if not SDT.objects(date=kwargs['qr_date']) and not kwargs.get('real_time'):
-        print('Not a Trading Date')
-        return
-
     try:
         all_stocks = StockInfo.objects()
     except Exception as e:
