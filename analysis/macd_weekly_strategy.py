@@ -9,7 +9,7 @@ import logging
 from mongoengine import Q
 from pandas import DataFrame
 
-from analysis.technical_analysis_util import pre_sdt_check, calculate_macd, check_duplicate_strategy
+from analysis.technical_analysis_util import pre_swt_check, calculate_macd, check_duplicate_strategy
 from analysis.technical_analysis_util import format_trading_data, start_quant_analysis, is_ad_price
 from models import StockWeeklyTrading as SWT, StockDailyTrading as SDT
 from models import QuantResult as QR
@@ -21,7 +21,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
     long_ema = kwargs['long_ema']
     dif_ema = kwargs['dif_ema']
     qr_date = kwargs['qr_date']
-    if not pre_sdt_check(stock_number, **kwargs):
+    if not pre_swt_check(stock_number, **kwargs):
         return
 
     strategy_direction = 'long'

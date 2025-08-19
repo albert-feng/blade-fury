@@ -136,16 +136,30 @@ def pre_sdt_check(stock_number, **kwargs):
         return
 
     qr_date = kwargs.get('qr_date')
-    rate_value = 0
     cursor = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date))\
         .order_by('-date')
     if not cursor:
         return False
 
-    min_total_value = 2000000000
-    stock_info = StockInfo.objects(stock_number=stock_number)
+    return True
 
-    if stock_info and stock_info[0].total_value and stock_info[0].total_value < min_total_value:
+
+def pre_swt_check(stock_number, **kwargs):
+    """
+    依据周线量价进行预先筛选
+    :param stock_number: 股票编号
+    :param kwargs: 包含qr_date等参数
+    :return: True表示通过筛选，False表示未通过，None表示过滤掉
+    """
+    if stock_number.startswith('8') or stock_number.startswith('4') or stock_number.startswith('9'):
+        # 过滤北交所的票
+        return
+
+    qr_date = kwargs.get('qr_date')
+
+    cursor = SWT.objects(Q(stock_number=stock_number) & Q(weekly_close_price__ne=0.0) & Q(first_trade_date__lte=qr_date) & Q(last_trade_date__gte=qr_date))\
+        .order_by('-last_trade_date')
+    if not cursor:
         return False
 
     return True
