@@ -11,10 +11,10 @@ import logging
 import argparse
 
 from mongoengine import Q
-from pandas import DataFrame
 
 from logger import setup_logging
-from models import QuantResult as QR, StockDailyTrading as SDT
+from models import QuantResult as QR, StockWeeklyTrading as SWT
+
 from analysis.technical_analysis_util import start_quant_analysis, check_duplicate_strategy
 
 
@@ -34,19 +34,18 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if not today_results:
         return
 
-    # 查询上一个交易日
-    previous_trading_days = SDT.objects(Q(date__lt=qr_date)).order_by('-date').limit(10)
-    if not previous_trading_days:
+    # 获取qr_date的前一天
+    previous_date = qr_date - datetime.timedelta(days=1)
+
+    # 查询包含qr_date和前一天的周线数据
+    current_week = SWT.objects(Q(stock_number=stock_number) & Q(first_trade_date__lte=qr_date) & Q(last_trade_date__gte=qr_date)).first()
+    previous_week = SWT.objects(Q(stock_number=stock_number) & Q(first_trade_date__lte=previous_date) & Q(last_trade_date__gte=previous_date)).first()
+
+    if not current_week or not previous_week:
         return
 
-    previous_date = None
-    for trading_day in previous_trading_days:
-        # 检查上一个交易日是否在同一周
-        if trading_day.date.isocalendar()[1] == qr_date.isocalendar()[1]:  # 同一周
-            previous_date = trading_day.date
-            break
-
-    if not previous_date:
+    # 检查是否是同一周的K线数据
+    if current_week.first_trade_date != previous_week.first_trade_date:
         return
 
     # 查询上一个交易日的量化结果
