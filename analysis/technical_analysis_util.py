@@ -252,17 +252,6 @@ def start_quant_analysis(**kwargs):
             stocks = []
 
         for i in stocks:
-            if i.account_firm and u'瑞华会计师' in i.account_firm:
-                # 过滤瑞华的客户
-                continue
-
-            if i.stock_number in banned_stock:
-                continue
-
-            if not kwargs.get('real_time') and\
-               not SDT.objects(Q(date=kwargs['qr_date']) & Q(stock_number=i.stock_number)):
-                continue
-
             qr = ''
             kwargs['industry_involved'] = i.industry_involved
             try:
