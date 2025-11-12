@@ -8,9 +8,21 @@ description: 成交量放大策略 - 获取股票最近10天的日线交易数�
              则将这只股票纳入策略选择结果
 """
 
+import os
+import sys
 import datetime
 import logging
 import argparse
+
+"""
+当脚本被直接运行（python path/to/volume_boost_strategy.py）时，
+Python 的模块搜索路径不包含项目根目录，导致无法导入 `logger`、`models` 等。
+下面的逻辑会在直接运行时把项目根目录加入到 sys.path。
+"""
+if __package__ in (None, ""):
+    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if project_root not in sys.path:
+        sys.path.insert(0, project_root)
 
 from mongoengine import Q
 from pandas import DataFrame
@@ -51,15 +63,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
             'volume': record.turnover_volume,
             'stock_number': record.stock_number
         })
-
     df = DataFrame(df_data)
-
-    # 去掉下跌的数据（收盘价低于开盘价）
-    df = df[df['closing_price'] >= df['opening_price']]
-
-    if len(df) < 2:
-        # 去掉下跌数据后数据不足
-        return
 
     # 获取当日数据（第一条数据）
     today_data = df.iloc[0]
@@ -68,6 +72,10 @@ def quant_stock(stock_number, stock_name, **kwargs):
     # 获取前一日数据
     yesterday_data = df.iloc[1]
     yesterday_volume = yesterday_data['volume']
+
+    # 要求当日收盘价高于前一日收盘价
+    if today_data['closing_price'] <= yesterday_data['closing_price']:
+        return
 
     # 限制：当日成交量必须大于前一日
     if today_volume <= yesterday_volume:
@@ -106,7 +114,6 @@ def quant_stock(stock_number, stock_name, **kwargs):
         if not check_duplicate_strategy(qr):
             qr.save()
             return qr
-
     return
 
 
