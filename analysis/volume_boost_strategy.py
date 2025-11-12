@@ -48,7 +48,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
             'date': record.date,
             'closing_price': record.today_closing_price,
             'opening_price': record.today_opening_price,
-            'volume': record.volume,
+            'volume': record.turnover_volume,
             'stock_number': record.stock_number
         })
 
