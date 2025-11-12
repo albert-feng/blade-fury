@@ -69,6 +69,10 @@ def quant_stock(stock_number, stock_name, **kwargs):
     yesterday_data = df.iloc[1]
     yesterday_volume = yesterday_data['volume']
 
+    # 限制：当日成交量必须大于前一日
+    if today_volume <= yesterday_volume:
+        return
+
     # 计算前5日平均成交量（排除今日）
     recent_5_days = df.iloc[1:6]  # 昨日及前4日
     if len(recent_5_days) >= 5:
