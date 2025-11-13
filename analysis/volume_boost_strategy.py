@@ -81,6 +81,11 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if today_volume <= yesterday_volume:
         return
 
+    # 过滤条件：当日收盘价必须是最近10日中的最高值（允许与历史最高持平）
+    max_close_10 = df['closing_price'].max()
+    if today_data['closing_price'] < max_close_10:
+        return
+
     # 计算前5日平均成交量（排除今日）
     recent_5_days = df.iloc[1:6]  # 昨日及前4日
     if len(recent_5_days) >= 5:
