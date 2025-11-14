@@ -53,6 +53,14 @@ def quant_stock(stock_number, stock_name, **kwargs):
         # 数据不足10天
         return
 
+    # 新增：检查最新行情日期与策略日期是否一致（按自然日比较）
+    latest_record_date = recent_data[0].date
+    qr_day = qr_date.date() if isinstance(qr_date, datetime.datetime) else qr_date
+    latest_day = latest_record_date.date() if isinstance(latest_record_date, datetime.datetime) else latest_record_date
+    if latest_day != qr_day:
+        logging.warning(f'最新行情日期({latest_day})与策略日期({qr_day})不一致，跳过 {stock_number}')
+        return
+
     # 转换为DataFrame并去掉下跌的数据
     df_data = []
     for record in recent_data:
@@ -64,6 +72,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
             'stock_number': record.stock_number
         })
     df = DataFrame(df_data)
+    # 确保按日期倒序排列，避免切片错位
+    df = df.sort_values(by='date', ascending=False).reset_index(drop=True)
 
     # 获取当日数据（第一条数据）
     today_data = df.iloc[0]
@@ -82,8 +92,9 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
 
     # 过滤条件：当日收盘价必须是最近10日中的最高值（允许与历史最高持平）
-    max_close_10 = df['closing_price'].max()
-    if today_data['closing_price'] < max_close_10:
+    # 修复：对比过去9日最高，避免包含当日导致判断失效
+    max_close_prev_9 = df.iloc[1:]['closing_price'].max()
+    if today_data['closing_price'] < max_close_prev_9:
         return
 
     # 计算前5日平均成交量（排除今日）
