@@ -8,21 +8,9 @@ description: 成交量放大策略 - 获取股票最近10天的日线交易数�
              则将这只股票纳入策略选择结果
 """
 
-import os
-import sys
 import datetime
 import logging
 import argparse
-
-"""
-当脚本被直接运行（python path/to/volume_boost_strategy.py）时，
-Python 的模块搜索路径不包含项目根目录，导致无法导入 `logger`、`models` 等。
-下面的逻辑会在直接运行时把项目根目录加入到 sys.path。
-"""
-if __package__ in (None, ""):
-    project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    if project_root not in sys.path:
-        sys.path.insert(0, project_root)
 
 from mongoengine import Q
 from pandas import DataFrame
@@ -68,7 +56,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
             'date': record.date,
             'closing_price': record.today_closing_price,
             'opening_price': record.today_opening_price,
-            'volume': record.turnover_volume,
+            'volume': record.turnover_amount,
             'stock_number': record.stock_number
         })
     df = DataFrame(df_data)
