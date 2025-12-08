@@ -50,6 +50,9 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     if today['diff_ma'] > 0 > yestoday['diff_ma']:
         increase_rate = round((today['close_price'] - yestoday['close_price']) / yestoday['close_price'], 4) * 100
+        # 日线：当日成交额（单位千）换算为“亿”并保留两位小数
+        day_turnover_raw = sdt[0].turnover_amount
+        turnover_amount_str = f"{day_turnover_raw / 10000:.2f}亿"
         qr = ''
         if strategy_direction == 'long':
             if today['macd'] > 0 > today['dif'] and today['dea'] < 0:
@@ -57,7 +60,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
                     stock_number=stock_number, stock_name=stock_name, date=today.name,
                     strategy_direction=strategy_direction, strategy_name=strategy_name,
                     init_price=today['close_price'], industry_involved=kwargs.get('industry_involved'),
-                    increase_rate=increase_rate
+                    increase_rate=increase_rate, turnover_amount=turnover_amount_str
                 )
         elif strategy_direction == 'short':
             if today['macd'] < 0 < today['dif'] and today['dea'] > 0:
@@ -65,7 +68,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
                     stock_number=stock_number, stock_name=stock_name, date=today.name,
                     strategy_direction=strategy_direction, strategy_name=strategy_name,
                     init_price=today['close_price'], industry_involved=kwargs.get('industry_involved'),
-                    increase_rate=increase_rate
+                    increase_rate=increase_rate, turnover_amount=turnover_amount_str
                 )
 
         if isinstance(qr, QR):

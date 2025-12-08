@@ -74,7 +74,9 @@ def quant_stock(stock_number, stock_name, **kwargs):
                 strategy_name=diff_strategy_name,
                 init_price=original_result.init_price,
                 industry_involved=kwargs.get('industry_involved'),
-                increase_rate=original_result.increase_rate
+                increase_rate=original_result.increase_rate,
+                # 周线：当周成交额（单位万）换算为“亿”并保留两位小数（按要求除以1000）
+                turnover_amount=f"{current_week.turnover_amount / 1000:.2f}亿"
             )
 
             if not check_duplicate_strategy(qr):

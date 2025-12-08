@@ -9,7 +9,9 @@ ignore =
     # W503: line break before binary operator (conflicts with black)
     W503,
     # E501: line too long (handled by max-line-length)
-    E501
+    E501,
+    # C901: function is too complex
+    C901
 
 # 排除检查的目录和文件
 exclude = 

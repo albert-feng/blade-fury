@@ -104,6 +104,10 @@ def quant_stock(stock_number, stock_name, **kwargs):
         # 计算涨幅（相对于前一日收盘价）
         price_change_rate = (today_data['closing_price'] - yesterday_data['closing_price']) / yesterday_data['closing_price'] * 100
 
+        # 日线：当日成交额（单位千）换算为“亿”并保留两位小数
+        day_turnover_raw = recent_data[0].turnover_amount
+        turnover_amount_str = f"{day_turnover_raw / 10000:.2f}亿"
+
         qr = QR(
             stock_number=stock_number,
             stock_name=stock_name,
@@ -112,7 +116,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
             strategy_name=strategy_name,
             init_price=today_data['closing_price'],
             industry_involved=kwargs.get('industry_involved'),
-            increase_rate=price_change_rate
+            increase_rate=price_change_rate,
+            turnover_amount=turnover_amount_str
         )
 
         if not check_duplicate_strategy(qr):

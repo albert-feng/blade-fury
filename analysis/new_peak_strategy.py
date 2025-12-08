@@ -37,11 +37,15 @@ def quant_stock(stock_number, stock_name, **kwargs):
     today_data = df.iloc[-1]
 
     if df['close_price'].max() <= today_data['close_price']:
+        # 日线：当日成交额（单位千）换算为“亿”并保留两位小数
+        day_turnover_raw = sdt[0].turnover_amount
+        turnover_amount_str = f"{day_turnover_raw / 10000:.2f}亿"
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=today_data.date,
             strategy_direction=strategy_direction, strategy_name=strategy_name,
             init_price=today_data['close_price'], industry_involved=kwargs.get('industry_involved'),
-            increase_rate=float(sdt[0].increase_rate.replace('%', ''))
+            increase_rate=float(sdt[0].increase_rate.replace('%', '')),
+            turnover_amount=turnover_amount_str
         )
         if real_time:
             return qr

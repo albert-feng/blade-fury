@@ -4,7 +4,6 @@
 import datetime
 import logging
 import argparse
-import pandas as pd
 
 from mongoengine import Q
 from pandas import DataFrame
@@ -62,11 +61,14 @@ def quant_stock(stock_number, stock_name, **kwargs):
             return
 
         if df.iloc[-short_point:].macd.sum() > -0.5:
-
+            # 周线：当周成交额（单位万）换算为“亿”并保留两位小数（按要求除以1000）
+            week_turnover_raw = swt[0].turnover_amount
+            turnover_amount_str = f"{week_turnover_raw / 1000:.2f}亿"
             qr = QR(
                 stock_number=stock_number, stock_name=stock_name, date=qr_date,
                 strategy_direction='long', strategy_name=strategy_name, init_price=init_price,
-                industry_involved=kwargs.get('industry_involved'), increase_rate=increase_rate
+                industry_involved=kwargs.get('industry_involved'), increase_rate=increase_rate,
+                turnover_amount=turnover_amount_str
             )
             if not check_duplicate_strategy(qr):
                 qr.save()

@@ -11,7 +11,7 @@ from pandas import DataFrame
 
 from analysis.technical_analysis_util import pre_swt_check, calculate_macd, check_duplicate_strategy
 from analysis.technical_analysis_util import format_trading_data, start_quant_analysis, is_ad_price
-from models import StockWeeklyTrading as SWT, StockDailyTrading as SDT
+from models import StockWeeklyTrading as SWT
 from models import QuantResult as QR
 from logger import setup_logging
 
@@ -49,10 +49,14 @@ def quant_stock(stock_number, stock_name, **kwargs):
             init_price = this_week['close_price']
 
         increase_rate = round((this_week['close_price'] - last_week['close_price']) / last_week['close_price'], 4) * 100
+        # 周线：当周成交额（单位万）换算为“亿”并保留两位小数（按要求除以1000）
+        week_turnover_raw = swt[0].turnover_amount
+        turnover_amount_str = f"{week_turnover_raw / 1000:.2f}亿"
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=qr_date,
             strategy_direction=strategy_direction, strategy_name=strategy_name, init_price=init_price,
-            industry_involved=kwargs.get('industry_involved'), increase_rate=increase_rate
+            industry_involved=kwargs.get('industry_involved'), increase_rate=increase_rate,
+            turnover_amount=turnover_amount_str
         )
         if not check_duplicate_strategy(qr):
             qr.save()

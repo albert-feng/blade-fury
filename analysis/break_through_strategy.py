@@ -30,7 +30,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         strategy_name = 'weeklong_' + strategy_name
 
     sdt = SDT.objects(Q(stock_number=stock_number) &
-                      Q(date__lte=kwargs['qr_date'])).order_by('-date')[:kwargs['long_ma']+10]
+                      Q(date__lte=kwargs['qr_date'])).order_by('-date')[:kwargs['long_ma'] + 10]
 
     if sdt is None or len(sdt) == 0:
         return
@@ -43,11 +43,14 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if yestoday['close_price'] < yestoday['long_ma'] and today['close_price'] > today['short_ma']\
        and today['close_price'] > today['long_ma']:
         increase_rate = round((today['close_price'] - yestoday['close_price']) / yestoday['close_price'], 4) * 100
+        # 日线：当日成交额（单位千）换算为“亿”并保留两位小数
+        day_turnover_raw = sdt[0].turnover_amount
+        turnover_amount_str = f"{day_turnover_raw / 10000:.2f}亿"
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=today.name,
             strategy_direction=strategy_direction, strategy_name=strategy_name,
             init_price=today['close_price'], industry_involved=kwargs.get('industry_involved'),
-            increase_rate=increase_rate
+            increase_rate=increase_rate, turnover_amount=turnover_amount_str
         )
 
         if real_time:
