@@ -4,7 +4,15 @@
 import config
 import time
 import datetime
-from mongoengine import *
+from mongoengine import (
+    connect,
+    Document,
+    StringField,
+    DateTimeField,
+    IntField,
+    FloatField,
+    BooleanField,
+)
 
 db = config.mongodb_config['db']
 connect(db)
