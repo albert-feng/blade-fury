@@ -38,7 +38,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if float(sdt[0].increase_rate.replace('%', '').strip()) > goup_stay:
         # 日线：当日成交额（单位千）换算为“亿”并保留两位小数
         day_turnover_raw = sdt[0].turnover_amount
-        turnover_amount_str = f"{day_turnover_raw / 10000:.2f}亿"
+        turnover_amount_str = f"{day_turnover_raw / 100000:.2f}亿"
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=qr_date,
             strategy_direction='long', strategy_name=strategy_name,
