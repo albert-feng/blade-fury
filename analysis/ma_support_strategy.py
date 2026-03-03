@@ -51,12 +51,11 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if len(df) < 10:
         return
 
-    # Last 10 days window
-    last_10_days = df.iloc[-10:]
-
-    # Condition 1: At least one day with increase > 9%
-    # Note: 9% is 0.09
-    has_surge = any(last_10_days['pct_change'] > 0.09)
+    # Condition 1: At least one day in previous 10 days (excluding today) with increase > 9%
+    if len(df) < 11:
+        return
+    prev_10_days = df.iloc[-11:-1]
+    has_surge = any(prev_10_days['pct_change'] > 0.09)
     if not has_surge:
         return
 
@@ -65,6 +64,10 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     # Check if MA is valid (not NaN)
     if pd.isna(today['ma']):
+        return
+
+    # Condition 3: Today must be rising
+    if today['pct_change'] <= 0:
         return
 
     if today['close_price'] >= today['ma'] >= today['low_price']:
