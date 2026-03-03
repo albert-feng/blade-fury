@@ -93,7 +93,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         if sdt[0].date.date() == today['date'].date():
             turnover_amount = sdt[0].turnover_amount
 
-        turnover_amount_str = f"{turnover_amount / 10000:.2f}亿"
+        turnover_amount_str = f"{turnover_amount / 100000:.2f}亿"
 
         qr = QR(
             stock_number=stock_number, stock_name=stock_name, date=qr_date,
