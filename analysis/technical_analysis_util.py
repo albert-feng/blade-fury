@@ -11,8 +11,8 @@ import pandas as pd
 from pandas import DataFrame
 from models import QuantResult as QR, StockDailyTrading as SDT, StockInfo, StockWeeklyTrading as SWT
 from mongoengine import Q
-from config import eastmoney_stock_api, banned_stock, tushare_token
-from collector.collect_util import estimate_market, get_tushare_month_trading
+from config import eastmoney_stock_api, tushare_token
+from collector.collect_util import get_tushare_month_trading
 
 query_step = 100
 timeout = 60

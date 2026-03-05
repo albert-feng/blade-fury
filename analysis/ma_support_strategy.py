@@ -52,11 +52,25 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
 
     # Condition 1: At least one day in previous 10 days (excluding today) with increase > 9%
+    # OR consecutive 2 days rising with sum > 9%
     if len(df) < 11:
         return
     prev_10_days = df.iloc[-11:-1]
-    has_surge = any(prev_10_days['pct_change'] > 0.09)
-    if not has_surge:
+
+    # Check single day > 9%
+    has_single_surge = any(prev_10_days['pct_change'] > 0.09)
+
+    has_two_day_surge = False
+    if not has_single_surge:
+        pct_series = prev_10_days['pct_change']
+        for i in range(len(pct_series) - 1):
+            p1 = pct_series.iloc[i]
+            p2 = pct_series.iloc[i + 1]
+            if p1 > 0 and p2 > 0 and (p1 + p2 > 0.09):
+                has_two_day_surge = True
+                break
+
+    if not (has_single_surge or has_two_day_surge):
         return
 
     # Condition 2: Today (last row) Close > MA > Low
