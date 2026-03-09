@@ -67,3 +67,4 @@ target/
 
 .vscode/
 venv
+.trae/
