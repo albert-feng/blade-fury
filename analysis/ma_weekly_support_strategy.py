@@ -9,7 +9,7 @@ from pandas import DataFrame
 from mongoengine import Q
 
 from logger import setup_logging
-from models import QuantResult as QR, StockWeeklyTrading as SWT
+from models import QuantResult as QR, StockWeeklyTrading as SWT, StockDailyTrading as SDT
 from analysis.technical_analysis_util import format_trading_data, check_duplicate_strategy, start_quant_analysis, pre_swt_check, is_ad_price
 
 
@@ -18,6 +18,10 @@ def quant_stock(stock_number, stock_name, **kwargs):
     qr_date = kwargs['qr_date']
 
     if not pre_swt_check(stock_number, **kwargs):
+        return
+
+    # 检查是否有当日的日k线数据，如果没有则跳过
+    if not SDT.objects(stock_number=stock_number, date=qr_date):
         return
 
     strategy_direction = 'long'
