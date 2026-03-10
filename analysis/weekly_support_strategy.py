@@ -25,7 +25,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
 
     strategy_direction = 'long'
-    strategy_name = 'ma_weekly_support_%s' % ma_window
+    strategy_name = 'weekly_support_%s' % ma_window
 
     # Need enough data:
     # 1. Calculate MA (needs ma_window)
@@ -40,12 +40,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if not swt or len(swt) < 10:
         return
 
-    use_ad_price, swt = is_ad_price(stock_number, qr_date, swt)
-    if not swt:
-        return
-
     # format_trading_data sorts by date ascending
-    trading_data = format_trading_data(swt, use_ad_price)
+    trading_data = format_trading_data(swt)
     df = DataFrame(trading_data)
 
     if len(df) < ma_window:
