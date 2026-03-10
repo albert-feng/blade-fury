@@ -10,7 +10,7 @@ from mongoengine import Q
 
 from logger import setup_logging
 from models import QuantResult as QR, StockDailyTrading as SDT
-from analysis.technical_analysis_util import format_trading_data, check_duplicate_strategy, start_quant_analysis, pre_sdt_check
+from analysis.technical_analysis_util import format_trading_data, check_duplicate_strategy, start_quant_analysis, pre_sdt_check, calculate_macd
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
@@ -29,7 +29,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
     # Need enough data:
     # 1. Calculate MA (needs ma_window)
     # 2. Check last 10 days increase (needs 10 days + 1 for pct_change)
-    quant_count = max(ma_window, 12) + 5
+    # 3. Calculate MACD (needs 26+9=35 at least usually, let's fetch enough)
+    quant_count = max(ma_window, 40) + 10
 
     sdt = SDT.objects(Q(stock_number=stock_number)
                       & Q(date__lte=qr_date)).order_by('-date')[:quant_count]
@@ -42,6 +43,25 @@ def quant_stock(stock_number, stock_name, **kwargs):
     df = DataFrame(trading_data)
 
     if len(df) < ma_window:
+        return
+
+    # Calculate MACD
+    df = calculate_macd(df, 12, 26, 9)
+
+    # Condition: Sum of recent 10 days MACD < 0
+    # OR MACD is increasing for the last 3 days
+    if len(df) < 10:
+        return
+
+    macd_sum_negative = df['macd'].iloc[-10:].sum() < 0
+
+    recent_3_days = df['macd'].iloc[-3:]
+    macd_increasing = (
+        len(recent_3_days) == 3
+        and recent_3_days.iloc[0] < recent_3_days.iloc[1] < recent_3_days.iloc[2]
+    )
+
+    if not (macd_sum_negative or macd_increasing):
         return
 
     # Calculate MA

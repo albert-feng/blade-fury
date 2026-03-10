@@ -52,10 +52,19 @@ def quant_stock(stock_number, stock_name, **kwargs):
     df = calculate_macd(df, 12, 26, 9)
 
     # Condition: Sum of recent 10 weeks MACD < 0
+    # OR MACD is increasing for the last 3 weeks
     if len(df) < 10:
         return
 
-    if df['macd'].iloc[-10:].sum() >= 0:
+    macd_sum_negative = df['macd'].iloc[-10:].sum() < 0
+
+    recent_3_weeks = df['macd'].iloc[-3:]
+    macd_increasing = (
+        len(recent_3_weeks) == 3
+        and recent_3_weeks.iloc[0] < recent_3_weeks.iloc[1] < recent_3_weeks.iloc[2]
+    )
+
+    if not (macd_sum_negative or macd_increasing):
         return
 
     # Calculate MA
