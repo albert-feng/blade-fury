@@ -78,11 +78,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
 
     if current_week['close_price'] >= current_week['ma'] >= current_week['low_price']:
-        if use_ad_price:
-            init_price = swt[0].weekly_close_price
-        else:
-            init_price = current_week['close_price']
-
+        init_price = current_week['close_price']
         increase_rate = round(current_week['pct_change'] * 100, 2) if not pd.isna(current_week['pct_change']) else 0
 
         # Turnover amount (万 -> 亿)
