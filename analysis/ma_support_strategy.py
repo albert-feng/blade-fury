@@ -20,6 +20,9 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if not pre_sdt_check(stock_number, **kwargs):
         return
 
+    if not SDT.objects(stock_number=stock_number, date=qr_date):
+        return
+
     strategy_direction = 'long'
     strategy_name = 'ma_support_%s' % ma_window
 

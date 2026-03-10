@@ -10,7 +10,7 @@ from mongoengine import Q
 
 from logger import setup_logging
 from models import QuantResult as QR, StockWeeklyTrading as SWT, StockDailyTrading as SDT
-from analysis.technical_analysis_util import format_trading_data, check_duplicate_strategy, start_quant_analysis, pre_swt_check, is_ad_price
+from analysis.technical_analysis_util import format_trading_data, check_duplicate_strategy, start_quant_analysis, pre_swt_check
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
@@ -51,7 +51,7 @@ def quant_stock(stock_number, stock_name, **kwargs):
     df['ma'] = df['close_price'].rolling(window=ma_window, center=False).mean()
 
     # Calculate pct_change
-    df['pct_change'] = df['close_price'].pct_change()
+    df['pct_change'] = df['close_price'].pct_change(fill_method=None)
 
     # Ensure we have enough data for 10-week check
     if len(df) < 11:
