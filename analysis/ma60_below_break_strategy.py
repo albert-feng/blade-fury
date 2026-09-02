@@ -118,4 +118,5 @@ def setup_argparse():
 if __name__ == "__main__":
     setup_logging(__file__, logging.WARNING)
     ma_window, qr_date = setup_argparse()
-    start_quant_analysis(ma_window=ma_window, qr_date=qr_date, quant_stock=quant_stock)
+    start_quant_analysis(ma_window=ma_window, qr_date=qr_date, quant_stock=quant_stock,
+                         require_above_year_ma=True)

@@ -30,8 +30,11 @@ def quant_stock(stock_number, stock_name, **kwargs):
     if week_long:
         strategy_name = 'weeklong_' + strategy_name
 
-    sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
-                      Q(date__lte=qr_date)).order_by('-date')[:quant_count]
+    sdt = SDT.objects(
+        Q(stock_number=stock_number)
+        & Q(today_closing_price__ne=0.0)
+        & Q(date__lte=qr_date)
+    ).order_by('-date')[:quant_count]
     if len(sdt) < quant_count:
         return
 
@@ -76,4 +79,4 @@ if __name__ == '__main__':
     today_trading = {}
 
     real_time_res = start_quant_analysis(qr_date=qr_date, quant_stock=quant_stock, today_trading=today_trading,
-                                         week_long=week_long)
+                                         week_long=week_long, require_above_year_ma=True)

@@ -18,6 +18,7 @@ query_step = 100
 timeout = 60
 retry = 5
 year_num = 250
+half_year_num = 120
 
 
 pro = ts.pro_api(tushare_token)
@@ -117,8 +118,8 @@ def calculate_kdj(df, n=9, k=3, d=3):
     high = df['high_price'].rolling(window=n).max()  # 过去9日的最高价
     rsv = (df['close_price'] - low) / (high - low) * 100
 
-    df['k'] = rsv.ewm(com=k-1, adjust=False).mean()
-    df['d'] = df['k'].ewm(com=d-1, adjust=False).mean()
+    df['k'] = rsv.ewm(com=k - 1, adjust=False).mean()
+    df['d'] = df['k'].ewm(com=d - 1, adjust=False).mean()
 
     df['j'] = 3 * df['k'] - 2 * df['d']  # J线公式
     return df
@@ -139,6 +140,8 @@ def pre_sdt_check(stock_number, **kwargs):
     cursor = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date))\
         .order_by('-date')
     if not cursor:
+        return False
+    if kwargs.get('require_above_year_ma') and not is_above_year_ma(stock_number, **kwargs):
         return False
 
     return True
@@ -161,6 +164,8 @@ def pre_swt_check(stock_number, **kwargs):
         .order_by('-last_trade_date')
     if not cursor:
         return False
+    if kwargs.get('require_above_year_ma') and not is_above_year_ma(stock_number, **kwargs):
+        return False
 
     return True
 
@@ -171,8 +176,10 @@ def is_week_long(stock_number, qr_date, short_ma, long_ma):
     else:
         quant_count = short_ma + 5
 
-    swt = SWT.objects(Q(stock_number=stock_number) &
-                      Q(last_trade_date__lte=qr_date)).order_by('-last_trade_date')[:quant_count]
+    swt = SWT.objects(
+        Q(stock_number=stock_number)
+        & Q(last_trade_date__lte=qr_date)
+    ).order_by('-last_trade_date')[:quant_count]
     if not swt:
         return False
 
@@ -186,15 +193,52 @@ def is_week_long(stock_number, qr_date, short_ma, long_ma):
         return False
 
 
-def cal_year_ma(cursor):
-    sdt = cursor[:year_num + 5]
+def cal_price_ma(cursor, ma_num):
+    sdt = cursor[:ma_num + 5]
     trading_data = format_trading_data(sdt)
     if not trading_data:
         return False
     df = DataFrame(trading_data)
-    df['year_ma'] = df['close_price'].rolling(window=year_num, center=False).mean()
+    ma_col_name = 'price_ma'
+    df[ma_col_name] = df['close_price'].rolling(window=ma_num, center=False).mean()
     today_ma = df.iloc[-1]
-    return round(today_ma['year_ma'], 4)
+    return round(today_ma[ma_col_name], 4)
+
+
+def cal_year_ma(cursor):
+    return cal_price_ma(cursor, year_num)
+
+
+def cal_half_year_ma(cursor):
+    return cal_price_ma(cursor, half_year_num)
+
+
+def is_above_year_ma(stock_number, **kwargs):
+    qr_date = kwargs.get('qr_date')
+    sdt = SDT.objects(
+        Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) & Q(date__lte=qr_date)
+    ).order_by('-date')[:year_num + 5]
+    if not sdt:
+        return False
+
+    if kwargs.get('real_time'):
+        sdt = setup_realtime_sdt(stock_number, sdt, kwargs)
+        if not sdt:
+            return False
+
+    if len(sdt) < half_year_num:
+        return False
+
+    latest_trading = sdt[0]
+    latest_close_price = latest_trading.today_closing_price
+    if len(sdt) >= year_num:
+        year_ma = latest_trading.year_ma or cal_year_ma(sdt)
+    else:
+        year_ma = cal_half_year_ma(sdt)
+
+    if not year_ma or pd.isna(year_ma):
+        return False
+    return latest_close_price > year_ma
 
 
 def cal_turnover_ma(cursor, count):
@@ -207,8 +251,11 @@ def cal_turnover_ma(cursor, count):
 def check_duplicate_strategy(qr):
     if isinstance(qr, QR):
         try:
-            cursor = QR.objects(Q(stock_number=qr.stock_number) & Q(strategy_name=qr.strategy_name) &
-                                Q(date=qr.date))
+            cursor = QR.objects(
+                Q(stock_number=qr.stock_number)
+                & Q(strategy_name=qr.strategy_name)
+                & Q(date=qr.date)
+            )
         except Exception as e:
             logging.error('Error when check dupliate %s strategy %s date %s: %s' % (qr.stock_number, qr.strategy_name,
                                                                                     qr.date, e))
@@ -329,7 +376,9 @@ def collect_stock_daily_trading():
         quantity_relative_ratio = stock[22]
         sdt.quantity_relative_ratio = 0 if quantity_relative_ratio == '-' else float(quantity_relative_ratio)
         sdt.turnover_rate = stock[23]
-        sdt.date = datetime.datetime.combine(datetime.date.today(), datetime.time(0,0))
+        sdt.date = datetime.datetime.combine(
+            datetime.date.today(), datetime.time(0, 0)
+        )
 
         if sdt.turnover_amount == 0:
             # 去掉停牌的交易数据

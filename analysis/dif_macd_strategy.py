@@ -24,8 +24,11 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
 
     real_time = kwargs.get('real_time', False)
-    sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
-                      Q(date__lte=kwargs['qr_date'])).order_by('-date')[:ema_volume]
+    sdt = SDT.objects(
+        Q(stock_number=stock_number)
+        & Q(today_closing_price__ne=0.0)
+        & Q(date__lte=kwargs['qr_date'])
+    ).order_by('-date')[:ema_volume]
 
     if float(sdt[0].increase_rate.replace('%', '')) > 9:
         return ''
@@ -91,6 +94,6 @@ if __name__ == '__main__':
 
     real_time_res = start_quant_analysis(short_ema=short_ema, long_ema=long_ema, dif_ema=dif_ema, qr_date=qr_date,
                                          quant_stock=quant_stock, real_time=real_time, today_trading=today_trading,
-                                         week_long=week_long)
+                                         week_long=week_long, require_above_year_ma=True)
     if real_time_res and real_time:
         display_quant(real_time_res)

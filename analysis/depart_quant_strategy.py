@@ -29,8 +29,11 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
 
     strategy_name = "depart_long_day"
-    sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
-                      Q(date__lte=qr_date)).order_by('-date')[:ema_volume]
+    sdt = SDT.objects(
+        Q(stock_number=stock_number)
+        & Q(today_closing_price__ne=0.0)
+        & Q(date__lte=qr_date)
+    ).order_by('-date')[:ema_volume]
     trading_data = format_trading_data(sdt)
     df = calculate_ma(DataFrame(trading_data), short_ma, long_ma)
     df = calculate_macd(df, short_ema, long_ema, dif_ema)
@@ -88,4 +91,4 @@ def setup_argparse():
 if __name__ == '__main__':
     setup_logging(__file__, logging.WARNING)
     qr_date = setup_argparse()
-    start_quant_analysis(qr_date=qr_date, quant_stock=quant_stock)
+    start_quant_analysis(qr_date=qr_date, quant_stock=quant_stock, require_above_year_ma=True)

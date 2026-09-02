@@ -24,8 +24,11 @@ def quant_stock(stock_number, stock_name, **kwargs):
     strategy_name = 'new_peak_%s' % length
     strategy_direction = 'long'
 
-    sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
-                      Q(date__lte=qr_date)).order_by('-date')[:length]
+    sdt = SDT.objects(
+        Q(stock_number=stock_number)
+        & Q(today_closing_price__ne=0.0)
+        & Q(date__lte=qr_date)
+    ).order_by('-date')[:length]
 
     if real_time:
         sdt = setup_realtime_sdt(stock_number, sdt, kwargs)
@@ -83,6 +86,7 @@ if __name__ == '__main__':
         today_trading = collect_stock_daily_trading()
 
     real_time_res = start_quant_analysis(length=length, qr_date=qr_date, quant_stock=quant_stock,
-                                         real_time=real_time, today_trading=today_trading)
+                                         real_time=real_time, today_trading=today_trading,
+                                         require_above_year_ma=True)
     if real_time_res and real_time:
         display_quant(real_time_res)

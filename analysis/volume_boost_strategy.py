@@ -153,5 +153,6 @@ if __name__ == '__main__':
 
     real_time_res = start_quant_analysis(
         qr_date=qr_date,
-        quant_stock=quant_stock
+        quant_stock=quant_stock,
+        require_above_year_ma=True,
     )

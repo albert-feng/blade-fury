@@ -68,3 +68,4 @@ target/
 .vscode/
 venv
 .trae/
+.codewhale/

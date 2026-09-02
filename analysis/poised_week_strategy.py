@@ -30,8 +30,10 @@ def quant_stock(stock_number, stock_name, **kwargs):
 
     strategy_name = "poised_long_week"
     last_trade_date = qr_date + datetime.timedelta(days=7)
-    swt = SWT.objects(Q(stock_number=stock_number) &
-                      Q(last_trade_date__lte=last_trade_date)).order_by('-last_trade_date')[:ema_volume]
+    swt = SWT.objects(
+        Q(stock_number=stock_number)
+        & Q(last_trade_date__lte=last_trade_date)
+    ).order_by('-last_trade_date')[:ema_volume]
     use_ad_price, swt = is_ad_price(stock_number, qr_date, swt)
     if not swt:
         return
@@ -101,5 +103,4 @@ def setup_argparse():
 if __name__ == '__main__':
     setup_logging(__file__, logging.WARNING)
     qr_date = setup_argparse()
-    start_quant_analysis(qr_date=qr_date, quant_stock=quant_stock)
-
+    start_quant_analysis(qr_date=qr_date, quant_stock=quant_stock, require_above_year_ma=True)

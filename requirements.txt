@@ -57,6 +57,7 @@ urllib3
 Werkzeug
 zope.interface
 tushare
+akshare
 bs4
 playwright
 #TA-Lib

@@ -31,8 +31,10 @@ def quant_stock(stock_number, stock_name, **kwargs):
     strategy_name = 'week_ma_%s_%s_%s' % (strategy_direction, short_ma, long_ma)
 
     last_trade_date = qr_date + datetime.timedelta(days=7)
-    swt = SWT.objects(Q(stock_number=stock_number) &
-                      Q(last_trade_date__lte=last_trade_date)).order_by('-last_trade_date')[:quant_count]
+    swt = SWT.objects(
+        Q(stock_number=stock_number)
+        & Q(last_trade_date__lte=last_trade_date)
+    ).order_by('-last_trade_date')[:quant_count]
     if not swt:
         return
 
@@ -91,4 +93,5 @@ if __name__ == '__main__':
     setup_logging(__file__, logging.WARNING)
     short_ma, long_ma, qr_date = setup_argparse()
 
-    real_time_res = start_quant_analysis(short_ma=short_ma, long_ma=long_ma, qr_date=qr_date, quant_stock=quant_stock)
+    real_time_res = start_quant_analysis(short_ma=short_ma, long_ma=long_ma, qr_date=qr_date,
+                                         quant_stock=quant_stock, require_above_year_ma=short_ma < long_ma)

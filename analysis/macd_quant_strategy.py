@@ -12,7 +12,7 @@ from logger import setup_logging
 from models import QuantResult as QR, StockDailyTrading as SDT
 from analysis.technical_analysis_util import calculate_macd, format_trading_data, check_duplicate_strategy
 from analysis.technical_analysis_util import start_quant_analysis, collect_stock_daily_trading, display_quant
-from analysis.technical_analysis_util import pre_sdt_check, setup_realtime_sdt
+from analysis.technical_analysis_util import pre_sdt_check, setup_realtime_sdt, is_above_year_ma
 
 
 ema_volume = 250
@@ -24,8 +24,11 @@ def quant_stock(stock_number, stock_name, **kwargs):
         return
 
     real_time = kwargs.get('real_time', False)
-    sdt = SDT.objects(Q(stock_number=stock_number) & Q(today_closing_price__ne=0.0) &
-                      Q(date__lte=kwargs['qr_date'])).order_by('-date')[:ema_volume]
+    sdt = SDT.objects(
+        Q(stock_number=stock_number)
+        & Q(today_closing_price__ne=0.0)
+        & Q(date__lte=kwargs['qr_date'])
+    ).order_by('-date')[:ema_volume]
 
     if float(sdt[0].increase_rate.replace('%', '')) > 9:
         return ''
@@ -44,6 +47,9 @@ def quant_stock(stock_number, stock_name, **kwargs):
         strategy_direction = 'long'
     elif yestoday['macd'] > 0 > today['macd']:
         strategy_direction = 'short'
+
+    if strategy_direction == 'long' and not is_above_year_ma(stock_number, **kwargs):
+        return ''
 
     if strategy_direction:
         strategy_name = 'macd_%s_%s_%s_%s' % (strategy_direction, kwargs['short_ema'], kwargs['long_ema'],

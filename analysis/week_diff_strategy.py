@@ -15,7 +15,7 @@ from mongoengine import Q
 from logger import setup_logging
 from models import QuantResult as QR, StockWeeklyTrading as SWT
 
-from analysis.technical_analysis_util import start_quant_analysis, check_duplicate_strategy
+from analysis.technical_analysis_util import start_quant_analysis, check_duplicate_strategy, is_above_year_ma
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
@@ -63,6 +63,9 @@ def quant_stock(stock_number, stock_name, **kwargs):
         # 获取当天该股票的原始量化结果
         original_result = today_results.filter(stock_number=stock_number).first()
         if original_result:
+            if original_result.strategy_direction == 'long' and not is_above_year_ma(stock_number, qr_date=qr_date):
+                return
+
             # 创建新的量化结果，策略名称加上_diff后缀
             diff_strategy_name = strategy_name + '_diff'
 
