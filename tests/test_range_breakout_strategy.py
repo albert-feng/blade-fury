@@ -128,7 +128,23 @@ class TestRangeBreakoutPattern(unittest.TestCase):
 
         self.assertFalse(result)
 
-    def test_reject_when_qr_date_is_not_above_both_ma(self):
+    def test_reject_when_qr_date_is_not_above_any_ma(self):
+        snapshots = [
+            self._day(9.0, 10.0, 11.0),
+            self._day(9.1, 10.0, 11.0),
+            self._day(9.2, 10.0, 11.0),
+            self._day(9.3, 10.0, 11.0),
+            self._day(9.4, 10.0, 11.0),
+            self._day(10.2, 10.0, 11.0),
+            self._day(11.2, 10.1, 11.0),
+            self._day(10.1, 10.2, 11.1),
+        ]
+
+        result = range_breakout.is_range_breakout_pattern(snapshots)
+
+        self.assertFalse(result)
+
+    def test_match_when_qr_date_is_above_only_one_ma(self):
         snapshots = [
             self._day(9.0, 10.0, 11.0),
             self._day(9.1, 10.0, 11.0),
@@ -142,7 +158,78 @@ class TestRangeBreakoutPattern(unittest.TestCase):
 
         result = range_breakout.is_range_breakout_pattern(snapshots)
 
+        self.assertTrue(result)
+
+
+class TestRangeBreakoutDayFilters(unittest.TestCase):
+
+    @staticmethod
+    def _day(close_price, ma60, ma120):
+        return {
+            'close_price': close_price,
+            'short_ma': ma60,
+            'long_ma': ma120,
+        }
+
+    def test_reject_when_today_close_is_lower_than_yesterday_close(self):
+        snapshots = [
+            self._day(8.0, 7.0, 7.5),
+            self._day(8.1, 7.0, 7.5),
+            self._day(8.2, 7.1, 7.6),
+            self._day(8.3, 7.1, 7.6),
+            self._day(8.4, 7.2, 7.7),
+            self._day(8.5, 7.2, 7.7),
+            self._day(8.6, 7.3, 7.8),
+            self._day(8.7, 7.3, 7.8),
+            self._day(8.8, 7.4, 7.9),
+            self._day(8.9, 7.4, 7.9),
+            self._day(9.5, 9.0, 11.0),
+            self._day(9.4, 9.1, 11.5),
+        ]
+
+        result = range_breakout.is_valid_breakout_day(snapshots)
+
         self.assertFalse(result)
+
+    def test_reject_when_today_close_is_not_higher_than_previous_ten_closes(self):
+        snapshots = [
+            self._day(8.0, 7.0, 7.5),
+            self._day(8.1, 7.0, 7.5),
+            self._day(8.2, 7.1, 7.6),
+            self._day(8.3, 7.1, 7.6),
+            self._day(8.4, 7.2, 7.7),
+            self._day(8.5, 7.2, 7.7),
+            self._day(8.6, 7.3, 7.8),
+            self._day(8.7, 7.3, 7.8),
+            self._day(8.8, 7.4, 7.9),
+            self._day(10.0, 7.4, 7.9),
+            self._day(9.5, 9.0, 11.0),
+            self._day(9.6, 9.1, 11.5),
+        ]
+
+        result = range_breakout.is_valid_breakout_day(snapshots)
+
+        self.assertFalse(result)
+
+    def test_accept_when_today_close_is_above_only_one_ma_but_meets_other_rules(self):
+        snapshots = [
+            self._day(8.0, 7.0, 7.5),
+            self._day(8.1, 7.0, 7.5),
+            self._day(8.2, 7.1, 7.6),
+            self._day(8.3, 7.1, 7.6),
+            self._day(8.4, 7.2, 7.7),
+            self._day(8.5, 7.2, 7.7),
+            self._day(8.6, 7.3, 7.8),
+            self._day(8.7, 7.3, 7.8),
+            self._day(8.8, 7.4, 7.9),
+            self._day(8.9, 7.4, 7.9),
+            self._day(9.5, 9.0, 11.0),
+            self._day(9.8, 9.1, 11.5),
+        ]
+
+        result = range_breakout.is_valid_breakout_day(snapshots)
+
+        self.assertTrue(result)
 
 
 if __name__ == '__main__':

@@ -26,6 +26,7 @@ SHORT_MA = 60
 LONG_MA = 120
 BREAKOUT_WINDOW = 3
 PRE_BREAKOUT_LOOKBACK = 5
+PREVIOUS_CLOSE_LOOKBACK = 10
 QUANT_COUNT = LONG_MA + BREAKOUT_WINDOW + PRE_BREAKOUT_LOOKBACK + 5
 
 
@@ -46,6 +47,15 @@ def _is_above_both_ma(day_snapshot):
     return (
         day_snapshot['close_price'] > day_snapshot['short_ma']
         and day_snapshot['close_price'] > day_snapshot['long_ma']
+    )
+
+
+def _is_above_any_ma(day_snapshot):
+    if not _has_valid_ma(day_snapshot):
+        return False
+    return (
+        day_snapshot['close_price'] > day_snapshot['short_ma']
+        or day_snapshot['close_price'] > day_snapshot['long_ma']
     )
 
 
@@ -84,7 +94,7 @@ def _is_three_day_window_breakout(day_snapshots):
         return False
 
     today = day_snapshots[-1]
-    if not _is_above_both_ma(today):
+    if not _is_above_any_ma(today):
         return False
 
     previous_five_days = day_snapshots[-required_days:-BREAKOUT_WINDOW]
@@ -111,13 +121,29 @@ def is_range_breakout_pattern(day_snapshots):
     if not day_snapshots:
         return False
 
-    if not _is_above_both_ma(day_snapshots[-1]):
+    if not _is_above_any_ma(day_snapshots[-1]):
         return False
 
     if _is_same_day_double_breakout(day_snapshots):
         return True
 
     return _is_three_day_window_breakout(day_snapshots)
+
+
+def is_valid_breakout_day(day_snapshots):
+    if len(day_snapshots) < PREVIOUS_CLOSE_LOOKBACK + 1:
+        return False
+
+    today = day_snapshots[-1]
+    yesterday = day_snapshots[-2]
+    if today['close_price'] < yesterday['close_price']:
+        return False
+
+    previous_ten_days = day_snapshots[-(PREVIOUS_CLOSE_LOOKBACK + 1):-1]
+    if today['close_price'] <= max(day_snapshot['close_price'] for day_snapshot in previous_ten_days):
+        return False
+
+    return _is_above_any_ma(today)
 
 
 def quant_stock(stock_number, stock_name, **kwargs):
@@ -150,6 +176,8 @@ def quant_stock(stock_number, stock_name, **kwargs):
     df = calculate_ma(DataFrame(trading_data), SHORT_MA, LONG_MA)
     day_snapshots = df[['close_price', 'short_ma', 'long_ma']].to_dict('records')
     if not is_range_breakout_pattern(day_snapshots):
+        return
+    if not is_valid_breakout_day(day_snapshots):
         return
 
     today = df.iloc[-1]
