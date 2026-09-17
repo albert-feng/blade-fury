@@ -143,7 +143,9 @@ def is_valid_breakout_day(day_snapshots):
     if today['close_price'] <= max(day_snapshot['close_price'] for day_snapshot in previous_ten_days):
         return False
 
-    return _is_above_any_ma(today)
+    return _is_breaking_ma(yesterday, today, 'short_ma') or _is_breaking_ma(
+        yesterday, today, 'long_ma'
+    )
 
 
 def quant_stock(stock_number, stock_name, **kwargs):

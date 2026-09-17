@@ -211,7 +211,7 @@ class TestRangeBreakoutDayFilters(unittest.TestCase):
 
         self.assertFalse(result)
 
-    def test_accept_when_today_close_is_above_only_one_ma_but_meets_other_rules(self):
+    def test_reject_when_today_close_is_above_ma_but_does_not_break_any_ma(self):
         snapshots = [
             self._day(8.0, 7.0, 7.5),
             self._day(8.1, 7.0, 7.5),
@@ -224,6 +224,26 @@ class TestRangeBreakoutDayFilters(unittest.TestCase):
             self._day(8.8, 7.4, 7.9),
             self._day(8.9, 7.4, 7.9),
             self._day(9.5, 9.0, 11.0),
+            self._day(9.8, 9.1, 11.5),
+        ]
+
+        result = range_breakout.is_valid_breakout_day(snapshots)
+
+        self.assertFalse(result)
+
+    def test_accept_when_today_close_breaks_above_one_ma_and_meets_other_rules(self):
+        snapshots = [
+            self._day(8.0, 7.0, 7.5),
+            self._day(8.1, 7.0, 7.5),
+            self._day(8.2, 7.1, 7.6),
+            self._day(8.3, 7.1, 7.6),
+            self._day(8.4, 7.2, 7.7),
+            self._day(8.5, 7.2, 7.7),
+            self._day(8.6, 7.3, 7.8),
+            self._day(8.7, 7.3, 7.8),
+            self._day(8.8, 7.4, 7.9),
+            self._day(8.9, 7.4, 7.9),
+            self._day(9.0, 9.1, 11.0),
             self._day(9.8, 9.1, 11.5),
         ]
 
